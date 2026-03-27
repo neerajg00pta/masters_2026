@@ -1,195 +1,117 @@
 import type { Golfer } from './types'
 
-// === ESPN API Types ===
-
-const ESPN_GOLF_SCOREBOARD =
-  'https://site.api.espn.com/apis/site/v2/sports/golf/pga/scoreboard'
-
+/** Golfer data from the ESPN leaderboard API */
 export interface ESPNGolfer {
   id: string
   name: string
-  score: number   // parsed: "E"->0, "-5"->-5, "+2"->2
+  scoreToPar: number
   today: number
-  thru: string    // "F", "1"-"18", tee time, "--"
+  thru: string
   status: 'active' | 'cut' | 'withdrawn'
+  position: string
 }
 
-// === Fetch ESPN leaderboard ===
+/** Result of matching an ESPN golfer to a pool golfer */
+export interface MatchResult {
+  poolGolferId: string
+  espnGolferId: string
+  espnName: string
+  scoreToPar: number
+  today: number
+  thru: string
+  status: Golfer['status']
+}
 
+/**
+ * Fetch the ESPN Masters leaderboard.
+ * Uses the ESPN public API for the Masters tournament.
+ */
 export async function fetchESPNLeaderboard(): Promise<ESPNGolfer[]> {
-  const resp = await fetch(ESPN_GOLF_SCOREBOARD)
-  if (!resp.ok) throw new Error(`ESPN API error: ${resp.status}`)
-  const data = await resp.json()
+  // Masters tournament ID on ESPN -- the PGA scoreboard endpoint returns
+  // the current/most-recent tournament
+  const url = 'https://site.api.espn.com/apis/site/v2/sports/golf/pga/scoreboard'
+  const res = await fetch(url)
+  if (!res.ok) throw new Error(`ESPN API ${res.status}`)
+  const data = await res.json()
 
   const golfers: ESPNGolfer[] = []
 
-  // Navigate: events[0].competitions[0].competitors[]
-  const event = data.events?.[0]
-  if (!event) return golfers
+  // Navigate ESPN's nested response structure
+  const events = data?.events ?? []
+  for (const event of events) {
+    const competitions = event?.competitions ?? []
+    for (const competition of competitions) {
+      const competitors = competition?.competitors ?? []
+      for (const competitor of competitors) {
+        const athlete = competitor?.athlete ?? {}
+        const stats = competitor?.statistics ?? []
+        const statusText = competitor?.status?.type?.description ?? ''
 
-  const competition = event.competitions?.[0]
-  if (!competition) return golfers
+        // Parse score to par from statistics
+        let scoreToPar = 0
+        let today = 0
+        let thru = ''
 
-  const competitors = competition.competitors ?? []
+        for (const stat of stats) {
+          if (stat.name === 'scoreToPar') scoreToPar = parseInt(stat.value, 10) || 0
+          if (stat.name === 'today') today = parseInt(stat.value, 10) || 0
+          if (stat.name === 'thru') thru = stat.displayValue ?? ''
+        }
 
-  for (const comp of competitors) {
-    const athlete = comp.athlete
-    if (!athlete) continue
+        let status: ESPNGolfer['status'] = 'active'
+        if (statusText.toLowerCase().includes('cut')) status = 'cut'
+        if (statusText.toLowerCase().includes('wd') || statusText.toLowerCase().includes('withdrawn')) status = 'withdrawn'
 
-    const displayName: string = athlete.displayName ?? ''
-    const id: string = String(athlete.id ?? comp.id ?? '')
-
-    // Parse score to par
-    const scoreStr: string = comp.score ?? comp.statistics?.[0]?.displayValue ?? 'E'
-    const score = parseScoreString(scoreStr)
-
-    // Parse today's round score
-    const todayStr: string = comp.linescores?.[comp.linescores.length - 1]?.displayValue ?? 'E'
-    const today = parseScoreString(todayStr)
-
-    // Parse thru
-    const thru = parseThru(comp)
-
-    // Parse status
-    const status = parseStatus(comp)
-
-    golfers.push({ id, name: displayName, score, today, thru, status })
+        golfers.push({
+          id: String(athlete.id ?? competitor.id ?? ''),
+          name: athlete.displayName ?? '',
+          scoreToPar,
+          today,
+          thru,
+          status,
+          position: competitor.status?.position?.displayName ?? '',
+        })
+      }
+    }
   }
 
   return golfers
 }
 
-/** Parse score string: "E"->0, "-5"->-5, "+2"->2, "3"->3 */
-function parseScoreString(s: string): number {
-  if (!s || s === 'E' || s === '-') return 0
-  const n = parseInt(s, 10)
-  return isNaN(n) ? 0 : n
-}
-
-/** Extract thru/hole info from competitor data */
-function parseThru(comp: any): string {
-  // Check status detail first
-  const statusDetail: string = comp.status?.displayValue ?? ''
-  if (statusDetail) {
-    // "F" = finished, "1"-"18" = on hole, tee time format
-    if (statusDetail === 'F') return 'F'
-    const holeNum = parseInt(statusDetail, 10)
-    if (!isNaN(holeNum) && holeNum >= 1 && holeNum <= 18) return `${holeNum}`
-    return statusDetail
-  }
-
-  // Fallback: check linescores for last completed hole
-  const linescores = comp.linescores
-  if (Array.isArray(linescores) && linescores.length > 0) {
-    return 'F'  // has linescores means at least one round completed
-  }
-
-  return '--'
-}
-
-/** Determine golfer status from ESPN data */
-function parseStatus(comp: any): ESPNGolfer['status'] {
-  const statusType: string = comp.status?.type?.name ?? ''
-  const statusState: string = comp.status?.type?.state ?? ''
-
-  if (statusType === 'STATUS_CUT' || statusState === 'cut') return 'cut'
-  if (statusType === 'STATUS_WITHDRAWN' || statusType === 'STATUS_WD' ||
-      statusState === 'withdrawn') return 'withdrawn'
-
-  return 'active'
-}
-
-// === Name normalization and matching ===
-
-/** Normalize a golfer name for matching: lowercase, trim, strip suffixes */
-function normalize(name: string): string {
-  return name
-    .toLowerCase()
-    .trim()
-    .replace(/\s+(jr\.?|sr\.?|iii|iv|ii)$/i, '')
-    .replace(/[.\-']/g, '')
-    .replace(/\s+/g, ' ')
-    .trim()
-}
-
-/** Check if two golfer names likely refer to the same person */
-export function fuzzyMatchGolfer(poolName: string, espnName: string): boolean {
-  if (!poolName || !espnName) return false
-  const p = normalize(poolName)
-  const e = normalize(espnName)
-
-  // Exact match after normalization
-  if (p === e) return true
-
-  // Substring: either contains the other
-  if (e.includes(p) || p.includes(e)) return true
-
-  // Last name match: compare last word of each
-  const pParts = p.split(' ')
-  const eParts = e.split(' ')
-  const pLast = pParts[pParts.length - 1]
-  const eLast = eParts[eParts.length - 1]
-
-  if (pLast === eLast && pLast.length >= 3) {
-    // Last names match — check first name initial
-    if (pParts[0][0] === eParts[0][0]) return true
-  }
-
-  return false
-}
-
-// === Match ESPN golfers to pool golfers ===
-
-export interface ESPNMatchResult {
-  golferId: string
-  espnGolfer: ESPNGolfer
-}
-
 /**
- * Match ESPN leaderboard golfers to pool golfers using a 3-pass strategy:
- * 1. By stored espnName (reliable, persisted from previous matches)
- * 2. By fuzzy name match
- * 3. Unmatched returned separately for admin manual mapping
+ * Match ESPN golfers to pool golfers by name.
+ * Returns matched pairs and unmatched ESPN golfers.
  */
 export function matchESPNToPool(
   espnGolfers: ESPNGolfer[],
-  poolGolfers: Golfer[]
-): { matched: ESPNMatchResult[]; unmatched: ESPNGolfer[] } {
-  const matched: ESPNMatchResult[] = []
-  const usedEspnIds = new Set<string>()
-  const usedPoolIds = new Set<string>()
+  poolGolfers: Golfer[],
+): { matched: MatchResult[]; unmatched: ESPNGolfer[] } {
+  const matched: MatchResult[] = []
+  const unmatched: ESPNGolfer[] = []
 
-  // Pass 1: match by stored espnName (most reliable)
-  for (const pool of poolGolfers) {
-    if (!pool.espnName) continue
-    const espn = espnGolfers.find(
-      e => !usedEspnIds.has(e.id) && normalize(e.name) === normalize(pool.espnName!)
+  for (const espn of espnGolfers) {
+    const espnLower = espn.name.toLowerCase().trim()
+
+    // Try exact match on espnName first, then name
+    const pool = poolGolfers.find(g =>
+      (g.espnName && g.espnName.toLowerCase().trim() === espnLower) ||
+      g.name.toLowerCase().trim() === espnLower
     )
-    if (!espn) continue
 
-    usedEspnIds.add(espn.id)
-    usedPoolIds.add(pool.id)
-    matched.push({ golferId: pool.id, espnGolfer: espn })
-  }
-
-  // Pass 2: fuzzy name match for remaining
-  for (const pool of poolGolfers) {
-    if (usedPoolIds.has(pool.id)) continue
-
-    for (const espn of espnGolfers) {
-      if (usedEspnIds.has(espn.id)) continue
-
-      if (fuzzyMatchGolfer(pool.name, espn.name)) {
-        usedEspnIds.add(espn.id)
-        usedPoolIds.add(pool.id)
-        matched.push({ golferId: pool.id, espnGolfer: espn })
-        break
-      }
+    if (pool) {
+      matched.push({
+        poolGolferId: pool.id,
+        espnGolferId: espn.id,
+        espnName: espn.name,
+        scoreToPar: espn.scoreToPar,
+        today: espn.today,
+        thru: espn.thru,
+        status: espn.status,
+      })
+    } else {
+      unmatched.push(espn)
     }
   }
-
-  // Pass 3: collect unmatched ESPN golfers
-  const unmatched = espnGolfers.filter(e => !usedEspnIds.has(e.id))
 
   return { matched, unmatched }
 }

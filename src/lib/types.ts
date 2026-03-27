@@ -102,7 +102,7 @@ export const CUT_SCORE = 100
 export function formatScore(score: number): string {
   if (score >= CUT_SCORE) return 'CUT'
   if (score === 0) return '-'
-  return score > 0 ? `+${score}` : `${score}`
+  return `${score}`
 }
 
 /** Check if a golfer is currently on the course (thru 1-17) */
