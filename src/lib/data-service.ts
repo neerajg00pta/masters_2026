@@ -1,5 +1,6 @@
 import { supabase } from './supabase'
 import type { Config, User, Team, Golfer, Selection, ScoreSnapshot } from './types'
+import type { MastersFieldEntry } from './masters-field'
 
 interface AllData {
   config: Config
@@ -106,6 +107,260 @@ export async function createUser(input: { name: string; email: string; fullName:
     createdAt: data.created_at,
   }
 }
+
+// === Team mutations ===
+
+/** Create a new team for a user */
+export async function createTeam(userId: string, teamName: string): Promise<Team> {
+  const { data, error } = await supabase
+    .from('teams')
+    .insert({ user_id: userId, team_name: teamName })
+    .select()
+    .single()
+
+  if (error) throw new Error(error.message)
+
+  return {
+    id: data.id,
+    userId: data.user_id,
+    teamName: data.team_name,
+    createdAt: data.created_at,
+  }
+}
+
+/** Delete a team by ID */
+export async function deleteTeam(teamId: string): Promise<void> {
+  // First delete all selections for this team
+  const { error: selError } = await supabase
+    .from('selections')
+    .delete()
+    .eq('team_id', teamId)
+
+  if (selError) throw new Error(selError.message)
+
+  const { error } = await supabase
+    .from('teams')
+    .delete()
+    .eq('id', teamId)
+
+  if (error) throw new Error(error.message)
+}
+
+/** Rename a team */
+export async function updateTeamName(teamId: string, name: string): Promise<void> {
+  const { error } = await supabase
+    .from('teams')
+    .update({ team_name: name })
+    .eq('id', teamId)
+
+  if (error) throw new Error(error.message)
+}
+
+// === Selection mutations ===
+
+/** Add a golfer to a team */
+export async function addSelection(teamId: string, golferId: string, isRandom: boolean): Promise<Selection> {
+  const { data, error } = await supabase
+    .from('selections')
+    .insert({ team_id: teamId, golfer_id: golferId, is_random: isRandom })
+    .select()
+    .single()
+
+  if (error) throw new Error(error.message)
+
+  return {
+    id: data.id,
+    teamId: data.team_id,
+    golferId: data.golfer_id,
+    isRandom: data.is_random ?? false,
+    pickedAt: data.picked_at,
+  }
+}
+
+/** Remove a golfer from a team */
+export async function removeSelection(teamId: string, golferId: string): Promise<void> {
+  const { error } = await supabase
+    .from('selections')
+    .delete()
+    .eq('team_id', teamId)
+    .eq('golfer_id', golferId)
+
+  if (error) throw new Error(error.message)
+}
+
+// === Config mutations ===
+
+/** Update config fields (single-row table) */
+export async function updateConfig(updates: Partial<Config>): Promise<void> {
+  const payload: Record<string, unknown> = {}
+  if (updates.poolLocked !== undefined) payload.pool_locked = updates.poolLocked
+  if (updates.randomsAssigned !== undefined) payload.randoms_assigned = updates.randomsAssigned
+  if (updates.liveScoring !== undefined) payload.live_scoring = updates.liveScoring
+
+  const { error } = await supabase
+    .from('config')
+    .update(payload)
+    .eq('id', 1)
+
+  if (error) throw new Error(error.message)
+}
+
+// === User mutations ===
+
+/** Update a user */
+export async function updateUser(
+  userId: string,
+  updates: Partial<{ name: string; fullName: string; email: string; admin: boolean; paid: boolean }>
+): Promise<void> {
+  const payload: Record<string, unknown> = {}
+  if (updates.name !== undefined) payload.name = updates.name
+  if (updates.fullName !== undefined) payload.full_name = updates.fullName
+  if (updates.email !== undefined) payload.email = updates.email
+  if (updates.admin !== undefined) payload.admin = updates.admin
+  if (updates.paid !== undefined) payload.paid = updates.paid
+
+  const { error } = await supabase
+    .from('users')
+    .update(payload)
+    .eq('id', userId)
+
+  if (error) throw new Error(error.message)
+}
+
+/** Delete a user and cascade delete their teams + selections */
+export async function deleteUser(userId: string): Promise<void> {
+  // Find all teams for this user
+  const { data: userTeams, error: teamsErr } = await supabase
+    .from('teams')
+    .select('id')
+    .eq('user_id', userId)
+
+  if (teamsErr) throw new Error(teamsErr.message)
+
+  // Delete selections for each team
+  for (const t of userTeams ?? []) {
+    const { error: selErr } = await supabase
+      .from('selections')
+      .delete()
+      .eq('team_id', t.id)
+    if (selErr) console.error(`Failed to delete selections for team ${t.id}:`, selErr.message)
+  }
+
+  // Delete teams
+  const { error: delTeamsErr } = await supabase
+    .from('teams')
+    .delete()
+    .eq('user_id', userId)
+  if (delTeamsErr) throw new Error(delTeamsErr.message)
+
+  // Delete snapshots for those teams
+  for (const t of userTeams ?? []) {
+    await supabase.from('score_snapshots').delete().eq('team_id', t.id)
+  }
+
+  // Delete the user
+  const { error } = await supabase
+    .from('users')
+    .delete()
+    .eq('id', userId)
+
+  if (error) throw new Error(error.message)
+}
+
+// === Golfer mutations ===
+
+/** Upsert golfers from the masters field data */
+export async function upsertGolfers(field: MastersFieldEntry[]): Promise<number> {
+  const rows = field.map((entry, idx) => ({
+    name: entry.name,
+    odds: entry.odds,
+    odds_numeric: entry.oddsNumeric,
+    world_rank: entry.worldRank,
+    sort_order: idx + 1,
+  }))
+
+  const { error, count } = await supabase
+    .from('golfers')
+    .upsert(rows, { onConflict: 'name', count: 'exact' })
+
+  if (error) throw new Error(error.message)
+  return count ?? rows.length
+}
+
+/** Update a single golfer field */
+export async function updateGolfer(
+  golferId: string,
+  updates: Partial<{
+    name: string
+    espnName: string | null
+    scoreToPar: number
+    today: number
+    thru: string
+    status: Golfer['status']
+    scoreLocked: boolean
+  }>
+): Promise<void> {
+  const payload: Record<string, unknown> = {}
+  if (updates.name !== undefined) payload.name = updates.name
+  if (updates.espnName !== undefined) payload.espn_name = updates.espnName
+  if (updates.scoreToPar !== undefined) payload.score_to_par = updates.scoreToPar
+  if (updates.today !== undefined) payload.today = updates.today
+  if (updates.thru !== undefined) payload.thru = updates.thru
+  if (updates.status !== undefined) payload.status = updates.status
+  if (updates.scoreLocked !== undefined) payload.score_locked = updates.scoreLocked
+
+  const { error } = await supabase
+    .from('golfers')
+    .update(payload)
+    .eq('id', golferId)
+
+  if (error) throw new Error(error.message)
+}
+
+/** Bulk add selections (for random assignments) */
+export async function bulkAddSelections(
+  assignments: Array<{ teamId: string; golferId: string }>
+): Promise<void> {
+  const rows = assignments.map(a => ({
+    team_id: a.teamId,
+    golfer_id: a.golferId,
+    is_random: true,
+  }))
+
+  const { error } = await supabase
+    .from('selections')
+    .insert(rows)
+
+  if (error) throw new Error(error.message)
+}
+
+/** Save daily score snapshots */
+export async function saveSnapshots(
+  entries: Array<{ teamId: string; aggregateScore: number; rank: number }>
+): Promise<void> {
+  const today = new Date().toISOString().slice(0, 10)
+
+  // Delete existing snapshots for today (idempotent)
+  await supabase
+    .from('score_snapshots')
+    .delete()
+    .eq('snapshot_date', today)
+
+  const rows = entries.map(e => ({
+    snapshot_date: today,
+    team_id: e.teamId,
+    aggregate_score: e.aggregateScore,
+    rank: e.rank,
+  }))
+
+  const { error } = await supabase
+    .from('score_snapshots')
+    .insert(rows)
+
+  if (error) throw new Error(error.message)
+}
+
+// === Score mutations ===
 
 /** Batch update golfer scores from live scoring */
 export async function updateGolferScores(

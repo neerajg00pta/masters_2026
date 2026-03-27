@@ -1,0 +1,137 @@
+/* === Panel === */
+.panel {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.panelHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: var(--masters-green);
+  color: #fff;
+  cursor: pointer;
+  user-select: none;
+}
+
+.panelTitle {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.chevron {
+  font-size: 12px;
+  transition: transform 0.2s;
+}
+
+.chevronCollapsed {
+  transform: rotate(-90deg);
+}
+
+.panelBody {
+  overflow: hidden;
+}
+
+/* === Table === */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.table thead th {
+  text-align: left;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 8px 8px;
+  border-bottom: 1px solid var(--border-default);
+  background: var(--bg-elevated);
+  position: sticky;
+  top: 0;
+}
+
+.table thead th:not(:nth-child(2)) {
+  text-align: right;
+}
+
+.table tbody td {
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--border-muted);
+}
+
+.table tbody td:not(:nth-child(2)) {
+  text-align: right;
+}
+
+.table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.table tbody tr:hover {
+  background: var(--bg-elevated);
+}
+
+/* === Player name === */
+.playerName {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 500;
+}
+
+.randomPlayer .playerName {
+  font-style: italic;
+}
+
+.randomBadge {
+  font-size: 11px;
+  line-height: 1;
+}
+
+/* === Cut row === */
+.cutRow td {
+  color: var(--text-muted);
+}
+
+/* === Rank === */
+.rank {
+  font-weight: 700;
+  font-size: 12px;
+  min-width: 28px;
+}
+
+/* === Live badge === */
+.liveBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--accent-green);
+  margin-left: 4px;
+}
+
+.liveDot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--accent-green);
+  animation: pulse-green 1.5s infinite;
+}
+
+/* === Empty state === */
+.empty {
+  padding: 24px 16px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 13px;
+}

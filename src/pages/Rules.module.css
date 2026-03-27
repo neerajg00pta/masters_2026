@@ -1,0 +1,211 @@
+.page {
+  max-width: 700px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.pageTitle {
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+  color: var(--masters-green);
+  text-align: center;
+}
+
+.subtitle {
+  font-size: 13px;
+  color: var(--text-secondary);
+  text-align: center;
+  margin-top: -12px;
+}
+
+/* Cards */
+
+.card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cardTitle {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--masters-green);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cardIcon {
+  font-size: 18px;
+}
+
+.cardBody {
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--text-primary);
+}
+
+.cardBody p {
+  margin-bottom: 8px;
+}
+
+.cardBody p:last-child {
+  margin-bottom: 0;
+}
+
+/* Lists */
+
+.ruleList {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 0;
+}
+
+.ruleItem {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text-primary);
+  padding-left: 20px;
+  position: relative;
+}
+
+.ruleItem::before {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 8px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--masters-green);
+}
+
+/* Score example */
+
+.scoreExample {
+  display: flex;
+  gap: 20px;
+  padding: 10px 14px;
+  background: var(--bg-primary);
+  border-radius: var(--radius);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+.scoreLabel {
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.scoreGood {
+  color: var(--accent-green);
+  font-weight: 700;
+}
+
+.scoreEven {
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+.scoreBad {
+  color: var(--accent-red);
+  font-weight: 700;
+}
+
+/* Payouts */
+
+.payoutGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.payoutItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 8px;
+  border-radius: var(--radius);
+  background: var(--bg-primary);
+  border: 1px solid var(--border-muted);
+}
+
+.payoutPlace {
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.payoutFirst { color: #b8860b; }
+.payoutSecond { color: #808080; }
+.payoutLast { color: #cd7f32; }
+.payoutMiddle { color: #cd7f32; }
+
+.payoutMedal {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.medalGold {
+  background: var(--payout-first);
+  color: #5d4e00;
+}
+
+.medalSilver {
+  background: var(--payout-second);
+  color: #444;
+}
+
+.medalBronze {
+  background: var(--payout-qualifying);
+  color: #4a2d00;
+}
+
+/* Highlight formula */
+
+.formula {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 4px;
+  background: rgba(0, 103, 71, 0.08);
+  color: var(--masters-green);
+  font-weight: 600;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Divider */
+
+.divider {
+  height: 1px;
+  background: var(--border-muted);
+  margin: 4px 0;
+}
+
+/* Emphasis */
+
+.em {
+  font-weight: 600;
+  color: var(--masters-green);
+}
+
+@media (max-width: 500px) {
+  .payoutGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

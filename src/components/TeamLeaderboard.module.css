@@ -1,0 +1,302 @@
+/* === Panel === */
+.panel {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.panelHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: var(--masters-green);
+  color: #fff;
+  cursor: pointer;
+  user-select: none;
+}
+
+.panelTitle {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.chevron {
+  font-size: 12px;
+  transition: transform 0.2s;
+}
+
+.chevronCollapsed {
+  transform: rotate(-90deg);
+}
+
+.panelBody {
+  overflow: hidden;
+}
+
+/* === Team row (collapsed) === */
+.teamRow {
+  display: grid;
+  grid-template-columns: 36px 24px 1fr auto auto auto auto;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border-muted);
+  cursor: pointer;
+  transition: background 0.12s;
+  font-variant-numeric: tabular-nums;
+}
+
+.teamRow:hover {
+  background: var(--bg-elevated);
+}
+
+.teamRow:last-child {
+  border-bottom: none;
+}
+
+/* Payout highlighting */
+.payoutFirst {
+  background: rgba(255, 215, 0, 0.12);
+}
+
+.payoutSecond {
+  background: rgba(192, 192, 192, 0.15);
+}
+
+.payoutLast,
+.payoutMiddle {
+  background: rgba(205, 127, 50, 0.10);
+}
+
+.currentUser {
+  background: rgba(0, 103, 71, 0.06);
+  border-left: 3px solid var(--masters-green);
+  padding-left: 9px;
+}
+
+.dqRow {
+  opacity: 0.5;
+}
+
+/* === Rank cell === */
+.rank {
+  font-weight: 700;
+  font-size: 13px;
+  text-align: center;
+  color: var(--text-primary);
+}
+
+.rankDq {
+  color: var(--accent-red);
+  font-size: 11px;
+}
+
+/* === Rank delta === */
+.delta {
+  font-size: 10px;
+  font-weight: 700;
+  text-align: center;
+  line-height: 1;
+}
+
+.deltaUp {
+  color: var(--accent-green);
+}
+
+.deltaDown {
+  color: var(--accent-red);
+}
+
+.deltaFlat {
+  color: var(--text-muted);
+  font-size: 9px;
+}
+
+/* === Team name cell === */
+.teamInfo {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 1px;
+}
+
+.teamName {
+  font-weight: 600;
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ownerName {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+/* === Aggregate score === */
+.aggScore {
+  font-weight: 700;
+  font-size: 13px;
+  text-align: right;
+  white-space: nowrap;
+  padding: 0 4px;
+}
+
+.aggLabel {
+  font-size: 10px;
+  color: var(--text-muted);
+  font-weight: 400;
+  margin-right: 3px;
+}
+
+/* === Behind column === */
+.behind {
+  font-size: 12px;
+  color: var(--text-secondary);
+  text-align: right;
+  min-width: 24px;
+}
+
+/* === Badges === */
+.liveBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--accent-green);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.liveDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent-green);
+  animation: pulse-green 1.5s infinite;
+}
+
+.dqBadge {
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--accent-red);
+  background: rgba(209, 36, 47, 0.1);
+  padding: 1px 5px;
+  border-radius: 3px;
+}
+
+/* === Star === */
+.starBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 2px;
+  line-height: 1;
+  color: var(--text-muted);
+  transition: color 0.12s;
+}
+
+.starBtn:hover {
+  color: var(--masters-gold);
+}
+
+.starBtnActive {
+  color: var(--masters-gold);
+}
+
+/* === Expanded golfer detail === */
+.golferDetail {
+  padding: 4px 12px 10px 12px;
+  background: var(--bg-elevated);
+  border-bottom: 1px solid var(--border-muted);
+}
+
+.golferTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.golferTable th {
+  text-align: left;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 4px 6px;
+  border-bottom: 1px solid var(--border-muted);
+}
+
+.golferTable th:not(:first-child) {
+  text-align: right;
+}
+
+.golferTable td {
+  padding: 4px 6px;
+  border-bottom: 1px solid var(--border-muted);
+}
+
+.golferTable td:not(:first-child) {
+  text-align: right;
+}
+
+.golferTable tr:last-child td {
+  border-bottom: none;
+}
+
+.countingLine td {
+  border-bottom: 2px solid var(--masters-green);
+}
+
+.cutGolfer td {
+  color: var(--text-muted);
+}
+
+.randomGolfer .golferName {
+  font-style: italic;
+}
+
+.golferName {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.randomBadge {
+  font-size: 11px;
+  line-height: 1;
+}
+
+.golferLive {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--accent-green);
+  margin-left: 4px;
+}
+
+.golferLiveDot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--accent-green);
+  animation: pulse-green 1.5s infinite;
+}
+
+/* === Empty state === */
+.empty {
+  padding: 24px 16px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 13px;
+}

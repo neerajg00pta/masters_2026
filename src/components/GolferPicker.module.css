@@ -1,0 +1,231 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* Header with counter */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+
+.counter {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.counterFull {
+  color: var(--masters-green);
+}
+
+/* Search */
+.searchWrap {
+  padding: 8px 16px;
+  background: var(--bg-surface);
+  border-left: 1px solid var(--border-default);
+  border-right: 1px solid var(--border-default);
+}
+
+.searchInput {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius);
+  background: var(--bg-input);
+  color: var(--text-primary);
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.searchInput::placeholder {
+  color: var(--text-muted);
+}
+
+.searchInput:focus {
+  border-color: var(--masters-green);
+  box-shadow: 0 0 0 2px rgba(0, 103, 71, 0.12);
+}
+
+/* Golfer list */
+.list {
+  border: 1px solid var(--border-default);
+  border-top: none;
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+  overflow: hidden;
+  max-height: 520px;
+  overflow-y: auto;
+}
+
+/* Single golfer row */
+.row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  cursor: pointer;
+  border-left: 3px solid transparent;
+  transition: background 0.12s, border-color 0.12s;
+  user-select: none;
+}
+
+.row:not(:last-child) {
+  border-bottom: 1px solid var(--border-muted);
+}
+
+.rowEven {
+  background: var(--bg-surface);
+}
+
+.rowOdd {
+  background: var(--bg-primary);
+}
+
+.row:hover {
+  background: var(--bg-elevated);
+}
+
+/* Selected state */
+.rowSelected {
+  border-left-color: var(--masters-green);
+  background: #e8f5e9 !important;
+}
+
+.rowSelected:hover {
+  background: #dcedc8 !important;
+}
+
+/* Dimmed state when max picks reached */
+.rowDimmed {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.rowDimmed:hover {
+  background: inherit;
+}
+
+/* Other team indicator */
+.rowOtherTeam {
+  background: #fffde7 !important;
+}
+
+.rowOtherTeam.rowOdd {
+  background: #fffde7 !important;
+}
+
+/* Read-only / locked */
+.rowReadonly {
+  cursor: default;
+}
+
+.rowReadonly:hover {
+  background: inherit;
+}
+
+/* Claiming / loading */
+.rowClaiming {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* Rank number */
+.rank {
+  width: 28px;
+  text-align: right;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Golfer name */
+.name {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Odds */
+.odds {
+  font-size: 12px;
+  color: var(--text-muted);
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Indicators */
+.checkmark {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: var(--masters-green);
+}
+
+.otherTeamBadge {
+  flex-shrink: 0;
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 8px;
+  background: var(--masters-gold);
+  color: var(--text-primary);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.randomBadge {
+  flex-shrink: 0;
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 8px;
+  background: var(--bg-elevated);
+  color: var(--text-secondary);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Locked / read-only view */
+.lockedHeader {
+  padding: 12px 16px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  font-size: 13px;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.lockIcon {
+  font-size: 14px;
+}
+
+/* Empty state */
+.empty {
+  padding: 32px 16px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 13px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-top: none;
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+}

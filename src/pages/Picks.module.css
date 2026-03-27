@@ -1,0 +1,243 @@
+.container {
+  max-width: 640px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Page title */
+.title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+/* Not logged in */
+.authPrompt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 48px 24px;
+  text-align: center;
+}
+
+.authIcon {
+  font-size: 36px;
+}
+
+.authTitle {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.authSubtitle {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+/* ─── Team tabs bar ─── */
+.tabBar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+  padding: 4px;
+  background: var(--bg-elevated);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-default);
+}
+
+.tab {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 14px;
+  border-radius: var(--radius);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.12s;
+  white-space: nowrap;
+}
+
+.tab:hover {
+  background: var(--bg-surface);
+  color: var(--text-primary);
+}
+
+.tabActive {
+  background: var(--masters-green);
+  color: #ffffff;
+}
+
+.tabActive:hover {
+  background: var(--masters-green-light);
+  color: #ffffff;
+}
+
+/* Delete X button on tab */
+.tabDelete {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  font-size: 11px;
+  line-height: 1;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.6);
+  transition: all 0.12s;
+  padding: 0;
+  margin-left: 2px;
+}
+
+.tabDelete:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+}
+
+.tabDeleteInactive {
+  color: var(--text-muted);
+}
+
+.tabDeleteInactive:hover {
+  background: rgba(209, 36, 47, 0.12);
+  color: var(--accent-red);
+}
+
+/* New team button */
+.newTeamBtn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  border-radius: var(--radius);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--masters-green);
+  background: transparent;
+  border: 1px dashed var(--masters-green);
+  cursor: pointer;
+  transition: all 0.12s;
+  white-space: nowrap;
+}
+
+.newTeamBtn:hover {
+  background: rgba(0, 103, 71, 0.06);
+}
+
+/* Inline name input */
+.inlineInput {
+  padding: 4px 10px;
+  border-radius: var(--radius);
+  border: 2px solid var(--masters-green);
+  background: var(--bg-input);
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 600;
+  outline: none;
+  width: 140px;
+}
+
+.inlineInput::placeholder {
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+/* Rename input */
+.renameInput {
+  padding: 4px 10px;
+  border-radius: var(--radius);
+  border: 2px solid var(--masters-green);
+  background: var(--bg-input);
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 600;
+  outline: none;
+  width: 120px;
+}
+
+/* ─── Empty state (no teams) ─── */
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 48px 24px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  text-align: center;
+}
+
+.emptyIcon {
+  font-size: 40px;
+}
+
+.emptyTitle {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.emptySubtitle {
+  font-size: 13px;
+  color: var(--text-secondary);
+  max-width: 320px;
+}
+
+.createBtn {
+  padding: 10px 24px;
+  border-radius: var(--radius);
+  font-size: 14px;
+  font-weight: 700;
+  color: #ffffff;
+  background: var(--masters-green);
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.createBtn:hover {
+  background: var(--masters-green-light);
+}
+
+.createBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Locked banner */
+.lockedBanner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius);
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.lockIcon {
+  font-size: 14px;
+}
+
+/* Section heading for picker */
+.sectionLabel {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
