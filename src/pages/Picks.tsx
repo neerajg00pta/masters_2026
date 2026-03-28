@@ -44,12 +44,19 @@ function PicksView() {
     }
   }, [visibleTeams, activeTeamId])
 
-  // Golfer lookup map
+  // Golfer lookup map — must be before any early returns (React hooks rule)
   const golferMap = useMemo(() => {
     const m = new Map<string, typeof golfers[0]>()
     for (const g of golfers) m.set(g.id, g)
     return m
   }, [golfers])
+
+  // Sort teams: active first
+  const sortedTeams = useMemo(() => {
+    const active = visibleTeams.filter(t => t.id === activeTeamId)
+    const rest = visibleTeams.filter(t => t.id !== activeTeamId)
+    return [...active, ...rest]
+  }, [visibleTeams, activeTeamId])
 
   if (!currentUser) {
     return (
@@ -128,12 +135,6 @@ function PicksView() {
     else if (e.key === 'Escape') { setRenamingTeamId(null); setRenameValue('') }
   }
 
-  // Sort teams: active first, then others
-  const sortedTeams = useMemo(() => {
-    const active = visibleTeams.filter(t => t.id === activeTeamId)
-    const rest = visibleTeams.filter(t => t.id !== activeTeamId)
-    return [...active, ...rest]
-  }, [visibleTeams, activeTeamId])
 
   return (
     <div className={styles.container}>

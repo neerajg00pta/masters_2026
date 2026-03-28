@@ -161,44 +161,83 @@ export function AdminGolfersPage() {
         <button className={styles.csvBtn} onClick={downloadCsv}>Download CSV</button>
       </div>
 
-      {/* Name matching tip */}
-      <div className={styles.tip}>
-        <strong>Name matching:</strong> Edit the Name column to match what ESPN uses.
-        Selections reference golfer IDs, so renaming is safe.
-        The Lock column prevents live scoring from overwriting manual score edits.
-      </div>
-
-      {/* ESPN Matching — only when live scoring + unmatched */}
-      {config.liveScoring && liveScoring.unmatchedEspn.length > 0 && (
-        <div className={styles.matchSection}>
-          <div className={styles.matchTitle}>
-            Unmatched ESPN Names ({liveScoring.unmatchedEspn.length})
-            <button className={`${styles.btn} ${styles.btnSm}`} onClick={handleAutoMatch} disabled={saving} style={{ marginLeft: 12 }}>
+      {/* ESPN Name Matching Tool */}
+      {config.liveScoring && (
+        <section className={styles.section}>
+          <div className={styles.sectionHeader}>
+            <h2 className={styles.sectionTitle}>ESPN Name Matching</h2>
+            <button className={`${styles.btn} ${styles.btnSm}`} onClick={handleAutoMatch} disabled={saving}>
               Auto-Match
             </button>
           </div>
-          {liveScoring.unmatchedEspn.map(espn => (
-            <div key={espn.id} className={styles.matchRow}>
-              <span className={styles.matchEspnName}>{espn.name}</span>
-              <select
-                className={styles.matchSelect}
-                value={espnAssignments.get(espn.name) ?? ''}
-                onChange={e => {
-                  const val = e.target.value
-                  setEspnAssignments(prev => { const next = new Map(prev); if (val) next.set(espn.name, val); else next.delete(espn.name); return next })
-                }}
-              >
-                <option value="">— Select pool golfer —</option>
-                {golfers.filter(g => !g.espnName).map(g => (
-                  <option key={g.id} value={g.id}>{g.name}</option>
-                ))}
-              </select>
-              <button className={styles.matchBtn} disabled={!espnAssignments.get(espn.name) || saving} onClick={() => handleAssignEspn(espn.name, espnAssignments.get(espn.name) ?? '')}>
-                Assign
-              </button>
-            </div>
-          ))}
-        </div>
+          <div className={styles.tip} style={{ margin: '0 14px 8px', borderRadius: 4 }}>
+            System fuzzy-matches pool names to ESPN names. Edit either side to fix mismatches — golfer IDs stay synced.
+            Lock column prevents live scoring from overwriting manual edits.
+          </div>
+          <div className={styles.tableWrap}>
+            <table className={styles.table}>
+              <thead>
+                <tr>
+                  <th style={{ width: '35%' }}>Pool Name</th>
+                  <th style={{ width: '60px', textAlign: 'center' }}>ID</th>
+                  <th style={{ width: '35%' }}>ESPN Name</th>
+                  <th style={{ width: '80px', textAlign: 'center' }}>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {golfers.map(g => {
+                  const matched = !!g.espnName
+                  const isUnmatched = !matched && liveScoring.unmatchedEspn.length > 0
+                  return (
+                    <tr key={g.id} className={matched ? styles.row : `${styles.row} ${isUnmatched ? styles.rowUnmatched : ''}`}>
+                      <td>
+                        <input className={styles.textInput} value={g.name}
+                          onChange={() => {/* handled by GolferRow below */}}
+                          readOnly
+                          style={{ color: 'var(--text-primary)', fontWeight: 500 }}
+                          title="Edit in the Field table below"
+                        />
+                      </td>
+                      <td style={{ textAlign: 'center', fontSize: 10, color: 'var(--text-muted)', fontFamily: 'monospace' }}>{g.id}</td>
+                      <td>
+                        {matched ? (
+                          <span style={{ fontSize: 13, color: 'var(--text-primary)' }}>{g.espnName}</span>
+                        ) : (
+                          <select
+                            className={styles.matchSelect}
+                            value={espnAssignments.get(g.id) ?? ''}
+                            onChange={e => {
+                              const val = e.target.value
+                              setEspnAssignments(prev => { const next = new Map(prev); if (val) next.set(g.id, val); else next.delete(g.id); return next })
+                            }}
+                          >
+                            <option value="">— unmatched —</option>
+                            {liveScoring.unmatchedEspn.map(espn => (
+                              <option key={espn.id} value={espn.name}>{espn.name}</option>
+                            ))}
+                          </select>
+                        )}
+                      </td>
+                      <td style={{ textAlign: 'center' }}>
+                        {matched ? (
+                          <span className={styles.matchedBadge}>✓</span>
+                        ) : espnAssignments.get(g.id) ? (
+                          <button className={styles.matchBtn}
+                            disabled={saving}
+                            onClick={() => handleAssignEspn(espnAssignments.get(g.id)!, g.id)}>
+                            Link
+                          </button>
+                        ) : (
+                          <span style={{ color: 'var(--text-muted)', fontSize: 11 }}>—</span>
+                        )}
+                      </td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+          </div>
+        </section>
       )}
 
       {/* Golfer Table */}
