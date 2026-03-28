@@ -9,6 +9,7 @@ import {
   updateConfig,
   bulkAddSelections,
 } from '../lib/data-service'
+import { supabase } from '../lib/supabase'
 import { assignRandomGolfers } from '../lib/random-assignment'
 import type { User } from '../lib/types'
 import styles from './Admin.module.css'
@@ -73,12 +74,17 @@ export function AdminPage() {
     }
   }
 
+  // Teams that are ready (5 picks) but have no random yet
+  const teamsNeedingRandom = readyTeams.filter(t =>
+    !selections.some(s => s.teamId === t.id && s.isRandom)
+  )
+
   const handleAssignRandoms = async () => {
     setSaving(true)
     try {
-      const assignments = assignRandomGolfers(teams, golfers, selections)
+      const assignments = assignRandomGolfers(teamsNeedingRandom, golfers, selections)
       if (assignments.length === 0) {
-        addToast('No teams to assign', 'error')
+        addToast('All ready teams already have randoms', 'info')
         setSaving(false)
         return
       }
@@ -88,6 +94,23 @@ export function AdminPage() {
       addToast(`Random golfers assigned to ${assignments.length} teams`, 'success')
     } catch {
       addToast('Failed to assign randoms', 'error')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const handleClearRandoms = async () => {
+    if (!window.confirm('Clear ALL random assignments? This cannot be undone.')) return
+    setSaving(true)
+    try {
+      // Delete all selections where is_random = true
+      const { error } = await supabase.from('selections').delete().eq('is_random', true)
+      if (error) throw new Error(error.message)
+      await updateConfig({ randomsAssigned: false })
+      await refresh()
+      addToast('All random assignments cleared', 'info')
+    } catch {
+      addToast('Failed to clear randoms', 'error')
     } finally {
       setSaving(false)
     }
@@ -257,14 +280,26 @@ export function AdminPage() {
             {config.poolLocked ? 'Unlock Pool' : 'Lock Pool'}
           </button>
 
-          {config.poolLocked && !config.randomsAssigned && (
-            <button
-              className={`${styles.btn} ${styles.btnGold}`}
-              onClick={handleAssignRandoms}
-              disabled={saving}
-            >
-              Assign Random Golfers
-            </button>
+          {config.poolLocked && (
+            <>
+              <button
+                className={`${styles.btn} ${styles.btnGold}`}
+                onClick={handleAssignRandoms}
+                disabled={saving || teamsNeedingRandom.length === 0}
+                title={teamsNeedingRandom.length === 0 ? 'All ready teams have randoms' : `${teamsNeedingRandom.length} teams need randoms`}
+              >
+                Assign Randoms{teamsNeedingRandom.length > 0 ? ` (${teamsNeedingRandom.length})` : ''}
+              </button>
+              {config.randomsAssigned && (
+                <button
+                  className={`${styles.btn} ${styles.btnDanger} ${styles.btnSm}`}
+                  onClick={handleClearRandoms}
+                  disabled={saving}
+                >
+                  Clear Randoms
+                </button>
+              )}
+            </>
           )}
 
           <button
