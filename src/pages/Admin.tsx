@@ -345,7 +345,10 @@ export function AdminPage() {
               </tr>
             </thead>
             <tbody>
-              {users.map(user => (
+              {[...users].sort((a, b) => {
+                if (a.admin !== b.admin) return a.admin ? -1 : 1
+                return 0
+              }).map(user => (
                 <tr key={user.id}>
                   <td style={{ textAlign: 'center' }}>
                     <button
