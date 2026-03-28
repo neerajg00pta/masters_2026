@@ -5,7 +5,7 @@ import { useToast } from '../context/ToastContext'
 import { useLiveScoringState } from '../context/LiveScoringContext'
 import { upsertGolfers, updateGolfer } from '../lib/data-service'
 import { MASTERS_2026_FIELD } from '../lib/masters-field'
-import type { Golfer } from '../lib/types'
+import { formatScore, type Golfer } from '../lib/types'
 import styles from './AdminGolfers.module.css'
 
 export function AdminGolfersPage() {
@@ -134,8 +134,9 @@ export function AdminGolfersPage() {
                 <th className={styles.thName}>Name</th>
                 <th className={styles.thEspn}>ESPN Match</th>
                 <th className={styles.thOdds}>Odds</th>
-                <th style={{ width: '50px', textAlign: 'center' }}>Teams</th>
+                <th style={{ width: '40px', textAlign: 'center' }}>Dups</th>
                 <th className={styles.thScore}>Score</th>
+                <th style={{ width: '50px', textAlign: 'center' }}>Adj</th>
                 <th className={styles.thToday}>Today</th>
                 <th className={styles.thThru}>Thru</th>
                 <th className={styles.thStatus}>Status</th>
@@ -145,14 +146,15 @@ export function AdminGolfersPage() {
             <tbody>
               {golfers.map(golfer => {
                 const teamCount = selections.filter(s => s.golferId === golfer.id && !s.isRandom).length
-                const isRandom = selections.some(s => s.golferId === golfer.id && s.isRandom)
+                const isRandomOnly = selections.some(s => s.golferId === golfer.id && s.isRandom) && teamCount === 0
+                const dupPenalty = isRandomOnly ? 0 : Math.max(0, teamCount - 1)
                 return (
                   <GolferRow
                     key={golfer.id}
                     golfer={golfer}
                     liveOn={liveOn}
-                    teamCount={teamCount}
-                    isRandom={isRandom}
+                    dupPenalty={dupPenalty}
+                    isRandomOnly={isRandomOnly}
                     onDebouncedUpdate={debouncedUpdate}
                     onStatusChange={handleStatusChange}
                     onLockToggle={handleLockToggle}
@@ -169,12 +171,12 @@ export function AdminGolfersPage() {
 }
 
 function GolferRow({
-  golfer, liveOn, teamCount, isRandom, onDebouncedUpdate, onStatusChange, onLockToggle, saving,
+  golfer, liveOn, dupPenalty, isRandomOnly, onDebouncedUpdate, onStatusChange, onLockToggle, saving,
 }: {
   golfer: Golfer
   liveOn: boolean
-  teamCount: number
-  isRandom: boolean
+  dupPenalty: number
+  isRandomOnly: boolean
   onDebouncedUpdate: (id: string, updates: Parameters<typeof updateGolfer>[1]) => void
   onStatusChange: (id: string, status: Golfer['status']) => void
   onLockToggle: (id: string, current: boolean) => void
@@ -216,14 +218,20 @@ function GolferRow({
         <input className={styles.textInput} value={localOdds} style={{ width: 60, textAlign: 'center' }}
           onChange={e => { setLocalOdds(e.target.value); onDebouncedUpdate(golfer.id, { name: golfer.name }) }} />
       </td>
-      <td style={{ textAlign: 'center', fontSize: 12 }}>
-        {teamCount > 0 ? teamCount : ''}
-        {isRandom && <span style={{ fontSize: 9, fontWeight: 700, color: 'var(--text-muted)', marginLeft: 2 }}>R</span>}
+      <td style={{ textAlign: 'center', fontSize: 12, fontVariantNumeric: 'tabular-nums' }}>
+        {isRandomOnly ? (
+          <span style={{ fontSize: 9, fontWeight: 700, color: 'var(--text-muted)' }}>RND</span>
+        ) : dupPenalty > 0 ? (
+          <span style={{ fontWeight: 600, color: 'var(--accent-red)' }}>+{dupPenalty}</span>
+        ) : ''}
       </td>
       <td>
         <input className={`${styles.scoreInput} ${golfer.scoreLocked ? styles.lockedInput : ''}`}
           type="number" value={localScore}
           onChange={e => { setLocalScore(e.target.value); const n = parseInt(e.target.value, 10); if (!isNaN(n)) onDebouncedUpdate(golfer.id, { scoreToPar: n }) }} />
+      </td>
+      <td style={{ textAlign: 'center', fontSize: 12, fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>
+        {formatScore(golfer.scoreToPar + dupPenalty)}
       </td>
       <td>
         <input className={`${styles.scoreInput} ${golfer.scoreLocked ? styles.lockedInput : ''}`}
