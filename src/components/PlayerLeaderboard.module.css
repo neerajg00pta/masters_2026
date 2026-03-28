@@ -43,6 +43,7 @@
   border-collapse: collapse;
   font-size: 12px;
   font-variant-numeric: tabular-nums;
+  table-layout: fixed;
 }
 
 .table thead th {
@@ -52,12 +53,20 @@
   color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  padding: 8px 8px;
+  padding: 6px 6px;
   border-bottom: 1px solid var(--border-default);
   background: var(--bg-elevated);
   position: sticky;
   top: 0;
 }
+
+/* Column widths — Rank, Player, Adj, Masters, Dups, Thru */
+.table thead th:nth-child(1) { width: 42px; }
+.table thead th:nth-child(2) { width: auto; }
+.table thead th:nth-child(3) { width: 50px; }
+.table thead th:nth-child(4) { width: 56px; }
+.table thead th:nth-child(5) { width: 42px; }
+.table thead th:nth-child(6) { width: 38px; }
 
 .sortableTh {
   cursor: pointer;
@@ -78,7 +87,7 @@
 }
 
 .table tbody td {
-  padding: 6px 8px;
+  padding: 4px 6px;
   border-bottom: 1px solid var(--border-muted);
 }
 

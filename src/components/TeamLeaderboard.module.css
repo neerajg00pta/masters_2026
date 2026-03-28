@@ -33,13 +33,11 @@
   background: linear-gradient(90deg, rgba(255,215,0,0.10) 0%, rgba(255,215,0,0.02) 50%, transparent 100%);
   border-left-color: var(--masters-gold-dark);
 }
-.rowOwn { border-left-color: var(--accent-blue) !important; }
-.rowOwn .team::before {
-  content: ''; display: inline-block; width: 6px; height: 6px;
-  border-radius: 50%; background: var(--accent-blue); margin-right: 4px; flex-shrink: 0;
-}
-.rowOwn.rowMoney {
-  background: linear-gradient(90deg, rgba(255,215,0,0.10) 0%, transparent 50%);
+.rowOwn {
+  border: 2px solid var(--masters-green);
+  border-radius: 4px;
+  margin: 1px 2px;
+  padding: 4px 7px;
 }
 .rowDq { opacity: 0.4; }
 
@@ -61,19 +59,16 @@
   min-width: 0;
 }
 
-/* Pulsing green dot */
+/* Green dot — static, same as field */
 .liveDot {
-  display: inline-block; width: 7px; height: 7px; border-radius: 50%;
+  display: inline-block; width: 6px; height: 6px; border-radius: 50%;
   background: var(--accent-green); flex-shrink: 0;
-  animation: pulse-dot 1.5s ease-in-out infinite;
 }
-@keyframes pulse-dot { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
 
-/* Score pill */
+/* Score — plain centered number */
 .score {
   font-weight: 800; font-size: 14px; color: var(--text-primary);
   text-align: center; line-height: 1;
-  background: var(--bg-elevated); border-radius: 5px; padding: 3px 0;
 }
 
 /* Delta — colored numbers, larger */

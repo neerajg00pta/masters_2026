@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useRef, useEffect } from 'react'
 import type { TeamLeaderboardEntry } from '../lib/types'
 import { formatScore, isGolferLive, COUNTING_GOLFERS } from '../lib/types'
 import type { PayoutPosition } from '../lib/scoring'
@@ -21,6 +21,17 @@ export function TeamLeaderboard({ entries, payoutMap, currentUserId }: Props) {
   const [collapsed, setCollapsed] = useState(false)
   const [expanded, setExpanded] = useState<Set<string>>(new Set())
   const [starred, setStarred] = useState(readStarred)
+
+  // Auto-expand pinned cards once
+  const didInit = useRef(false)
+  useEffect(() => {
+    if (didInit.current || !currentUserId) return
+    const own = entries.filter(e => e.user.id === currentUserId).map(e => `p-${e.team.id}`)
+    if (own.length > 0) {
+      setExpanded(new Set(own))
+      didInit.current = true
+    }
+  }, [currentUserId, entries])
 
   const toggle = useCallback((id: string) => {
     setExpanded(p => { const n = new Set(p); n.has(id) ? n.delete(id) : n.add(id); return n })
