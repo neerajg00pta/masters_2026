@@ -1,9 +1,7 @@
 /* ═══ Panel ═══ */
 .panel {
-  background: var(--bg-surface);
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
+  background: var(--bg-surface); border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg); overflow: hidden;
   box-shadow: 0 1px 4px rgba(0,0,0,0.05);
 }
 .hdr {
@@ -11,22 +9,22 @@
   padding: 10px 14px; background: var(--masters-green); color: #fff;
   cursor: pointer; user-select: none;
 }
-.hdrTitle { font-size: 12px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; }
+.hdrT { font-size: 12px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; }
 .chev { font-size: 10px; transition: transform 0.2s; opacity: 0.7; }
-.chevClosed { transform: rotate(-90deg); }
+.chevC { transform: rotate(-90deg); }
 .body { overflow: hidden; }
 
-/* ═══ Row: Pos | Info+badges | Score | Delta | Star ═══ */
+/* ═══ Row: Pos | $ | Team | Score | Delta | Star ═══ */
 .row {
   display: grid;
-  grid-template-columns: 38px 1fr 52px 44px 22px;
+  grid-template-columns: 36px 18px 1fr 48px 48px 22px;
   align-items: center;
-  gap: 4px;
-  padding: 5px 10px;
+  gap: 2px;
+  padding: 5px 8px;
   border-bottom: 1px solid var(--border-muted);
   border-left: 3px solid transparent;
   cursor: pointer;
-  transition: background 0.1s;
+  transition: background 0.08s;
   font-variant-numeric: tabular-nums;
 }
 .row:hover { background: var(--bg-elevated); }
@@ -36,116 +34,100 @@
   border-left-color: var(--masters-gold-dark);
 }
 .rowOwn { border-left-color: var(--accent-blue) !important; }
-.rowOwn .name::before {
+.rowOwn .team::before {
   content: ''; display: inline-block; width: 6px; height: 6px;
-  border-radius: 50%; background: var(--accent-blue); margin-right: 5px; flex-shrink: 0;
+  border-radius: 50%; background: var(--accent-blue); margin-right: 4px; flex-shrink: 0;
 }
 .rowOwn.rowMoney {
-  background: linear-gradient(90deg, rgba(255,215,0,0.10) 0%, rgba(255,215,0,0.02) 50%, transparent 100%);
+  background: linear-gradient(90deg, rgba(255,215,0,0.10) 0%, transparent 50%);
 }
 .rowDq { opacity: 0.4; }
 
-/* ── Pos ── */
-.pos {
-  font-weight: 800; font-size: 13px; color: var(--text-primary);
-  text-align: center; line-height: 1;
-}
-.dqBadge {
-  font-size: 9px; font-weight: 800; color: var(--accent-red);
-  background: rgba(209,36,47,0.1); padding: 1px 4px; border-radius: 3px;
+/* Pos */
+.pos { font-weight: 800; font-size: 13px; text-align: center; color: var(--text-primary); }
+.dq { font-size: 9px; font-weight: 800; color: var(--accent-red); }
+
+/* $ column */
+.money {
+  font-size: 11px; font-weight: 900; color: var(--masters-green);
+  text-align: center;
 }
 
-/* ── Info: name + owner + badges inline ── */
-.info {
-  display: flex; align-items: center; gap: 5px;
-  min-width: 0; overflow: hidden;
-}
-.name {
+/* Team name + live dot */
+.team {
   font-weight: 700; font-size: 13px; color: var(--text-primary);
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  display: inline-flex; align-items: center;
-  flex-shrink: 1; min-width: 0;
-}
-.owner {
-  font-size: 11px; color: var(--text-muted); white-space: nowrap; flex-shrink: 0;
+  display: inline-flex; align-items: center; gap: 4px;
+  min-width: 0;
 }
 
-/* ── Pills: $, LIVE, RND — consistent size ── */
-.pill {
-  display: inline-flex; align-items: center; gap: 3px;
-  font-size: 8px; font-weight: 800; letter-spacing: 0.4px;
-  padding: 1px 5px; border-radius: 8px; white-space: nowrap;
-  flex-shrink: 0; line-height: 1.4;
+/* Pulsing green dot */
+.liveDot {
+  display: inline-block; width: 7px; height: 7px; border-radius: 50%;
+  background: var(--accent-green); flex-shrink: 0;
+  animation: pulse-dot 1.5s ease-in-out infinite;
 }
-.pillLive {
-  color: #fff; background: var(--accent-green);
-  animation: pulse-badge 2s ease-in-out infinite;
-}
-.pillGrey {
-  color: var(--text-muted); background: var(--bg-elevated);
-  border: 1px solid var(--border-default);
-}
-.liveDot { width: 4px; height: 4px; border-radius: 50%; background: #fff; }
-@keyframes pulse-badge { 0%, 100% { opacity: 1; } 50% { opacity: 0.65; } }
+@keyframes pulse-dot { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
 
-/* ── Score — fixed-width pill ── */
+/* Score pill */
 .score {
-  font-weight: 800; font-size: 15px; color: var(--text-primary);
+  font-weight: 800; font-size: 14px; color: var(--text-primary);
   text-align: center; line-height: 1;
-  min-width: 44px;
-  background: var(--bg-elevated);
-  border-radius: 6px;
-  padding: 3px 0;
+  background: var(--bg-elevated); border-radius: 5px; padding: 3px 0;
 }
 
-/* ── Delta — colored numbers, no pill ── */
-.delta {
-  text-align: center; font-weight: 800; font-size: 12px; line-height: 1;
-  min-width: 36px;
-}
-.deltaUp { color: var(--accent-green); }
-.deltaDown { color: var(--accent-red); }
-.deltaFlat { color: var(--text-muted); font-size: 10px; }
+/* Delta — colored numbers, larger */
+.delta { text-align: center; font-weight: 800; font-size: 14px; line-height: 1; }
+.up { color: var(--accent-green); }
+.down { color: var(--accent-red); }
+.flat { color: var(--text-muted); font-size: 11px; }
 
-/* ── Star ── */
+/* Star */
 .star {
-  background: none; border: none; cursor: pointer;
-  font-size: 14px; padding: 0; line-height: 1;
-  color: var(--border-default); transition: all 0.12s;
+  background: none; border: none; cursor: pointer; font-size: 14px;
+  padding: 0; line-height: 1; color: var(--border-default); transition: all 0.12s;
 }
-.star:hover { color: var(--masters-gold); transform: scale(1.15); }
+.star:hover { color: var(--masters-gold); }
 .starOn { color: var(--masters-gold) !important; }
 
 /* ═══ Divider ═══ */
-.divider { height: 0; border-bottom: 2px solid var(--masters-green); margin: 0 10px; opacity: 0.3; }
+.divider { height: 0; border-bottom: 2px solid var(--masters-green); margin: 0 8px; opacity: 0.25; }
 
-/* ═══ Detail — tight, centered ═══ */
+/* ═══ Detail ═══ */
 .detail {
-  padding: 0 10px 4px;
-  background: var(--bg-primary);
+  padding: 2px 8px 4px; background: var(--bg-primary);
   border-bottom: 2px solid var(--border-default);
-  display: flex;
-  justify-content: center;
+  display: flex; flex-direction: column; align-items: center; gap: 1px;
+}
+.detailOwner {
+  font-size: 10px; color: var(--text-muted); font-weight: 600;
+  letter-spacing: 0.3px; padding: 1px 0;
 }
 .dt {
-  border-collapse: collapse;
-  font-size: 11px; font-variant-numeric: tabular-nums;
-  width: auto; min-width: 320px; max-width: 500px;
+  border-collapse: collapse; font-size: 11px; font-variant-numeric: tabular-nums;
+  width: auto; min-width: 300px; max-width: 460px;
 }
 .dt th {
   font-size: 8px; font-weight: 700; color: var(--text-muted);
-  text-transform: uppercase; letter-spacing: 0.6px;
-  padding: 2px 6px; border-bottom: 1px solid var(--border-muted);
+  text-transform: uppercase; letter-spacing: 0.5px;
+  padding: 1px 5px; border-bottom: 1px solid var(--border-muted);
   text-align: right;
 }
 .dt td {
-  padding: 2px 6px; border-bottom: 1px solid var(--border-muted);
+  padding: 2px 5px; border-bottom: 1px solid var(--border-muted);
   text-align: right; font-weight: 600;
 }
 .dt tr:last-child td { border-bottom: none; }
-.dtName { text-align: left !important; }
-.dt td:first-child { text-align: left; font-weight: 500; white-space: nowrap; }
-.dt th:first-child { text-align: left; }
+.dtL { text-align: left !important; }
+.dt td:first-child {
+  text-align: left; font-weight: 500; white-space: nowrap;
+  display: flex; align-items: center; gap: 4px;
+}
+.rnd {
+  font-size: 8px; font-weight: 800; color: var(--text-muted);
+  background: var(--bg-elevated); border: 1px solid var(--border-default);
+  padding: 0px 4px; border-radius: 6px; letter-spacing: 0.3px;
+}
 .cutLine td { border-bottom: 2px solid var(--masters-green) !important; }
 .cutRow td { color: var(--text-muted); font-style: italic; }
 
