@@ -18,13 +18,13 @@
 .chevClosed { transform: rotate(-90deg); }
 .body { overflow: hidden; }
 
-/* ═══ Row ═══ */
+/* ═══ Row: Pos | Team | Score | Move | Star ═══ */
 .row {
   display: grid;
-  grid-template-columns: 48px 1fr 64px 56px 28px;
+  grid-template-columns: 40px 1fr 56px 48px 24px;
   align-items: center;
-  gap: 8px;
-  padding: 12px 14px;
+  gap: 6px;
+  padding: 10px 12px;
   border-bottom: 1px solid var(--border-muted);
   border-left: 4px solid transparent;
   cursor: pointer;
@@ -35,14 +35,13 @@
 .row:hover { background: var(--bg-elevated); }
 .rowOpen { background: var(--bg-primary); }
 
-/* ── Money positions — all same gold tint ── */
+/* ── Money — all same gold tint ── */
 .rowFirst, .rowSecond, .rowBronze {
-  background: linear-gradient(90deg, rgba(255,215,0,0.10) 0%, rgba(255,215,0,0.03) 50%, transparent 100%);
+  background: linear-gradient(90deg, rgba(255,215,0,0.12) 0%, rgba(255,215,0,0.03) 50%, transparent 100%);
   border-left-color: var(--masters-gold-dark);
 }
-.rowFirst .posNum { color: var(--masters-green); font-size: 20px; }
 
-/* ── Own team — distinct from money ── */
+/* ── Own team — blue marker, distinct from money ── */
 .rowOwn {
   border-left-color: var(--accent-blue) !important;
 }
@@ -50,22 +49,27 @@
 .rowOwn .teamName::before {
   content: '';
   display: inline-block;
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
   background: var(--accent-blue);
-  margin-right: 6px;
+  margin-right: 5px;
   flex-shrink: 0;
+}
+
+/* Own + money: blue border wins, gold bg still shows */
+.rowOwn.rowFirst, .rowOwn.rowSecond, .rowOwn.rowBronze {
+  background: linear-gradient(90deg, rgba(255,215,0,0.12) 0%, rgba(255,215,0,0.03) 50%, transparent 100%);
 }
 
 .rowDq { opacity: 0.4; }
 
-/* ── Position ── */
+/* ── Position — consistent for all ranks ── */
 .pos { text-align: center; }
 
 .posNum {
-  font-weight: 900;
-  font-size: 16px;
+  font-weight: 800;
+  font-size: 14px;
   color: var(--text-primary);
   line-height: 1;
 }
@@ -86,12 +90,12 @@
 
 .owner { font-size: 11px; color: var(--text-muted); }
 
-/* ── Score ── */
+/* ── Score — hero number, centered ── */
 .score {
   font-weight: 900;
-  font-size: 20px;
+  font-size: 18px;
   color: var(--text-primary);
-  text-align: right;
+  text-align: center;
   letter-spacing: -0.5px;
   line-height: 1;
 }
