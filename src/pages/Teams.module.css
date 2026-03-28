@@ -204,6 +204,18 @@
 
 .cardEmpty { padding: 16px 12px; text-align: center; font-size: 11px; color: var(--text-muted); }
 
+/* Random slot row */
+.cardRandomRow {
+  border-top: 2px dashed var(--border-default) !important;
+  background: var(--bg-primary);
+}
+
+.cardRandomSlot {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
 /* Rename input */
 .renameInput {
   padding: 2px 6px; border: 1px solid var(--masters-gold); border-radius: 3px;

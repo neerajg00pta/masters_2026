@@ -182,6 +182,7 @@ function TeamsView() {
             const isActive = t.id === activeTeamId
             const teamSels = selections.filter(s => s.teamId === t.id)
             const userPicks = teamSels.filter(s => !s.isRandom)
+            const randomSel = teamSels.find(s => s.isRandom)
             const pickCount = userPicks.length
             const isComplete = pickCount >= PICKS_PER_TEAM
 
@@ -230,20 +231,18 @@ function TeamsView() {
 
                 {/* Golfer list in card */}
                 <div className={styles.cardGolfers}>
-                  {teamSels.length === 0 && (
+                  {userPicks.length === 0 && randomSel === undefined && (
                     <div className={styles.cardEmpty}>No golfers picked yet</div>
                   )}
-                  {teamSels.map(s => {
+                  {/* User picks (1-5) */}
+                  {userPicks.map(s => {
                     const g = golferMap.get(s.golferId)
                     if (!g) return null
                     return (
                       <div key={s.id} className={styles.cardGolferRow}>
-                        <span className={styles.cardGolferName}>
-                          {g.name}
-                          {s.isRandom && <span className={styles.rndBadge}>RND</span>}
-                        </span>
+                        <span className={styles.cardGolferName}>{g.name}</span>
                         <span className={styles.cardGolferOdds}>{g.odds}</span>
-                        {canEdit && !s.isRandom && (
+                        {canEdit && (
                           <button
                             className={styles.cardRemoveBtn}
                             onClick={e => { e.stopPropagation(); handleRemoveGolfer(t.id, g.id) }}
@@ -253,12 +252,26 @@ function TeamsView() {
                       </div>
                     )
                   })}
-                  {/* Empty slots */}
+                  {/* Empty pick slots */}
                   {Array.from({ length: Math.max(0, PICKS_PER_TEAM - pickCount) }).map((_, i) => (
                     <div key={`e${i}`} className={styles.cardGolferRowEmpty}>
                       <span className={styles.cardEmptySlot}>Pick {pickCount + i + 1}</span>
                     </div>
                   ))}
+                  {/* Random slot — always shown as slot 6 */}
+                  <div className={`${styles.cardGolferRow} ${styles.cardRandomRow}`}>
+                    {randomSel ? (
+                      <>
+                        <span className={styles.cardGolferName}>
+                          {golferMap.get(randomSel.golferId)?.name ?? '?'}
+                          <span className={styles.rndBadge}>RND</span>
+                        </span>
+                        <span className={styles.cardGolferOdds}>{golferMap.get(randomSel.golferId)?.odds}</span>
+                      </>
+                    ) : (
+                      <span className={styles.cardRandomSlot}>Random — assigned after lock</span>
+                    )}
+                  </div>
                 </div>
               </div>
             )
