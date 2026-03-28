@@ -35,30 +35,27 @@
 .row:hover { background: var(--bg-elevated); }
 .rowOpen { background: var(--bg-primary); }
 
-/* ── Money positions ── */
-.rowFirst {
-  border-left-color: var(--masters-green);
-  background: linear-gradient(90deg, rgba(0,103,71,0.10) 0%, rgba(0,103,71,0.02) 40%, transparent 100%);
+/* ── Money positions — all same gold tint ── */
+.rowFirst, .rowSecond, .rowBronze {
+  background: linear-gradient(90deg, rgba(255,215,0,0.10) 0%, rgba(255,215,0,0.03) 50%, transparent 100%);
+  border-left-color: var(--masters-gold-dark);
 }
 .rowFirst .posNum { color: var(--masters-green); font-size: 20px; }
-.rowFirst .teamName { color: var(--masters-green); }
-.rowFirst .score { color: var(--masters-green); }
 
-.rowSecond {
-  border-left-color: #b8860b;
-  background: linear-gradient(90deg, rgba(184,134,11,0.08) 0%, transparent 40%);
-}
-.rowSecond .posNum { color: #b8860b; }
-
-.rowBronze {
-  border-left-color: #CD7F32;
-  background: linear-gradient(90deg, rgba(205,127,50,0.06) 0%, transparent 40%);
-}
-
-/* ── Own team ── */
+/* ── Own team — distinct from money ── */
 .rowOwn {
-  border-left-color: var(--masters-green) !important;
-  background: rgba(0,103,71,0.05) !important;
+  border-left-color: var(--accent-blue) !important;
+}
+
+.rowOwn .teamName::before {
+  content: '';
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent-blue);
+  margin-right: 6px;
+  flex-shrink: 0;
 }
 
 .rowDq { opacity: 0.4; }

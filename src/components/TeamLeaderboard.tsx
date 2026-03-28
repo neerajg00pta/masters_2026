@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import type { TeamLeaderboardEntry, ScoredGolfer } from '../lib/types'
 import { formatScore, isGolferLive, COUNTING_GOLFERS } from '../lib/types'
 import type { PayoutPosition } from '../lib/scoring'
@@ -26,13 +26,15 @@ export function TeamLeaderboard({ entries, payoutMap, currentUserId }: Props) {
   })
   const [starred, setStarred] = useState(readStarred)
 
+  // Auto-expand user's teams ONCE on first load, not on every poll
+  const didAutoExpand = useRef(false)
   useEffect(() => {
-    if (!currentUserId) return
-    setExpanded(prev => {
-      const n = new Set(prev)
-      entries.filter(e => e.user.id === currentUserId).forEach(e => n.add(e.team.id))
-      return n
-    })
+    if (!currentUserId || didAutoExpand.current) return
+    const own = entries.filter(e => e.user.id === currentUserId).map(e => e.team.id)
+    if (own.length > 0) {
+      setExpanded(prev => { const n = new Set(prev); own.forEach(id => n.add(id)); return n })
+      didAutoExpand.current = true
+    }
   }, [currentUserId, entries])
 
   const toggleExpand = useCallback((id: string) => {
