@@ -35,8 +35,8 @@ export function AdminPage() {
   } | null>(null)
   const [editValue, setEditValue] = useState('')
 
-  // Delete confirmation
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null)
+  const [playerSearch, setPlayerSearch] = useState('')
 
   if (!isAdmin) {
     return <div className={styles.forbidden}>Admin access required.</div>
@@ -300,6 +300,21 @@ export function AdminPage() {
           <span className={styles.paidSummary}>
             {paidCount}/{users.length} paid &middot; ${totalCollected.toLocaleString()} collected
           </span>
+          <div style={{ position: 'relative', flex: 1, maxWidth: 220 }}>
+            <input
+              className={styles.inlineInput}
+              style={{ width: '100%', paddingRight: 24 }}
+              placeholder="Filter players..."
+              value={playerSearch}
+              onChange={e => setPlayerSearch(e.target.value)}
+            />
+            {playerSearch && (
+              <button
+                style={{ position: 'absolute', right: 6, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: 14 }}
+                onClick={() => setPlayerSearch('')}
+              >&times;</button>
+            )}
+          </div>
           <button
             className={`${styles.btn} ${styles.btnPrimary} ${styles.btnSm}`}
             onClick={() => setShowNewRow(true)}
@@ -345,7 +360,15 @@ export function AdminPage() {
               </tr>
             </thead>
             <tbody>
-              {[...users].sort((a, b) => {
+              {[...users]
+              .filter(u => {
+                if (!playerSearch.trim()) return true
+                const q = playerSearch.toLowerCase()
+                return u.name.toLowerCase().includes(q)
+                  || (u.fullName ?? '').toLowerCase().includes(q)
+                  || u.email.toLowerCase().includes(q)
+              })
+              .sort((a, b) => {
                 if (a.admin !== b.admin) return a.admin ? -1 : 1
                 return 0
               }).map(user => (
