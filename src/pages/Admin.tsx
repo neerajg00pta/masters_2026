@@ -24,7 +24,6 @@ export function AdminPage() {
   const [saving, setSaving] = useState(false)
 
   // New player inline row state
-  const [newFullName, setNewFullName] = useState('')
   const [newName, setNewName] = useState('')
   const [newEmail, setNewEmail] = useState('')
   const [showNewRow, setShowNewRow] = useState(false)
@@ -133,30 +132,20 @@ export function AdminPage() {
   // === User Management ===
 
   const addPlayer = async () => {
-    const fullName = newFullName.trim()
-    const name = newName.trim().slice(0, 8)
+    const name = newName.trim()
     const email = newEmail.trim().toLowerCase()
     if (!name || !email) {
-      addToast('Display name and email are required', 'error')
+      addToast('Name and email are required', 'error')
       return
     }
     if (users.some(u => u.email.toLowerCase() === email)) {
       addToast('Email already registered', 'error')
       return
     }
-    if (users.some(u => u.name.toLowerCase() === name.toLowerCase())) {
-      addToast('Display name already taken', 'error')
-      return
-    }
-    if (fullName && users.some(u => u.fullName?.toLowerCase() === fullName.toLowerCase())) {
-      addToast('Full name already registered', 'error')
-      return
-    }
     setSaving(true)
     try {
-      await createUser({ name, email, fullName: fullName || name })
+      await createUser({ name, email, fullName: name })
       await refresh()
-      setNewFullName('')
       setNewName('')
       setNewEmail('')
       setShowNewRow(false)
@@ -219,28 +208,21 @@ export function AdminPage() {
       setEditingCell(null)
       return
     }
-    if (field === 'name') val = val.slice(0, 8)
-
     const other = users.filter(u => u.id !== userId)
     if (field === 'email' && other.some(u => u.email.toLowerCase() === val.toLowerCase())) {
       addToast('Email already taken', 'error')
       setEditingCell(null)
       return
     }
-    if (field === 'name' && other.some(u => u.name.toLowerCase() === val.toLowerCase())) {
-      addToast('Display name already taken', 'error')
-      setEditingCell(null)
-      return
-    }
-    if (field === 'fullName' && other.some(u => u.fullName?.toLowerCase() === val.toLowerCase())) {
-      addToast('Full name already taken', 'error')
-      setEditingCell(null)
-      return
-    }
 
     setSaving(true)
     try {
-      await updateUser(userId, { [field]: val })
+      if (field === 'name') {
+        // Write to both name and fullName
+        await updateUser(userId, { name: val, fullName: val })
+      } else {
+        await updateUser(userId, { [field]: val })
+      }
       await refresh()
       setEditingCell(null)
     } catch {
@@ -259,7 +241,6 @@ export function AdminPage() {
 
   const cancelNewRow = () => {
     setShowNewRow(false)
-    setNewFullName('')
     setNewName('')
     setNewEmail('')
   }
@@ -385,8 +366,7 @@ export function AdminPage() {
             <thead>
               <tr>
                 <th style={{ width: 28 }}></th>
-                <th>Full Name</th>
-                <th>Display</th>
+                <th>Name</th>
                 <th>Email</th>
                 <th>Teams</th>
                 <th>Paid</th>
@@ -421,7 +401,7 @@ export function AdminPage() {
                     </button>
                   </td>
                   <td>
-                    {editingCell?.userId === user.id && editingCell.field === 'fullName' ? (
+                    {editingCell?.userId === user.id && editingCell.field === 'name' ? (
                       <input
                         className={styles.inlineInput}
                         value={editValue}
@@ -436,32 +416,9 @@ export function AdminPage() {
                     ) : (
                       <button
                         className={styles.cellBtn}
-                        onClick={() => startEdit(user.id, 'fullName', user.fullName || '')}
+                        onClick={() => startEdit(user.id, 'name', user.fullName || user.name)}
                       >
-                        {user.fullName || '\u2014'}
-                      </button>
-                    )}
-                  </td>
-                  <td>
-                    {editingCell?.userId === user.id && editingCell.field === 'name' ? (
-                      <input
-                        className={styles.inlineInput}
-                        value={editValue}
-                        onChange={e => setEditValue(e.target.value.slice(0, 8))}
-                        onKeyDown={e => {
-                          if (e.key === 'Enter') commitEdit()
-                          if (e.key === 'Escape') setEditingCell(null)
-                        }}
-                        onBlur={commitEdit}
-                        autoFocus
-                        maxLength={8}
-                      />
-                    ) : (
-                      <button
-                        className={styles.cellBtn}
-                        onClick={() => startEdit(user.id, 'name', user.name)}
-                      >
-                        {user.name}
+                        {user.fullName || user.name}
                       </button>
                     )}
                   </td>
@@ -538,29 +495,14 @@ export function AdminPage() {
               ))}
               {showNewRow && (
                 <tr className={styles.newRow}>
-                  <td>
-                    <input
-                      className={styles.inlineInput}
-                      value={newFullName}
-                      onChange={e => setNewFullName(e.target.value)}
-                      placeholder="Full name"
-                      autoFocus
-                      onKeyDown={e => {
-                        if (e.key === 'Enter') {
-                          const next = e.currentTarget.parentElement?.nextElementSibling?.querySelector('input') as HTMLInputElement | null
-                          next?.focus()
-                        }
-                        if (e.key === 'Escape') cancelNewRow()
-                      }}
-                    />
-                  </td>
+                  <td></td>
                   <td>
                     <input
                       className={styles.inlineInput}
                       value={newName}
-                      onChange={e => setNewName(e.target.value.slice(0, 8))}
-                      placeholder="Max 8 chars"
-                      maxLength={8}
+                      onChange={e => setNewName(e.target.value)}
+                      placeholder="Name"
+                      autoFocus
                       onKeyDown={e => {
                         if (e.key === 'Enter') {
                           const next = e.currentTarget.parentElement?.nextElementSibling?.querySelector('input') as HTMLInputElement | null
@@ -578,7 +520,7 @@ export function AdminPage() {
                       placeholder="Email"
                       onBlur={() => {
                         if (newName.trim() && newEmail.trim()) addPlayer()
-                        else if (!newFullName.trim() && !newName.trim() && !newEmail.trim()) cancelNewRow()
+                        else if (!newName.trim() && !newEmail.trim()) cancelNewRow()
                       }}
                       onKeyDown={e => {
                         if (e.key === 'Enter' && newName.trim() && newEmail.trim()) addPlayer()
@@ -586,7 +528,6 @@ export function AdminPage() {
                       }}
                     />
                   </td>
-                  <td></td>
                   <td></td>
                   <td></td>
                   <td></td>

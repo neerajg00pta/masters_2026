@@ -107,7 +107,7 @@ export function Layout({ children }: { children: ReactNode }) {
                   </button>
                 </nav>
               )}
-              <span className={styles.userName}>{currentUser.name}</span>
+              <span className={styles.userName}>{currentUser.fullName ?? currentUser.name}</span>
               <button onClick={logout} className={styles.logoutBtn}>
                 Log out
               </button>
