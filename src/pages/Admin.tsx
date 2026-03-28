@@ -53,6 +53,13 @@ export function AdminPage() {
     teamCountByUser.set(t.userId, (teamCountByUser.get(t.userId) ?? 0) + 1)
   }
 
+  // Team readiness
+  const readyTeams = teams.filter(t => {
+    const picks = selections.filter(s => s.teamId === t.id && !s.isRandom)
+    return picks.length >= 5
+  })
+  const draftTeams = teams.length - readyTeams.length
+
   // === Pool Controls ===
 
   const toggleLock = async () => {
@@ -302,6 +309,8 @@ export function AdminPage() {
         <div className={styles.statusLine}>
           <span className={`${styles.statusDot} ${config.poolLocked ? styles.statusDotRed : styles.statusDotGreen}`} />
           Pool: {config.poolLocked ? 'Locked' : 'Open'}
+          {' | '}
+          Teams: {readyTeams.length} ready{draftTeams > 0 ? `, ${draftTeams} draft` : ''}
           {' | '}
           Randoms: {config.randomsAssigned ? 'Assigned' : 'Pending'}
           {' | '}
