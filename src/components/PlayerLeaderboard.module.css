@@ -59,6 +59,20 @@
   top: 0;
 }
 
+.sortableTh {
+  cursor: pointer;
+  user-select: none;
+  transition: color 0.12s;
+}
+
+.sortableTh:hover {
+  color: var(--masters-green);
+}
+
+.sortableThActive {
+  color: var(--masters-green);
+}
+
 .table thead th:not(:nth-child(2)) {
   text-align: right;
 }

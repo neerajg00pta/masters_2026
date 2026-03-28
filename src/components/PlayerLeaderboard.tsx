@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import type { PlayerLeaderboardEntry } from '../lib/types'
 import { formatScore, isGolferLive, CUT_SCORE } from '../lib/types'
 import styles from './PlayerLeaderboard.module.css'
@@ -7,7 +7,10 @@ interface PlayerLeaderboardProps {
   entries: PlayerLeaderboardEntry[]
 }
 
-/** Compute tie-aware rank display strings for player entries (already sorted by adjScore asc) */
+type SortKey = 'adj' | 'masters' | 'dups' | 'name' | 'odds' | 'thru'
+type SortDir = 'asc' | 'desc'
+
+/** Compute tie-aware rank display strings for sorted entries */
 function computeRanks(entries: PlayerLeaderboardEntry[]): string[] {
   const ranks: number[] = []
   let currentRank = 1
@@ -19,22 +22,76 @@ function computeRanks(entries: PlayerLeaderboardEntry[]): string[] {
     }
     currentRank = i + 2
   }
-
-  // Determine ties
   const rankCounts = new Map<number, number>()
-  for (const r of ranks) {
-    rankCounts.set(r, (rankCounts.get(r) ?? 0) + 1)
-  }
-
-  return ranks.map(r => {
-    const isTied = (rankCounts.get(r) ?? 0) > 1
-    return isTied ? `T${r}` : `${r}`
-  })
+  for (const r of ranks) rankCounts.set(r, (rankCounts.get(r) ?? 0) + 1)
+  return ranks.map(r => (rankCounts.get(r) ?? 0) > 1 ? `T${r}` : `${r}`)
 }
 
 export function PlayerLeaderboard({ entries }: PlayerLeaderboardProps) {
   const [collapsed, setCollapsed] = useState(false)
-  const rankDisplays = computeRanks(entries)
+  const [sortKey, setSortKey] = useState<SortKey>('adj')
+  const [sortDir, setSortDir] = useState<SortDir>('asc')
+
+  const handleSort = (key: SortKey) => {
+    if (sortKey === key) {
+      setSortDir(d => d === 'asc' ? 'desc' : 'asc')
+    } else {
+      setSortKey(key)
+      // Default direction per column
+      setSortDir(key === 'name' ? 'asc' : key === 'dups' ? 'desc' : 'asc')
+    }
+  }
+
+  const sorted = useMemo(() => {
+    const arr = [...entries]
+    const dir = sortDir === 'asc' ? 1 : -1
+
+    arr.sort((a, b) => {
+      const aCut = a.adjScore >= CUT_SCORE ? 1 : 0
+      const bCut = b.adjScore >= CUT_SCORE ? 1 : 0
+      // Always push cut golfers to bottom
+      if (aCut !== bCut) return aCut - bCut
+
+      let cmp = 0
+      switch (sortKey) {
+        case 'adj':
+          cmp = a.adjScore - b.adjScore
+          // Secondary: best odds
+          if (cmp === 0) cmp = a.golfer.oddsNumeric - b.golfer.oddsNumeric
+          break
+        case 'masters':
+          cmp = a.golfer.scoreToPar - b.golfer.scoreToPar
+          break
+        case 'dups':
+          cmp = a.dupPenalty - b.dupPenalty
+          break
+        case 'name':
+          cmp = a.golfer.name.localeCompare(b.golfer.name)
+          break
+        case 'odds':
+          cmp = a.golfer.oddsNumeric - b.golfer.oddsNumeric
+          break
+        case 'thru': {
+          const aThru = parseInt(a.golfer.thru, 10) || (a.golfer.thru === 'F' ? 99 : 0)
+          const bThru = parseInt(b.golfer.thru, 10) || (b.golfer.thru === 'F' ? 99 : 0)
+          cmp = aThru - bThru
+          break
+        }
+      }
+      return cmp * dir
+    })
+    return arr
+  }, [entries, sortKey, sortDir])
+
+  const rankDisplays = useMemo(() => computeRanks(sorted), [sorted])
+
+  const sortIndicator = (key: SortKey) => {
+    if (sortKey !== key) return ''
+    return sortDir === 'asc' ? ' ▲' : ' ▼'
+  }
+
+  const thClass = (key: SortKey) =>
+    `${styles.sortableTh} ${sortKey === key ? styles.sortableThActive : ''}`
 
   return (
     <div className={styles.panel}>
@@ -52,15 +109,15 @@ export function PlayerLeaderboard({ entries }: PlayerLeaderboardProps) {
               <thead>
                 <tr>
                   <th>Rank</th>
-                  <th>Player</th>
-                  <th>Adj</th>
-                  <th>Masters</th>
-                  <th>Dups</th>
-                  <th>Thru</th>
+                  <th className={thClass('name')} onClick={() => handleSort('name')}>Player{sortIndicator('name')}</th>
+                  <th className={thClass('adj')} onClick={() => handleSort('adj')}>Adj{sortIndicator('adj')}</th>
+                  <th className={thClass('masters')} onClick={() => handleSort('masters')}>Masters{sortIndicator('masters')}</th>
+                  <th className={thClass('dups')} onClick={() => handleSort('dups')}>Dups{sortIndicator('dups')}</th>
+                  <th className={thClass('thru')} onClick={() => handleSort('thru')}>Thru{sortIndicator('thru')}</th>
                 </tr>
               </thead>
               <tbody>
-                {entries.map((entry, idx) => {
+                {sorted.map((entry, idx) => {
                   const isCut = entry.adjScore >= CUT_SCORE
                   const live = isGolferLive(entry.golfer.thru)
 
