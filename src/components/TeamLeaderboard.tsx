@@ -128,9 +128,10 @@ function Row({ entry, payout, isOwn, isExpanded, isStarred, onExpand, onStar }: 
         </div>
 
         {/* Team */}
-        <div className={styles.team} title={entry.user.fullName ?? entry.user.name}>
+        <div className={styles.team}>
           <span className={styles.teamName}>
             {entry.team.teamName}
+            <span className={styles.ownerInline}>{entry.user.fullName ?? entry.user.name}</span>
             {hasMoney && <span className={styles.moneyPill}>$</span>}
             {entry.isLive && !entry.isDisqualified && (
               <span className={styles.livePill}><span className={styles.liveDot} />LIVE</span>

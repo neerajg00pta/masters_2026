@@ -88,7 +88,14 @@
   display: inline-flex; align-items: center; gap: 5px;
 }
 
-.owner { display: none; }
+.ownerInline {
+  font-weight: 400;
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-left: 2px;
+}
+
+.ownerInline::before { content: '·'; margin-right: 3px; }
 
 /* ── Score ── */
 .score {
@@ -173,23 +180,23 @@
 
 /* ═══ Expanded Detail ═══ */
 .detail {
-  padding: 0 10px 6px; background: var(--bg-primary);
+  padding: 0 10px 2px; background: var(--bg-primary);
   border-bottom: 2px solid var(--border-default);
 }
 
 .dtable {
   width: 100%; border-collapse: collapse;
-  font-size: 12px; font-variant-numeric: tabular-nums;
+  font-size: 11px; font-variant-numeric: tabular-nums;
 }
 
 .dtable th {
-  text-align: left; font-size: 9px; font-weight: 700;
+  text-align: left; font-size: 8px; font-weight: 700;
   color: var(--text-muted); text-transform: uppercase;
-  letter-spacing: 0.8px; padding: 3px 6px;
+  letter-spacing: 0.8px; padding: 2px 5px;
   border-bottom: 1px solid var(--border-muted);
 }
 
-.dtable td { padding: 4px 6px; border-bottom: 1px solid var(--border-muted); }
+.dtable td { padding: 2px 5px; border-bottom: 1px solid var(--border-muted); }
 .dtable tr:last-child td { border-bottom: none; }
 .dtable th:not(:first-child) { text-align: right; }
 
