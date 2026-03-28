@@ -284,81 +284,50 @@
   border-color: var(--accent-red);
 }
 
-/* ESPN Matching */
+/* ESPN match indicators */
 
-.matchSection {
-  background: var(--bg-surface);
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-lg);
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.matchTitle {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--masters-green);
-}
-
-.matchRow {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 4px 0;
-  border-bottom: 1px solid var(--border-muted);
-  font-size: 13px;
-}
-
-.matchEspnName {
-  width: 180px;
-  font-weight: 600;
-  color: var(--text-primary);
-}
-
-.matchSelect {
-  flex: 1;
-  padding: 4px 8px;
-  border: 1px solid var(--border-default);
-  border-radius: 4px;
-  background: var(--bg-input);
-  color: var(--text-primary);
+.matchedName {
   font-size: 12px;
-  outline: none;
-}
-
-.matchSelect:focus { border-color: var(--masters-green); }
-
-.matchBtn {
-  padding: 3px 10px;
-  border-radius: 4px;
-  border: 1px solid var(--masters-green);
-  background: var(--masters-green);
-  color: #fff;
-  font-size: 11px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.matchBtn:hover { opacity: 0.85; }
-
-.matchedBadge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  background: rgba(46, 160, 67, 0.12);
   color: var(--accent-green);
-  font-size: 12px;
-  font-weight: 700;
+  font-weight: 500;
 }
 
-.rowUnmatched td {
-  background: rgba(255, 215, 0, 0.06);
+.noMatchBadge {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--accent-red);
+  background: rgba(209, 36, 47, 0.08);
+  padding: 2px 6px;
+  border-radius: 3px;
+  letter-spacing: 0.3px;
 }
+
+.noData {
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.rowNoMatch td {
+  background: rgba(255, 215, 0, 0.06) !important;
+}
+
+.rowNoMatch td:first-child {
+  box-shadow: inset 3px 0 0 var(--accent-red);
+}
+
+/* Warn tip */
+
+.tipWarn {
+  padding: 10px 14px;
+  background: rgba(209, 36, 47, 0.05);
+  border: 1px solid rgba(209, 36, 47, 0.15);
+  border-radius: var(--radius);
+  font-size: 12px;
+  color: var(--accent-red);
+  line-height: 1.5;
+}
+
+.tipWarn strong { color: var(--accent-red); }
 
 /* Odds display */
 

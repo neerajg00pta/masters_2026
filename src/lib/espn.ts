@@ -129,8 +129,10 @@ export async function fetchESPNLeaderboard(): Promise<ESPNGolfer[]> {
 function normalize(name: string): string {
   return name
     .toLowerCase()
-    .replace(/\s+(jr\.?|sr\.?|iii|iv|ii)$/i, '')
-    .replace(/[.']/g, '')
+    .replace(/\(a\)/gi, '')          // strip amateur indicator
+    .replace(/\s+(jr\.?|sr\.?|iii|iv|ii)$/i, '')  // strip suffixes
+    .replace(/[.''`,-]/g, '')        // strip punctuation
+    .replace(/\s+/g, ' ')           // collapse whitespace
     .trim()
 }
 
