@@ -218,9 +218,9 @@ function GolferDetail({ scoredGolfers }: { scoredGolfers: ScoredGolfer[] }) {
         <thead>
           <tr>
             <th>Golfer</th>
-            <th>Adj Score</th>
+            <th>Adj</th>
             <th>Masters</th>
-            <th>Dup Pen</th>
+            <th>Dups</th>
             <th>Thru</th>
           </tr>
         </thead>

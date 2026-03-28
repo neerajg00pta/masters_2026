@@ -105,6 +105,39 @@
   color: var(--masters-green);
 }
 
+/* Tab bar */
+
+.tabBar {
+  display: flex;
+  gap: 2px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  padding: 3px;
+}
+
+.tab {
+  flex: 1;
+  padding: 8px 16px;
+  border: none;
+  border-radius: var(--radius);
+  font-size: 13px;
+  font-weight: 600;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.tab:hover { color: var(--text-primary); background: var(--bg-surface); }
+
+.tabActive {
+  background: var(--masters-green);
+  color: #fff;
+}
+
+.tabActive:hover { background: var(--masters-green-light); color: #fff; }
+
 /* Sections */
 
 .section {

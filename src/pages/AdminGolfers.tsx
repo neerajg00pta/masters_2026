@@ -12,9 +12,10 @@ export function AdminGolfersPage() {
   const { isAdmin } = useAuth()
   const { config, golfers, selections, refresh } = useData()
   const { addToast } = useToast()
-  void useLiveScoringState() // keep hook call order but not used directly anymore
+  const liveScoring = useLiveScoringState()
 
   const [saving, setSaving] = useState(false)
+  const [activeTab, setActiveTab] = useState<'field' | 'espn'>('field')
   const debounceRef = useRef<ReturnType<typeof setTimeout>>(null)
 
   if (!isAdmin) {
@@ -120,8 +121,74 @@ export function AdminGolfersPage() {
         </div>
       )}
 
-      {/* Single Field Table — the one source of truth */}
-      <section className={styles.section}>
+      {/* Tab bar */}
+      <div className={styles.tabBar}>
+        <button className={`${styles.tab} ${activeTab === 'field' ? styles.tabActive : ''}`} onClick={() => setActiveTab('field')}>
+          Field
+        </button>
+        <button className={`${styles.tab} ${activeTab === 'espn' ? styles.tabActive : ''}`} onClick={() => setActiveTab('espn')}>
+          ESPN Raw Feed {liveScoring.allEspnGolfers.length > 0 ? `(${liveScoring.allEspnGolfers.length})` : ''}
+        </button>
+      </div>
+
+      {/* ESPN Raw Feed Tab */}
+      {activeTab === 'espn' && (
+        <section className={styles.section}>
+          <div className={styles.sectionHeader}>
+            <h2 className={styles.sectionTitle}>ESPN Raw Feed</h2>
+            <span className={styles.sectionCount}>
+              {liveScoring.allEspnGolfers.length} golfers
+              {liveScoring.lastPoll && <> &middot; last poll {liveScoring.lastPoll.toLocaleTimeString()}</>}
+            </span>
+          </div>
+          {liveScoring.allEspnGolfers.length === 0 ? (
+            <div style={{ padding: '24px 14px', textAlign: 'center', color: 'var(--text-muted)', fontSize: 13 }}>
+              {liveOn ? 'Waiting for first ESPN poll...' : 'Turn on live scoring to fetch ESPN data.'}
+            </div>
+          ) : (
+            <div className={styles.tableWrap}>
+              <table className={styles.table}>
+                <thead>
+                  <tr>
+                    <th style={{ width: 50 }}>Pos</th>
+                    <th>Name</th>
+                    <th style={{ width: 60 }}>Score</th>
+                    <th style={{ width: 60 }}>Today</th>
+                    <th style={{ width: 60 }}>Thru</th>
+                    <th style={{ width: 70 }}>Status</th>
+                    <th style={{ width: 70 }}>Matched</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {liveScoring.allEspnGolfers.map((eg, i) => {
+                    const poolMatch = golfers.find(g => g.espnName?.toLowerCase() === eg.name.toLowerCase())
+                    return (
+                      <tr key={eg.id} className={i % 2 === 0 ? '' : styles.row}>
+                        <td style={{ textAlign: 'center', fontSize: 12, color: 'var(--text-muted)' }}>{eg.position || i + 1}</td>
+                        <td style={{ fontWeight: 500 }}>{eg.name}</td>
+                        <td style={{ textAlign: 'center', fontVariantNumeric: 'tabular-nums' }}>{eg.scoreToPar === 0 ? '-' : eg.scoreToPar}</td>
+                        <td style={{ textAlign: 'center', fontVariantNumeric: 'tabular-nums' }}>{eg.today === 0 ? '-' : eg.today}</td>
+                        <td style={{ textAlign: 'center' }}>{eg.thru || '--'}</td>
+                        <td style={{ textAlign: 'center', fontSize: 11 }}>{eg.status}</td>
+                        <td style={{ textAlign: 'center' }}>
+                          {poolMatch ? (
+                            <span style={{ color: 'var(--accent-green)', fontSize: 11, fontWeight: 600 }}>{poolMatch.id}</span>
+                          ) : (
+                            <span style={{ color: 'var(--text-muted)', fontSize: 11 }}>—</span>
+                          )}
+                        </td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </section>
+      )}
+
+      {/* Field Table */}
+      {activeTab === 'field' && <section className={styles.section}>
         <div className={styles.sectionHeader}>
           <h2 className={styles.sectionTitle}>Field</h2>
           <span className={styles.sectionCount}>{golfers.length} golfers</span>
@@ -134,9 +201,9 @@ export function AdminGolfersPage() {
                 <th className={styles.thName}>Name</th>
                 <th className={styles.thEspn}>ESPN Match</th>
                 <th className={styles.thOdds}>Odds</th>
-                <th style={{ width: '40px', textAlign: 'center' }}>Dups</th>
-                <th className={styles.thScore}>Score</th>
                 <th style={{ width: '50px', textAlign: 'center' }}>Adj</th>
+                <th className={styles.thScore}>Masters</th>
+                <th style={{ width: '40px', textAlign: 'center' }}>Dups</th>
                 <th className={styles.thToday}>Today</th>
                 <th className={styles.thThru}>Thru</th>
                 <th className={styles.thStatus}>Status</th>
@@ -165,7 +232,7 @@ export function AdminGolfersPage() {
             </tbody>
           </table>
         </div>
-      </section>
+      </section>}
     </div>
   )
 }
@@ -218,20 +285,20 @@ function GolferRow({
         <input className={styles.textInput} value={localOdds} style={{ width: 60, textAlign: 'center' }}
           onChange={e => { setLocalOdds(e.target.value); onDebouncedUpdate(golfer.id, { name: golfer.name }) }} />
       </td>
-      <td style={{ textAlign: 'center', fontSize: 12, fontVariantNumeric: 'tabular-nums' }}>
-        {isRandomOnly ? (
-          <span style={{ fontSize: 9, fontWeight: 700, color: 'var(--text-muted)' }}>RND</span>
-        ) : dupPenalty > 0 ? (
-          <span style={{ fontWeight: 600, color: 'var(--accent-red)' }}>+{dupPenalty}</span>
-        ) : ''}
+      <td style={{ textAlign: 'center', fontSize: 12, fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>
+        {formatScore(golfer.scoreToPar + dupPenalty)}
       </td>
       <td>
         <input className={`${styles.scoreInput} ${golfer.scoreLocked ? styles.lockedInput : ''}`}
           type="number" value={localScore}
           onChange={e => { setLocalScore(e.target.value); const n = parseInt(e.target.value, 10); if (!isNaN(n)) onDebouncedUpdate(golfer.id, { scoreToPar: n }) }} />
       </td>
-      <td style={{ textAlign: 'center', fontSize: 12, fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>
-        {formatScore(golfer.scoreToPar + dupPenalty)}
+      <td style={{ textAlign: 'center', fontSize: 12, fontVariantNumeric: 'tabular-nums' }}>
+        {isRandomOnly ? (
+          <span style={{ fontSize: 9, fontWeight: 700, color: 'var(--text-muted)' }}>RND</span>
+        ) : dupPenalty > 0 ? (
+          <span style={{ fontWeight: 600, color: 'var(--accent-red)' }}>+{dupPenalty}</span>
+        ) : ''}
       </td>
       <td>
         <input className={`${styles.scoreInput} ${golfer.scoreLocked ? styles.lockedInput : ''}`}

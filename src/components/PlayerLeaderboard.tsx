@@ -53,9 +53,9 @@ export function PlayerLeaderboard({ entries }: PlayerLeaderboardProps) {
                 <tr>
                   <th>Rank</th>
                   <th>Player</th>
-                  <th>Adj Score</th>
+                  <th>Adj</th>
                   <th>Masters</th>
-                  <th>Dup Pen</th>
+                  <th>Dups</th>
                   <th>Thru</th>
                 </tr>
               </thead>
