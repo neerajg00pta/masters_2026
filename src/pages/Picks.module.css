@@ -16,9 +16,39 @@
 
 .title { font-size: 18px; font-weight: 700; color: var(--text-primary); }
 
-.userSelect {
-  padding: 6px 10px; border: 1px solid var(--border-default); border-radius: var(--radius);
-  background: var(--bg-surface); color: var(--text-primary); font-size: 12px; font-weight: 600;
+/* Admin search */
+.searchWrap {
+  position: relative;
+  flex: 1;
+  max-width: 300px;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 7px 30px 7px 12px;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius);
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.searchInput::placeholder { color: var(--text-muted); }
+.searchInput:focus { border-color: var(--masters-green); box-shadow: 0 0 0 2px rgba(0,103,71,0.1); }
+
+.searchClear {
+  position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+  background: none; border: none; color: var(--text-muted); font-size: 16px; cursor: pointer;
+}
+.searchClear:hover { color: var(--text-primary); }
+
+.ownerLabel {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--text-muted);
+  margin-left: 4px;
 }
 
 .lockedBanner {

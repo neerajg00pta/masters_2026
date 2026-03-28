@@ -15,25 +15,42 @@ function PicksView() {
   const { currentUser, isAdmin } = useAuth()
   const { addToast } = useToast()
 
-  const [managingUserId, setManagingUserId] = useState<string | null>(null)
   const [activeTeamId, setActiveTeamId] = useState<string | null>(null)
   const [creatingTeam, setCreatingTeam] = useState(false)
   const [newTeamName, setNewTeamName] = useState('')
   const [renamingTeamId, setRenamingTeamId] = useState<string | null>(null)
   const [renameValue, setRenameValue] = useState('')
   const [saving, setSaving] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
 
   const isLocked = config.poolLocked
   const canEdit = !isLocked || isAdmin
 
-  const effectiveUserId = managingUserId ?? currentUser?.id ?? null
-  const effectiveUser = users.find(u => u.id === effectiveUserId)
-  const isManagingOther = isAdmin && managingUserId !== null && managingUserId !== currentUser?.id
+  // Build user lookup
+  const userMap = useMemo(() => {
+    const m = new Map<string, typeof users[0]>()
+    for (const u of users) m.set(u.id, u)
+    return m
+  }, [users])
 
-  const visibleTeams = useMemo(
-    () => (effectiveUserId ? teams.filter(t => t.userId === effectiveUserId) : []),
-    [teams, effectiveUserId],
-  )
+  // For regular users: show only their teams. For admin: show all teams (filterable by search).
+  const allVisibleTeams = useMemo(() => {
+    if (isAdmin) return teams
+    return currentUser ? teams.filter(t => t.userId === currentUser.id) : []
+  }, [teams, currentUser, isAdmin])
+
+  // Fuzzy search filter (admin only — searches participant name + team name)
+  const visibleTeams = useMemo(() => {
+    if (!searchQuery.trim()) return allVisibleTeams
+    const q = searchQuery.toLowerCase().trim()
+    return allVisibleTeams.filter(t => {
+      const owner = userMap.get(t.userId)
+      const ownerName = (owner?.name ?? '').toLowerCase()
+      const ownerFull = (owner?.fullName ?? '').toLowerCase()
+      const teamName = t.teamName.toLowerCase()
+      return teamName.includes(q) || ownerName.includes(q) || ownerFull.includes(q)
+    })
+  }, [allVisibleTeams, searchQuery, userMap])
 
   // Auto-select first team
   useEffect(() => {
@@ -67,10 +84,10 @@ function PicksView() {
 
   const handleCreateTeam = async () => {
     const trimmed = newTeamName.trim()
-    if (!trimmed || !effectiveUserId) return
+    if (!trimmed || !currentUser) return
     setSaving(true)
     try {
-      const team = await createTeam(effectiveUserId, trimmed)
+      const team = await createTeam(currentUser.id, trimmed)
       await refresh()
       setActiveTeamId(team.id)
       setCreatingTeam(false)
@@ -135,20 +152,20 @@ function PicksView() {
   return (
     <div className={styles.container}>
       <div className={styles.titleRow}>
-        <h1 className={styles.title}>
-          {isManagingOther ? `Editing: ${effectiveUser?.name ?? 'User'}` : 'My Picks'}
-        </h1>
+        <h1 className={styles.title}>{isAdmin ? 'All Teams' : 'My Picks'}</h1>
         {isAdmin && (
-          <select
-            className={styles.userSelect}
-            value={effectiveUserId ?? ''}
-            onChange={e => { setManagingUserId(e.target.value || null); setActiveTeamId(null) }}
-          >
-            <option value={currentUser.id}>My teams</option>
-            {users.filter(u => u.id !== currentUser.id).map(u => (
-              <option key={u.id} value={u.id}>{u.name} ({u.fullName ?? u.email})</option>
-            ))}
-          </select>
+          <div className={styles.searchWrap}>
+            <input
+              className={styles.searchInput}
+              type="text"
+              placeholder="Search teams or participants..."
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+            />
+            {searchQuery && (
+              <button className={styles.searchClear} onClick={() => setSearchQuery('')}>&times;</button>
+            )}
+          </div>
         )}
       </div>
 
@@ -195,6 +212,7 @@ function PicksView() {
                       title={canEdit ? 'Double-click to rename' : undefined}
                     >
                       {t.teamName}
+                      {isAdmin && <span className={styles.ownerLabel}>({userMap.get(t.userId)?.name ?? '?'})</span>}
                     </span>
                   )}
                   <div className={styles.cardMeta}>
