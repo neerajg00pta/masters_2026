@@ -187,18 +187,25 @@
 .dtable {
   width: 100%; border-collapse: collapse;
   font-size: 11px; font-variant-numeric: tabular-nums;
+  table-layout: fixed;
 }
 
 .dtable th {
   text-align: left; font-size: 8px; font-weight: 700;
   color: var(--text-muted); text-transform: uppercase;
-  letter-spacing: 0.8px; padding: 2px 5px;
+  letter-spacing: 0.8px; padding: 2px 4px;
   border-bottom: 1px solid var(--border-muted);
 }
 
-.dtable td { padding: 2px 5px; border-bottom: 1px solid var(--border-muted); }
+.dtable th:nth-child(1) { width: auto; }
+.dtable th:nth-child(2) { width: 40px; text-align: right; }
+.dtable th:nth-child(3) { width: 52px; text-align: right; }
+.dtable th:nth-child(4) { width: 36px; text-align: right; }
+.dtable th:nth-child(5) { width: 32px; text-align: right; }
+
+.dtable td { padding: 2px 4px; border-bottom: 1px solid var(--border-muted); }
 .dtable tr:last-child td { border-bottom: none; }
-.dtable th:not(:first-child) { text-align: right; }
+.dtable td:not(:first-child) { text-align: right; }
 
 .num { text-align: right; font-weight: 600; }
 .cutLine td { border-bottom: 2.5px solid var(--masters-green) !important; }
