@@ -1,16 +1,17 @@
-/* === Panel === */
+/* ═══ Panel ═══ */
 .panel {
   background: var(--bg-surface);
   border: 1px solid var(--border-default);
   border-radius: var(--radius-lg);
   overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
 .panelHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 14px;
+  padding: 12px 16px;
   background: var(--masters-green);
   color: #fff;
   cursor: pointer;
@@ -18,285 +19,225 @@
 }
 
 .panelTitle {
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 1px;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
   text-transform: uppercase;
 }
 
-.chevron {
-  font-size: 12px;
-  transition: transform 0.2s;
-}
+.chevron { font-size: 11px; transition: transform 0.2s; opacity: 0.7; }
+.chevronCollapsed { transform: rotate(-90deg); }
+.panelBody { overflow: hidden; }
 
-.chevronCollapsed {
-  transform: rotate(-90deg);
-}
-
-.panelBody {
-  overflow: hidden;
-}
-
-/* === Team row (collapsed) === */
+/* ═══ Team Row ═══ */
 .teamRow {
   display: grid;
-  grid-template-columns: 36px 24px 1fr auto auto auto auto;
+  grid-template-columns: 40px 28px 1fr auto 32px;
   align-items: center;
-  gap: 4px;
-  padding: 8px 12px;
+  gap: 6px;
+  padding: 10px 14px;
   border-bottom: 1px solid var(--border-muted);
   cursor: pointer;
-  transition: background 0.12s;
+  transition: background 0.1s;
   font-variant-numeric: tabular-nums;
+  border-left: 4px solid transparent;
 }
 
-.teamRow:hover {
-  background: var(--bg-elevated);
-}
+.teamRow:hover { background: var(--bg-elevated); }
+.teamRowExpanded { background: var(--bg-primary); }
 
-.teamRow:last-child {
-  border-bottom: none;
-}
-
-/* Payout highlighting */
+/* ── Payout highlights ── */
 .payoutFirst {
-  background: rgba(255, 215, 0, 0.12);
+  border-left-color: var(--masters-green);
+  background: linear-gradient(90deg, rgba(0, 103, 71, 0.08) 0%, rgba(0, 103, 71, 0.02) 100%);
 }
+.payoutFirst .rank { color: var(--masters-green); }
+.payoutFirst .teamName { color: var(--masters-green); }
+.payoutFirst .aggScore { color: var(--masters-green); }
 
 .payoutSecond {
-  background: rgba(192, 192, 192, 0.15);
+  border-left-color: var(--masters-gold-dark);
+  background: linear-gradient(90deg, rgba(199, 166, 0, 0.06) 0%, transparent 100%);
+}
+.payoutSecond .rank { color: var(--masters-gold-dark); }
+
+.payoutBronze {
+  border-left-color: #CD7F32;
+  background: linear-gradient(90deg, rgba(205, 127, 50, 0.05) 0%, transparent 100%);
 }
 
-.payoutLast,
-.payoutMiddle {
-  background: rgba(205, 127, 50, 0.10);
+/* Own team */
+.ownRow {
+  border-left-color: var(--masters-green) !important;
+  background: rgba(0, 103, 71, 0.04) !important;
 }
 
-.currentUser {
-  background: rgba(0, 103, 71, 0.06);
-  border-left: 3px solid var(--masters-green);
-  padding-left: 9px;
-}
+.dqRow { opacity: 0.45; }
 
-.dqRow {
-  opacity: 0.5;
-}
-
-/* === Rank cell === */
+/* ── Rank ── */
 .rank {
-  font-weight: 700;
-  font-size: 13px;
+  font-weight: 800;
+  font-size: 15px;
   text-align: center;
   color: var(--text-primary);
-}
-
-.rankDq {
-  color: var(--accent-red);
-  font-size: 11px;
-}
-
-/* === Rank delta === */
-.delta {
-  font-size: 10px;
-  font-weight: 700;
-  text-align: center;
   line-height: 1;
-}
-
-.deltaUp {
-  color: var(--accent-green);
-}
-
-.deltaDown {
-  color: var(--accent-red);
-}
-
-.deltaFlat {
-  color: var(--text-muted);
-  font-size: 9px;
-}
-
-/* === Team name cell === */
-.teamInfo {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  gap: 1px;
-}
-
-.teamName {
-  font-weight: 600;
-  font-size: 13px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.ownerName {
-  font-size: 11px;
-  color: var(--text-muted);
-}
-
-/* === Aggregate score === */
-.aggScore {
-  font-weight: 700;
-  font-size: 13px;
-  text-align: right;
-  white-space: nowrap;
-  padding: 0 4px;
-}
-
-.aggLabel {
-  font-size: 10px;
-  color: var(--text-muted);
-  font-weight: 400;
-  margin-right: 3px;
-}
-
-/* === Behind column === */
-.behind {
-  font-size: 12px;
-  color: var(--text-secondary);
-  text-align: right;
-  min-width: 24px;
-}
-
-/* === Badges === */
-.liveBadge {
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-  font-size: 9px;
-  font-weight: 700;
-  color: var(--accent-green);
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-}
-
-.liveDot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--accent-green);
-  animation: pulse-green 1.5s infinite;
 }
 
 .dqBadge {
   font-size: 9px;
-  font-weight: 700;
+  font-weight: 800;
   color: var(--accent-red);
   background: rgba(209, 36, 47, 0.1);
-  padding: 1px 5px;
+  padding: 2px 5px;
   border-radius: 3px;
+  letter-spacing: 0.5px;
 }
 
-/* === Star === */
+/* ── Delta ── */
+.delta { font-size: 10px; font-weight: 700; text-align: center; line-height: 1; }
+.deltaUp { color: var(--accent-green); }
+.deltaDown { color: var(--accent-red); }
+
+/* ── Team info ── */
+.teamInfo { display: flex; flex-direction: column; min-width: 0; gap: 1px; }
+.teamName {
+  font-weight: 700;
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--text-primary);
+}
+.ownerName { font-size: 11px; color: var(--text-muted); }
+
+/* ── Score block ── */
+.scoreBlock {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.aggScore {
+  font-weight: 800;
+  font-size: 18px;
+  color: var(--text-primary);
+  letter-spacing: -0.5px;
+}
+
+.behind {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  min-width: 24px;
+  text-align: right;
+}
+
+/* ── LIVE pill ── */
+.livePill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 9px;
+  font-weight: 800;
+  color: #fff;
+  background: var(--accent-green);
+  padding: 2px 7px 2px 5px;
+  border-radius: 10px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  animation: pulse-badge 2s ease-in-out infinite;
+  white-space: nowrap;
+}
+
+.liveDot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #fff;
+}
+
+@keyframes pulse-badge {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+/* ── RND pill ── */
+.rndPill {
+  display: inline-flex;
+  align-items: center;
+  font-size: 9px;
+  font-weight: 800;
+  color: var(--text-muted);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-default);
+  padding: 1px 6px;
+  border-radius: 10px;
+  letter-spacing: 0.5px;
+  margin-left: 4px;
+}
+
+/* ── Star ── */
 .starBtn {
   background: none;
   border: none;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 16px;
   padding: 2px;
   line-height: 1;
-  color: var(--text-muted);
-  transition: color 0.12s;
+  color: var(--border-default);
+  transition: color 0.12s, transform 0.12s;
+}
+.starBtn:hover { color: var(--masters-gold); transform: scale(1.15); }
+.starActive { color: var(--masters-gold) !important; }
+
+/* ═══ Expanded Detail ═══ */
+.detail {
+  padding: 2px 14px 12px 14px;
+  background: var(--bg-primary);
+  border-bottom: 2px solid var(--border-default);
 }
 
-.starBtn:hover {
-  color: var(--masters-gold);
-}
-
-.starBtnActive {
-  color: var(--masters-gold);
-}
-
-/* === Expanded golfer detail === */
-.golferDetail {
-  padding: 4px 12px 10px 12px;
-  background: var(--bg-elevated);
-  border-bottom: 1px solid var(--border-muted);
-}
-
-.golferTable {
+.detailTable {
   width: 100%;
   border-collapse: collapse;
   font-size: 12px;
   font-variant-numeric: tabular-nums;
 }
 
-.golferTable th {
+.detailTable th {
   text-align: left;
-  font-size: 10px;
-  font-weight: 600;
+  font-size: 9px;
+  font-weight: 700;
   color: var(--text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  padding: 4px 6px;
+  letter-spacing: 0.8px;
+  padding: 6px 8px;
   border-bottom: 1px solid var(--border-muted);
 }
 
-.golferTable th:not(:first-child) {
-  text-align: right;
-}
-
-.golferTable td {
-  padding: 4px 6px;
+.detailTable td {
+  padding: 7px 8px;
   border-bottom: 1px solid var(--border-muted);
+  font-size: 13px;
 }
 
-.golferTable td:not(:first-child) {
-  text-align: right;
-}
+.detailTable tr:last-child td { border-bottom: none; }
 
-.golferTable tr:last-child td {
-  border-bottom: none;
-}
+.numCell { text-align: right; font-weight: 600; }
 
-.countingLine td {
-  border-bottom: 2px solid var(--masters-green);
-}
+.detailTable th:not(:first-child) { text-align: right; }
 
-.cutGolfer td {
-  color: var(--text-muted);
-}
+.countingLine td { border-bottom: 2px solid var(--masters-green) !important; }
 
-.randomGolfer .golferName {
-  font-style: italic;
-}
+.cutRow td { color: var(--text-muted); font-style: italic; }
 
 .golferName {
   display: inline-flex;
   align-items: center;
   gap: 4px;
+  font-weight: 500;
 }
 
-.randomBadge {
-  font-size: 11px;
-  line-height: 1;
-}
-
-.golferLive {
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-  font-size: 9px;
-  font-weight: 700;
-  color: var(--accent-green);
-  margin-left: 4px;
-}
-
-.golferLiveDot {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: var(--accent-green);
-  animation: pulse-green 1.5s infinite;
-}
-
-/* === Empty state === */
-.empty {
-  padding: 24px 16px;
-  text-align: center;
-  color: var(--text-muted);
-  font-size: 13px;
-}
+/* ═══ Empty ═══ */
+.empty { padding: 32px 16px; text-align: center; color: var(--text-muted); font-size: 13px; }

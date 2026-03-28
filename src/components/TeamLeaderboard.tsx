@@ -27,14 +27,11 @@ function writeStarred(ids: Set<string>) {
 export function TeamLeaderboard({ entries, payoutMap, currentUserId }: TeamLeaderboardProps) {
   const [collapsed, setCollapsed] = useState(false)
   const [expanded, setExpanded] = useState<Set<string>>(() => {
-    // Auto-expand current user's teams
     if (!currentUserId) return new Set<string>()
-    const own = entries.filter(e => e.user.id === currentUserId).map(e => e.team.id)
-    return new Set(own)
+    return new Set(entries.filter(e => e.user.id === currentUserId).map(e => e.team.id))
   })
   const [starred, setStarred] = useState<Set<string>>(readStarred)
 
-  // Keep auto-expand in sync when currentUserId changes
   useEffect(() => {
     if (!currentUserId) return
     setExpanded(prev => {
@@ -46,41 +43,22 @@ export function TeamLeaderboard({ entries, payoutMap, currentUserId }: TeamLeade
   }, [currentUserId, entries])
 
   const toggleExpand = useCallback((teamId: string) => {
-    setExpanded(prev => {
-      const next = new Set(prev)
-      if (next.has(teamId)) {
-        next.delete(teamId)
-      } else {
-        next.add(teamId)
-      }
-      return next
-    })
+    setExpanded(prev => { const n = new Set(prev); n.has(teamId) ? n.delete(teamId) : n.add(teamId); return n })
   }, [])
 
   const toggleStar = useCallback((e: React.MouseEvent, teamId: string) => {
     e.stopPropagation()
-    setStarred(prev => {
-      const next = new Set(prev)
-      if (next.has(teamId)) {
-        next.delete(teamId)
-      } else {
-        next.add(teamId)
-      }
-      writeStarred(next)
-      return next
-    })
+    setStarred(prev => { const n = new Set(prev); n.has(teamId) ? n.delete(teamId) : n.add(teamId); writeStarred(n); return n })
   }, [])
 
-  // Sort entries: current user first, then starred, then non-DQ by rank, DQ last
+  // Sort: own teams first, starred, non-DQ by rank, DQ last
   const sorted = [...entries].sort((a, b) => {
     const aOwn = currentUserId && a.user.id === currentUserId ? 0 : 1
     const bOwn = currentUserId && b.user.id === currentUserId ? 0 : 1
     if (aOwn !== bOwn) return aOwn - bOwn
-
     const aStar = starred.has(a.team.id) ? 0 : 1
     const bStar = starred.has(b.team.id) ? 0 : 1
     if (aStar !== bStar) return aStar - bStar
-
     if (a.isDisqualified !== b.isDisqualified) return a.isDisqualified ? 1 : -1
     return a.rank - b.rank
   })
@@ -88,7 +66,7 @@ export function TeamLeaderboard({ entries, payoutMap, currentUserId }: TeamLeade
   return (
     <div className={styles.panel}>
       <div className={styles.panelHeader} onClick={() => setCollapsed(c => !c)}>
-        <span className={styles.panelTitle}>Team Leaderboard</span>
+        <span className={styles.panelTitle}>Leaderboard</span>
         <span className={`${styles.chevron} ${collapsed ? styles.chevronCollapsed : ''}`}>&#9660;</span>
       </div>
 
@@ -96,27 +74,23 @@ export function TeamLeaderboard({ entries, payoutMap, currentUserId }: TeamLeade
         <div className={styles.panelBody}>
           {sorted.length === 0 ? (
             <div className={styles.empty}>No teams yet.</div>
-          ) : (
-            sorted.map(entry => (
-              <TeamRow
-                key={entry.team.id}
-                entry={entry}
-                payout={payoutMap.get(entry.team.id) ?? null}
-                isOwn={currentUserId === entry.user.id}
-                isExpanded={expanded.has(entry.team.id)}
-                isStarred={starred.has(entry.team.id)}
-                onToggleExpand={() => toggleExpand(entry.team.id)}
-                onToggleStar={(e) => toggleStar(e, entry.team.id)}
-              />
-            ))
-          )}
+          ) : sorted.map(entry => (
+            <TeamRow
+              key={entry.team.id}
+              entry={entry}
+              payout={payoutMap.get(entry.team.id) ?? null}
+              isOwn={currentUserId === entry.user.id}
+              isExpanded={expanded.has(entry.team.id)}
+              isStarred={starred.has(entry.team.id)}
+              onToggleExpand={() => toggleExpand(entry.team.id)}
+              onToggleStar={(e) => toggleStar(e, entry.team.id)}
+            />
+          ))}
         </div>
       )}
     </div>
   )
 }
-
-/* === Individual team row === */
 
 interface TeamRowProps {
   entry: TeamLeaderboardEntry
@@ -131,90 +105,60 @@ interface TeamRowProps {
 function TeamRow({ entry, payout, isOwn, isExpanded, isStarred, onToggleExpand, onToggleStar }: TeamRowProps) {
   const rowClasses = [
     styles.teamRow,
-    isOwn ? styles.currentUser : '',
+    isOwn ? styles.ownRow : '',
     entry.isDisqualified ? styles.dqRow : '',
     payout === 'first' ? styles.payoutFirst : '',
     payout === 'second' ? styles.payoutSecond : '',
-    payout === 'last' ? styles.payoutLast : '',
-    payout === 'middle' ? styles.payoutMiddle : '',
+    payout === 'last' || payout === 'middle' ? styles.payoutBronze : '',
+    isExpanded ? styles.teamRowExpanded : '',
   ].filter(Boolean).join(' ')
 
   return (
     <>
       <div className={rowClasses} onClick={onToggleExpand}>
-        {/* Rank */}
-        <span className={`${styles.rank} ${entry.isDisqualified ? styles.rankDq : ''}`}>
-          {entry.rankDisplay}
+        <span className={styles.rank}>
+          {entry.isDisqualified ? <span className={styles.dqBadge}>DQ</span> : entry.rankDisplay}
         </span>
 
-        {/* Rank delta */}
         <span className={styles.delta}>
-          <RankDelta delta={entry.rankDelta} />
+          {entry.rankDelta !== null && entry.rankDelta > 0 && <span className={styles.deltaUp}>&#9650;{entry.rankDelta}</span>}
+          {entry.rankDelta !== null && entry.rankDelta < 0 && <span className={styles.deltaDown}>&#9660;{Math.abs(entry.rankDelta)}</span>}
         </span>
 
-        {/* Team name + owner */}
         <div className={styles.teamInfo}>
           <span className={styles.teamName}>{entry.team.teamName}</span>
-          <span className={styles.ownerName}>({entry.user.name})</span>
+          <span className={styles.ownerName}>{entry.user.name}</span>
         </div>
 
-        {/* Aggregate score */}
-        <span className={styles.aggScore}>
-          <span className={styles.aggLabel}>Best 4:</span>
-          {entry.isDisqualified ? 'DQ' : formatScore(entry.aggregateScore)}
-        </span>
-
-        {/* Behind */}
-        <span className={styles.behind}>
-          {entry.behind === null || entry.behind === 0 ? '-' : `+${entry.behind}`}
-        </span>
-
-        {/* Badges */}
-        <span>
+        <div className={styles.scoreBlock}>
           {entry.isLive && !entry.isDisqualified && (
-            <span className={styles.liveBadge}>
-              <span className={styles.liveDot} />
-              LIVE
-            </span>
+            <span className={styles.livePill}><span className={styles.liveDot} />LIVE</span>
           )}
-          {entry.isDisqualified && (
-            <span className={styles.dqBadge}>DQ</span>
+          <span className={styles.aggScore}>
+            {entry.isDisqualified ? '—' : formatScore(entry.aggregateScore)}
+          </span>
+          {entry.behind !== null && entry.behind > 0 && (
+            <span className={styles.behind}>+{entry.behind}</span>
           )}
-        </span>
+        </div>
 
-        {/* Star */}
         <button
-          className={`${styles.starBtn} ${isStarred ? styles.starBtnActive : ''}`}
+          className={`${styles.starBtn} ${isStarred || isOwn ? styles.starActive : ''}`}
           onClick={onToggleStar}
-          aria-label={isStarred ? 'Unpin team' : 'Pin team'}
         >
-          {isStarred ? '\u2605' : '\u2606'}
+          {isStarred || isOwn ? '\u2605' : '\u2606'}
         </button>
       </div>
 
-      {/* Expanded golfer detail */}
-      {isExpanded && (
-        <GolferDetail scoredGolfers={entry.scoredGolfers} />
-      )}
+      {isExpanded && <GolferDetail scoredGolfers={entry.scoredGolfers} />}
     </>
   )
 }
 
-/* === Rank delta display === */
-
-function RankDelta({ delta }: { delta: number | null }) {
-  if (delta === null) return null
-  if (delta > 0) return <span className={styles.deltaUp}>{'\u25B2'}{delta}</span>
-  if (delta < 0) return <span className={styles.deltaDown}>{'\u25BC'}{Math.abs(delta)}</span>
-  return <span className={styles.deltaFlat}>-</span>
-}
-
-/* === Golfer detail table (expanded view) === */
-
 function GolferDetail({ scoredGolfers }: { scoredGolfers: ScoredGolfer[] }) {
   return (
-    <div className={styles.golferDetail}>
-      <table className={styles.golferTable}>
+    <div className={styles.detail}>
+      <table className={styles.detailTable}>
         <thead>
           <tr>
             <th>Golfer</th>
@@ -226,32 +170,28 @@ function GolferDetail({ scoredGolfers }: { scoredGolfers: ScoredGolfer[] }) {
         </thead>
         <tbody>
           {scoredGolfers.map((sg, idx) => {
-            const isCountingLine = idx === COUNTING_GOLFERS - 1 && idx < scoredGolfers.length - 1
+            const isCounting = idx === COUNTING_GOLFERS - 1 && idx < scoredGolfers.length - 1
             const live = isGolferLive(sg.golfer.thru)
 
-            const trClasses = [
-              isCountingLine ? styles.countingLine : '',
-              sg.isCut ? styles.cutGolfer : '',
-              sg.isRandom ? styles.randomGolfer : '',
-            ].filter(Boolean).join(' ') || undefined
-
             return (
-              <tr key={sg.golfer.id} className={trClasses}>
+              <tr
+                key={sg.golfer.id}
+                className={[
+                  isCounting ? styles.countingLine : '',
+                  sg.isCut ? styles.cutRow : '',
+                ].filter(Boolean).join(' ') || undefined}
+              >
                 <td>
                   <span className={styles.golferName}>
-                    {sg.isRandom && <span className={styles.randomBadge} title="Random assignment">{'\uD83C\uDFB2'}</span>}
                     {sg.golfer.name}
-                    {live && !sg.isCut && (
-                      <span className={styles.golferLive}>
-                        <span className={styles.golferLiveDot} />
-                      </span>
-                    )}
+                    {sg.isRandom && <span className={styles.rndPill}>RND</span>}
+                    {live && !sg.isCut && <span className={styles.livePill}><span className={styles.liveDot} />LIVE</span>}
                   </span>
                 </td>
-                <td>{formatScore(sg.adjScore)}</td>
-                <td>{sg.isCut ? 'CUT' : formatScore(sg.golfer.scoreToPar)}</td>
-                <td>{sg.dupPenalty > 0 ? `+${sg.dupPenalty}` : '-'}</td>
-                <td>{sg.isCut ? 'X' : sg.golfer.thru}</td>
+                <td className={styles.numCell}>{formatScore(sg.adjScore)}</td>
+                <td className={styles.numCell}>{sg.isCut ? 'CUT' : formatScore(sg.golfer.scoreToPar)}</td>
+                <td className={styles.numCell}>{sg.dupPenalty > 0 ? `+${sg.dupPenalty}` : '-'}</td>
+                <td className={styles.numCell}>{sg.isCut ? 'X' : (sg.golfer.thru || '--')}</td>
               </tr>
             )
           })}
