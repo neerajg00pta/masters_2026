@@ -26,11 +26,11 @@ export function TeamLeaderboard({ entries, payoutMap, currentUserId }: Props) {
   })
   const [starred, setStarred] = useState(readStarred)
 
-  // Auto-expand user's teams ONCE on first load, not on every poll
+  // Auto-expand user's teams in PINNED section only, once on first load
   const didAutoExpand = useRef(false)
   useEffect(() => {
     if (!currentUserId || didAutoExpand.current) return
-    const own = entries.filter(e => e.user.id === currentUserId).map(e => e.team.id)
+    const own = entries.filter(e => e.user.id === currentUserId).map(e => `pin-${e.team.id}`)
     if (own.length > 0) {
       setExpanded(prev => { const n = new Set(prev); own.forEach(id => n.add(id)); return n })
       didAutoExpand.current = true
@@ -73,9 +73,9 @@ export function TeamLeaderboard({ entries, payoutMap, currentUserId }: Props) {
                     <Row key={`pin-${e.team.id}`} entry={e}
                       payout={payoutMap.get(e.team.id) ?? null}
                       isOwn={currentUserId === e.user.id}
-                      isExpanded={expanded.has(e.team.id)}
+                      isExpanded={expanded.has(`pin-${e.team.id}`)}
                       isStarred={starred.has(e.team.id) || (currentUserId === e.user.id)}
-                      onExpand={() => toggleExpand(e.team.id)}
+                      onExpand={() => toggleExpand(`pin-${e.team.id}`)}
                       onStar={ev => toggleStar(ev, e.team.id)}
                     />
                   ))}
