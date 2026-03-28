@@ -106,9 +106,17 @@
   font-style: italic;
 }
 
-.randomBadge {
-  font-size: 11px;
-  line-height: 1;
+.rndPill {
+  display: inline-flex;
+  align-items: center;
+  font-size: 9px;
+  font-weight: 800;
+  color: var(--text-muted);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-default);
+  padding: 1px 6px;
+  border-radius: 10px;
+  letter-spacing: 0.5px;
 }
 
 /* === Cut row === */
