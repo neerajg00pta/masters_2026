@@ -8,14 +8,12 @@ import {
   deleteUser,
   updateConfig,
   bulkAddSelections,
-  saveSnapshots,
 } from '../lib/data-service'
 import { assignRandomGolfers } from '../lib/random-assignment'
-import { computeTeamLeaderboard } from '../lib/scoring'
 import type { User } from '../lib/types'
 import styles from './Admin.module.css'
 
-const ENTRY_FEE = 100
+const ENTRY_FEE = 20 // per team
 const BASE_URL = `${window.location.origin}${window.location.pathname}`
 
 export function AdminPage() {
@@ -45,7 +43,6 @@ export function AdminPage() {
   }
 
   const paidCount = users.filter(u => u.paid).length
-  const totalCollected = paidCount * ENTRY_FEE
 
   // Count teams per user
   const teamCountByUser = new Map<string, number>()
@@ -58,7 +55,7 @@ export function AdminPage() {
     const picks = selections.filter(s => s.teamId === t.id && !s.isRandom)
     return picks.length >= 5
   })
-  void (teams.length - readyTeams.length) // draft count available if needed
+  const totalCollected = readyTeams.length * ENTRY_FEE
 
   // === Pool Controls ===
 
@@ -91,25 +88,6 @@ export function AdminPage() {
       addToast(`Random golfers assigned to ${assignments.length} teams`, 'success')
     } catch {
       addToast('Failed to assign randoms', 'error')
-    } finally {
-      setSaving(false)
-    }
-  }
-
-  const handleSaveSnapshot = async () => {
-    setSaving(true)
-    try {
-      const leaderboard = computeTeamLeaderboard(teams, users, golfers, selections, snapshots, null)
-      const entries = leaderboard.map(e => ({
-        teamId: e.team.id,
-        aggregateScore: e.aggregateScore,
-        rank: e.rank,
-      }))
-      await saveSnapshots(entries)
-      await refresh()
-      addToast('Snapshot saved for today', 'success')
-    } catch {
-      addToast('Failed to save snapshot', 'error')
     } finally {
       setSaving(false)
     }
@@ -290,14 +268,6 @@ export function AdminPage() {
           )}
 
           <button
-            className={styles.btn}
-            onClick={handleSaveSnapshot}
-            disabled={saving}
-          >
-            Save Daily Snapshot
-          </button>
-
-          <button
             className={`${styles.btn} ${config.liveScoring ? styles.btnSuccess : ''}`}
             onClick={toggleLiveScoring}
             disabled={saving}
@@ -315,6 +285,8 @@ export function AdminPage() {
           Randoms: {config.randomsAssigned ? 'Assigned' : 'Pending'}
           {' | '}
           Live: {config.liveScoring ? 'ON' : 'OFF'}
+          {' | '}
+          Last snapshot: {snapshots.length > 0 ? snapshots[0].snapshotDate : 'none'}
         </div>
       </section>
 
