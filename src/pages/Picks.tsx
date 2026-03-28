@@ -51,12 +51,8 @@ function PicksView() {
     return m
   }, [golfers])
 
-  // Sort teams: active first
-  const sortedTeams = useMemo(() => {
-    const active = visibleTeams.filter(t => t.id === activeTeamId)
-    const rest = visibleTeams.filter(t => t.id !== activeTeamId)
-    return [...active, ...rest]
-  }, [visibleTeams, activeTeamId])
+  // Keep teams in creation order (no reordering)
+  const sortedTeams = visibleTeams
 
   if (!currentUser) {
     return (
@@ -202,10 +198,9 @@ function PicksView() {
                     </span>
                   )}
                   <div className={styles.cardMeta}>
-                    <span className={`${styles.pickBadge} ${isComplete ? styles.pickBadgeComplete : styles.pickBadgeIncomplete}`}>
-                      {pickCount}/{PICKS_PER_TEAM}
+                    <span className={`${styles.statusBadge} ${isComplete ? styles.statusReady : styles.statusDraft}`}>
+                      {isComplete ? 'READY' : 'DRAFT'} {pickCount}/{PICKS_PER_TEAM}
                     </span>
-                    {isActive && <span className={styles.editingBadge}>EDITING</span>}
                     {canEdit && (
                       <button
                         className={styles.cardDeleteBtn}

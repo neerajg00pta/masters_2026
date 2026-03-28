@@ -10,7 +10,7 @@ import styles from './AdminGolfers.module.css'
 
 export function AdminGolfersPage() {
   const { isAdmin } = useAuth()
-  const { config, golfers, refresh } = useData()
+  const { golfers, refresh } = useData()
   const { addToast } = useToast()
   const liveScoring = useLiveScoringState()
 
@@ -161,9 +161,8 @@ export function AdminGolfersPage() {
         <button className={styles.csvBtn} onClick={downloadCsv}>Download CSV</button>
       </div>
 
-      {/* ESPN Name Matching Tool */}
-      {config.liveScoring && (
-        <section className={styles.section}>
+      {/* ESPN Name Matching Tool — always available for setup */}
+      <section className={styles.section}>
           <div className={styles.sectionHeader}>
             <h2 className={styles.sectionTitle}>ESPN Name Matching</h2>
             <button className={`${styles.btn} ${styles.btnSm}`} onClick={handleAutoMatch} disabled={saving}>
@@ -238,7 +237,6 @@ export function AdminGolfersPage() {
             </table>
           </div>
         </section>
-      )}
 
       {/* Golfer Table */}
       <section className={styles.section}>
@@ -250,7 +248,7 @@ export function AdminGolfersPage() {
           <table className={styles.table}>
             <thead>
               <tr>
-                <th className={styles.thNum}>#</th>
+                <th className={styles.thNum}>Rank</th>
                 <th className={styles.thName}>Name</th>
                 <th className={styles.thEspn}>ESPN Name</th>
                 <th className={styles.thOdds}>Odds</th>

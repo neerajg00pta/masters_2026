@@ -12,7 +12,7 @@ interface Props {
 
 export function GolferPicker({ teamId }: Props) {
   const { config, golfers, selections, teams, refresh } = useData()
-  const { currentUser, isAdmin } = useAuth()
+  const { isAdmin } = useAuth()
   const { addToast } = useToast()
   const [search, setSearch] = useState('')
   const [claimingId, setClaimingId] = useState<string | null>(null)
@@ -27,16 +27,22 @@ export function GolferPicker({ teamId }: Props) {
     [teamSelections],
   )
 
-  // Golfer IDs picked by OTHER teams of same user
-  const otherTeamGolferIds = useMemo(() => {
-    // Find the team owner
+  // Map golferId → team names for OTHER teams of same user
+  const otherTeamGolferMap = useMemo(() => {
     const team = teams.find(t => t.id === teamId)
-    if (!team) return new Set<string>()
-    const otherIds = new Set(
-      teams.filter(t => t.userId === team.userId && t.id !== teamId).map(t => t.id),
-    )
-    return new Set(selections.filter(s => otherIds.has(s.teamId)).map(s => s.golferId))
-  }, [currentUser, teams, teamId, selections])
+    if (!team) return new Map<string, string[]>()
+    const otherTeams = teams.filter(t => t.userId === team.userId && t.id !== teamId)
+    const otherTeamMap = new Map(otherTeams.map(t => [t.id, t.teamName]))
+    const map = new Map<string, string[]>()
+    for (const s of selections) {
+      const tName = otherTeamMap.get(s.teamId)
+      if (!tName) continue
+      const existing = map.get(s.golferId) ?? []
+      existing.push(tName)
+      map.set(s.golferId, existing)
+    }
+    return map
+  }, [teams, teamId, selections])
 
   const pickCount = teamSelections.filter(s => !s.isRandom).length
   const isFull = pickCount >= PICKS_PER_TEAM
@@ -96,7 +102,7 @@ export function GolferPicker({ teamId }: Props) {
         )}
         {filteredGolfers.map((g, i) => {
           const isPicked = pickedGolferIds.has(g.id)
-          const isOnOther = otherTeamGolferIds.has(g.id)
+          const otherTeamNames = otherTeamGolferMap.get(g.id)
           const isClaiming = claimingId === g.id
           const isDimmed = !isPicked && isFull
 
@@ -115,7 +121,9 @@ export function GolferPicker({ teamId }: Props) {
               <span className={styles.rank}>{g.sortOrder}</span>
               <span className={styles.name}>
                 {g.name}
-                {isOnOther && !isPicked && <span className={styles.otherBadge}>other team</span>}
+                {otherTeamNames && !isPicked && otherTeamNames.map(tn => (
+                  <span key={tn} className={styles.otherBadge}>{tn}</span>
+                ))}
               </span>
               <span className={styles.odds}>{g.odds ?? ''}</span>
               {isPicked && <span className={styles.pickedTag}>PICKED</span>}

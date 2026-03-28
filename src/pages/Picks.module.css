@@ -103,37 +103,27 @@
   flex-shrink: 0;
 }
 
-.pickBadge {
+.statusBadge {
   font-size: 10px;
   font-weight: 700;
-  padding: 2px 6px;
+  padding: 2px 8px;
   border-radius: 4px;
   font-variant-numeric: tabular-nums;
+  letter-spacing: 0.3px;
 }
 
-.pickBadgeComplete {
+.statusReady {
   background: rgba(46, 160, 67, 0.15);
   color: var(--accent-green);
 }
 
-.pickBadgeIncomplete {
+.statusDraft {
   background: rgba(255, 215, 0, 0.2);
   color: var(--masters-gold-dark);
 }
 
-.editingBadge {
-  font-size: 9px;
-  font-weight: 800;
-  letter-spacing: 0.5px;
-  padding: 2px 5px;
-  border-radius: 3px;
-  background: var(--masters-gold);
-  color: #000;
-}
-
-.teamCardActive .editingBadge { background: rgba(255,255,255,0.25); color: #fff; }
-.teamCardActive .pickBadgeComplete { background: rgba(255,255,255,0.2); color: #fff; }
-.teamCardActive .pickBadgeIncomplete { background: rgba(255,255,255,0.2); color: var(--masters-gold); }
+.teamCardActive .statusReady { background: rgba(255,255,255,0.2); color: #fff; }
+.teamCardActive .statusDraft { background: rgba(255,255,255,0.2); color: var(--masters-gold); }
 
 .cardDeleteBtn {
   width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;
