@@ -14,6 +14,23 @@
 .chevC { transform: rotate(-90deg); }
 .body { overflow: hidden; }
 
+/* Search */
+.searchBar {
+  padding: 6px 8px; border-bottom: 1px solid var(--border-muted);
+  position: relative;
+}
+.searchInput {
+  width: 100%; padding: 5px 28px 5px 8px; border: 1px solid var(--border-default);
+  border-radius: var(--radius); background: var(--bg-input); color: var(--text-primary);
+  font-size: 12px; outline: none;
+}
+.searchInput::placeholder { color: var(--text-muted); }
+.searchInput:focus { border-color: var(--masters-green); }
+.searchClear {
+  position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+  background: none; border: none; color: var(--text-muted); font-size: 14px; cursor: pointer;
+}
+
 /* ═══ Row: Pos | $ | Team | Score | Delta | Star ═══ */
 .row {
   display: grid;

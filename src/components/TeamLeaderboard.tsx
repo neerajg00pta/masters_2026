@@ -21,6 +21,7 @@ export function TeamLeaderboard({ entries, payoutMap, currentUserId }: Props) {
   const [collapsed, setCollapsed] = useState(false)
   const [expanded, setExpanded] = useState<Set<string>>(new Set())
   const [starred, setStarred] = useState(readStarred)
+  const [search, setSearch] = useState('')
 
   // Auto-expand pinned cards once
   const didInit = useRef(false)
@@ -46,7 +47,15 @@ export function TeamLeaderboard({ entries, payoutMap, currentUserId }: Props) {
     return a.rank - b.rank
   })
 
-  const pinned = sorted.filter(e =>
+  // Filter by search
+  const filtered = search.trim() ? sorted.filter(e => {
+    const q = search.toLowerCase()
+    return e.team.teamName.toLowerCase().includes(q)
+      || (e.user.fullName ?? '').toLowerCase().includes(q)
+      || e.user.name.toLowerCase().includes(q)
+  }) : sorted
+
+  const pinned = (search.trim() ? filtered : sorted).filter(e =>
     (currentUserId && e.user.id === currentUserId) || starred.has(e.team.id)
   )
 
@@ -70,12 +79,18 @@ export function TeamLeaderboard({ entries, payoutMap, currentUserId }: Props) {
         <span className={`${styles.chev} ${collapsed ? styles.chevC : ''}`}>&#9660;</span>
       </div>
       {!collapsed && <div className={styles.body}>
+        <div className={styles.searchBar}>
+          <input className={styles.searchInput} type="text" placeholder="Find team or player..."
+            value={search} onChange={e => setSearch(e.target.value)} />
+          {search && <button className={styles.searchClear} onClick={() => setSearch('')}>&times;</button>}
+        </div>
         {sorted.length === 0 ? <div className={styles.empty}>No teams yet.</div> : <>
-          {pinned.length > 0 && <>
+          {!search.trim() && pinned.length > 0 && <>
             {pinned.map(e => renderRow(e, 'p-'))}
             <div className={styles.divider} />
           </>}
-          {sorted.map(e => renderRow(e, ''))}
+          {filtered.length === 0 ? <div className={styles.empty}>No matches for "{search}"</div> :
+            filtered.map(e => renderRow(e, ''))}
         </>}
       </div>}
     </div>
