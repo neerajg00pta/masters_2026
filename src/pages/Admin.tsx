@@ -58,7 +58,7 @@ export function AdminPage() {
     const picks = selections.filter(s => s.teamId === t.id && !s.isRandom)
     return picks.length >= 5
   })
-  const draftTeams = teams.length - readyTeams.length
+  void (teams.length - readyTeams.length) // draft count available if needed
 
   // === Pool Controls ===
 
@@ -310,7 +310,7 @@ export function AdminPage() {
           <span className={`${styles.statusDot} ${config.poolLocked ? styles.statusDotRed : styles.statusDotGreen}`} />
           Pool: {config.poolLocked ? 'Locked' : 'Open'}
           {' | '}
-          Teams: {readyTeams.length} ready{draftTeams > 0 ? `, ${draftTeams} draft` : ''}
+          Teams: {readyTeams.length} ready
           {' | '}
           Randoms: {config.randomsAssigned ? 'Assigned' : 'Pending'}
           {' | '}
