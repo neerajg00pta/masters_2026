@@ -4,8 +4,7 @@ import { AuthProvider } from './context/AuthContext'
 import { ToastProvider } from './context/ToastContext'
 import { LiveScoringProvider } from './context/LiveScoringContext'
 import { Layout } from './components/Layout'
-import { HomePage } from './pages/Home'
-import { PicksPage } from './pages/Picks'
+import { MainPage } from './pages/Main'
 import { RulesPage } from './pages/Rules'
 import { AdminPage } from './pages/Admin'
 import { AdminGolfersPage } from './pages/AdminGolfers'
@@ -20,8 +19,7 @@ export default function App() {
             <LiveScoringProvider>
               <Layout>
                 <Routes>
-                  <Route path="/" element={<HomePage />} />
-                  <Route path="/picks" element={<PicksPage />} />
+                  <Route path="/" element={<MainPage />} />
                   <Route path="/rules" element={<RulesPage />} />
                   <Route path="/admin" element={<AdminPage />} />
                   <Route path="/admin/golfers" element={<AdminGolfersPage />} />

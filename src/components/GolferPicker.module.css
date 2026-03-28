@@ -1,157 +1,88 @@
-.container {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
+/* ── Two-column layout: Team | Golfer List ── */
+.layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 16px;
+  align-items: start;
 }
 
-/* Header with counter */
-.header {
+@media (max-width: 700px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ════════════════════════════════════════════
+   LEFT PANEL: Your Team
+   ════════════════════════════════════════════ */
+.teamPanel {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  position: sticky;
+  top: calc(var(--header-height) + 16px);
+}
+
+.teamHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 16px;
-  background: var(--bg-surface);
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border-muted);
+  background: var(--masters-green);
+  color: #fff;
+}
+
+.teamTitle {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
 }
 
 .counter {
   font-size: 13px;
-  font-weight: 600;
-  color: var(--text-secondary);
-}
-
-.counterFull {
-  color: var(--masters-green);
-}
-
-/* Search */
-.searchWrap {
-  padding: 8px 16px;
-  background: var(--bg-surface);
-  border-left: 1px solid var(--border-default);
-  border-right: 1px solid var(--border-default);
-}
-
-.searchInput {
-  width: 100%;
-  padding: 8px 12px;
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius);
-  background: var(--bg-input);
-  color: var(--text-primary);
-  font-size: 13px;
-  outline: none;
-  transition: border-color 0.15s;
-}
-
-.searchInput::placeholder {
-  color: var(--text-muted);
-}
-
-.searchInput:focus {
-  border-color: var(--masters-green);
-  box-shadow: 0 0 0 2px rgba(0, 103, 71, 0.12);
-}
-
-/* Golfer list */
-.list {
-  border: 1px solid var(--border-default);
-  border-top: none;
-  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
-  overflow: hidden;
-  max-height: 520px;
-  overflow-y: auto;
-}
-
-/* Single golfer row */
-.row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 16px;
-  cursor: pointer;
-  border-left: 3px solid transparent;
-  transition: background 0.12s, border-color 0.12s;
-  user-select: none;
-}
-
-.row:not(:last-child) {
-  border-bottom: 1px solid var(--border-muted);
-}
-
-.rowEven {
-  background: var(--bg-surface);
-}
-
-.rowOdd {
-  background: var(--bg-primary);
-}
-
-.row:hover {
-  background: var(--bg-elevated);
-}
-
-/* Selected state */
-.rowSelected {
-  border-left-color: var(--masters-green);
-  background: #e8f5e9 !important;
-}
-
-.rowSelected:hover {
-  background: #dcedc8 !important;
-}
-
-/* Dimmed state when max picks reached */
-.rowDimmed {
-  opacity: 0.45;
-  cursor: default;
-}
-
-.rowDimmed:hover {
-  background: inherit;
-}
-
-/* Other team indicator */
-.rowOtherTeam {
-  background: #fffde7 !important;
-}
-
-.rowOtherTeam.rowOdd {
-  background: #fffde7 !important;
-}
-
-/* Read-only / locked */
-.rowReadonly {
-  cursor: default;
-}
-
-.rowReadonly:hover {
-  background: inherit;
-}
-
-/* Claiming / loading */
-.rowClaiming {
-  opacity: 0.6;
-  pointer-events: none;
-}
-
-/* Rank number */
-.rank {
-  width: 28px;
-  text-align: right;
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--text-muted);
-  flex-shrink: 0;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.7);
   font-variant-numeric: tabular-nums;
 }
 
-/* Golfer name */
-.name {
+.counterFull {
+  color: var(--masters-gold);
+}
+
+.teamList {
+  display: flex;
+  flex-direction: column;
+}
+
+.teamRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border-muted);
+  transition: opacity 0.15s;
+}
+
+.teamRow:last-child { border-bottom: none; }
+
+.teamRowClaiming { opacity: 0.5; }
+
+.teamRank {
+  width: 18px;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.teamName {
   flex: 1;
-  font-size: 14px;
-  font-weight: 500;
+  font-size: 13px;
+  font-weight: 600;
   color: var(--text-primary);
   min-width: 0;
   overflow: hidden;
@@ -159,73 +90,239 @@
   white-space: nowrap;
 }
 
-/* Odds */
-.odds {
+.teamOdds {
+  font-size: 11px;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.randomBadge {
+  font-size: 9px;
+  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 3px;
+  background: var(--bg-elevated);
+  color: var(--text-secondary);
+  letter-spacing: 0.5px;
+  flex-shrink: 0;
+}
+
+.removeBtn {
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 16px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.12s;
+  line-height: 1;
+}
+
+.removeBtn:hover {
+  background: rgba(209, 36, 47, 0.1);
+  color: var(--accent-red);
+}
+
+.removeBtn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+/* Empty slots */
+.teamRowEmpty {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border-muted);
+}
+
+.teamRowEmpty:last-child { border-bottom: none; }
+
+.teamEmptySlot {
+  font-size: 13px;
+  color: var(--border-default);
+}
+
+.teamEmpty {
+  padding: 24px 14px;
+  text-align: center;
   font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+/* ════════════════════════════════════════════
+   RIGHT PANEL: Masters Field List
+   ════════════════════════════════════════════ */
+.listPanel {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.listHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border-muted);
+}
+
+.listTitle {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--text-secondary);
+}
+
+.listCount {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+/* Search */
+.searchWrap {
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--border-muted);
+  position: relative;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 8px 32px 8px 12px;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius);
+  background: var(--bg-input);
+  color: var(--text-primary);
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.searchInput::placeholder { color: var(--text-muted); }
+
+.searchInput:focus {
+  border-color: var(--masters-green);
+  box-shadow: 0 0 0 2px rgba(0, 103, 71, 0.1);
+}
+
+.searchClear {
+  position: absolute;
+  right: 22px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 16px;
+  cursor: pointer;
+  padding: 2px 4px;
+}
+
+.searchClear:hover { color: var(--text-primary); }
+
+/* Golfer list */
+.list {
+  max-height: 520px;
+  overflow-y: auto;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px;
+  cursor: pointer;
+  transition: background 0.1s;
+  user-select: none;
+}
+
+.row:not(:last-child) {
+  border-bottom: 1px solid var(--border-muted);
+}
+
+.rowEven { background: var(--bg-surface); }
+
+.row:hover:not(.rowSelected):not(.rowDimmed) {
+  background: var(--bg-elevated);
+}
+
+.rowSelected {
+  background: rgba(0, 103, 71, 0.06) !important;
+  cursor: default;
+}
+
+.rowDimmed {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.rowClaiming {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.rank {
+  width: 24px;
+  text-align: right;
+  font-size: 11px;
+  font-weight: 600;
   color: var(--text-muted);
   flex-shrink: 0;
   font-variant-numeric: tabular-nums;
 }
 
-/* Indicators */
-.checkmark {
-  flex-shrink: 0;
-  width: 20px;
-  height: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 14px;
-  color: var(--masters-green);
-}
-
-.otherTeamBadge {
-  flex-shrink: 0;
-  font-size: 10px;
-  padding: 1px 6px;
-  border-radius: 8px;
-  background: var(--masters-gold);
-  color: var(--text-primary);
-  font-weight: 600;
-  white-space: nowrap;
-}
-
-.randomBadge {
-  flex-shrink: 0;
-  font-size: 10px;
-  padding: 1px 6px;
-  border-radius: 8px;
-  background: var(--bg-elevated);
-  color: var(--text-secondary);
-  font-weight: 600;
-  white-space: nowrap;
-}
-
-/* Locked / read-only view */
-.lockedHeader {
-  padding: 12px 16px;
-  background: var(--bg-surface);
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+.name {
+  flex: 1;
   font-size: 13px;
-  color: var(--text-secondary);
+  font-weight: 500;
+  color: var(--text-primary);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 }
 
-.lockIcon {
-  font-size: 14px;
+.odds {
+  font-size: 11px;
+  color: var(--text-muted);
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
 }
 
-/* Empty state */
+.pickedTag {
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--masters-green);
+  letter-spacing: 0.5px;
+  flex-shrink: 0;
+}
+
+.otherBadge {
+  font-size: 9px;
+  padding: 1px 5px;
+  border-radius: 3px;
+  background: rgba(255, 215, 0, 0.2);
+  color: var(--masters-gold-dark);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
 .empty {
-  padding: 32px 16px;
+  padding: 32px 14px;
   text-align: center;
   color: var(--text-muted);
   font-size: 13px;
-  background: var(--bg-surface);
-  border: 1px solid var(--border-default);
-  border-top: none;
-  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
 }

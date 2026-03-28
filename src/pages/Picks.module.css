@@ -1,16 +1,40 @@
 .container {
-  max-width: 640px;
+  max-width: 960px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
-/* Page title */
+/* Title row */
+.titleRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
 .title {
   font-size: 18px;
   font-weight: 700;
   color: var(--text-primary);
+}
+
+.userSelect {
+  padding: 6px 10px;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius);
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  font-size: 12px;
+  font-weight: 600;
+  outline: none;
+  cursor: pointer;
+}
+
+.userSelect:focus {
+  border-color: var(--masters-green);
 }
 
 /* Not logged in */

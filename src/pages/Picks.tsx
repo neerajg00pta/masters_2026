@@ -6,11 +6,16 @@ import { createTeam, deleteTeam, updateTeamName } from '../lib/data-service'
 import { GolferPicker } from '../components/GolferPicker'
 import styles from './Picks.module.css'
 
-export function PicksPage() {
-  const { config, teams, refresh } = useData()
-  const { currentUser } = useAuth()
+export { PicksView }
+export function PicksPage() { return <PicksView /> }
+
+function PicksView() {
+  const { config, teams, users, refresh } = useData()
+  const { currentUser, isAdmin } = useAuth()
   const { addToast } = useToast()
 
+  // Admin can pick a user to manage
+  const [managingUserId, setManagingUserId] = useState<string | null>(null)
   const [activeTeamId, setActiveTeamId] = useState<string | null>(null)
   const [creatingTeam, setCreatingTeam] = useState(false)
   const [newTeamName, setNewTeamName] = useState('')
@@ -20,30 +25,32 @@ export function PicksPage() {
 
   const isLocked = config.poolLocked
 
-  // Only this user's teams
-  const myTeams = useMemo(
-    () => (currentUser ? teams.filter(t => t.userId === currentUser.id) : []),
-    [teams, currentUser],
+  // The effective user whose teams we're viewing
+  const effectiveUserId = managingUserId ?? currentUser?.id ?? null
+  const effectiveUser = users.find(u => u.id === effectiveUserId)
+  const isManagingOther = isAdmin && managingUserId !== null && managingUserId !== currentUser?.id
+
+  // Teams for the effective user
+  const visibleTeams = useMemo(
+    () => (effectiveUserId ? teams.filter(t => t.userId === effectiveUserId) : []),
+    [teams, effectiveUserId],
   )
 
-  // Auto-select first team when teams load or active team is removed
+  // Auto-select first team
   useEffect(() => {
-    if (myTeams.length > 0) {
-      const activeExists = myTeams.some(t => t.id === activeTeamId)
-      if (!activeExists) {
-        setActiveTeamId(myTeams[0].id)
-      }
+    if (visibleTeams.length > 0) {
+      const exists = visibleTeams.some(t => t.id === activeTeamId)
+      if (!exists) setActiveTeamId(visibleTeams[0].id)
     } else {
       setActiveTeamId(null)
     }
-  }, [myTeams, activeTeamId])
+  }, [visibleTeams, activeTeamId])
 
-  // ── Not logged in ──
+  // Not logged in
   if (!currentUser) {
     return (
       <div className={styles.container}>
         <div className={styles.authPrompt}>
-          <span className={styles.authIcon}>&#9971;</span>
           <span className={styles.authTitle}>Sign in to manage your picks</span>
           <span className={styles.authSubtitle}>
             Use the Sign In button in the header to log in with your email.
@@ -53,14 +60,12 @@ export function PicksPage() {
     )
   }
 
-  // ── Create team handler ──
   const handleCreateTeam = async () => {
     const trimmed = newTeamName.trim()
-    if (!trimmed || !currentUser) return
-
+    if (!trimmed || !effectiveUserId) return
     setSaving(true)
     try {
-      const team = await createTeam(currentUser.id, trimmed)
+      const team = await createTeam(effectiveUserId, trimmed)
       await refresh()
       setActiveTeamId(team.id)
       setCreatingTeam(false)
@@ -74,19 +79,12 @@ export function PicksPage() {
   }
 
   const handleCreateKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      handleCreateTeam()
-    } else if (e.key === 'Escape') {
-      setCreatingTeam(false)
-      setNewTeamName('')
-    }
+    if (e.key === 'Enter') handleCreateTeam()
+    else if (e.key === 'Escape') { setCreatingTeam(false); setNewTeamName('') }
   }
 
-  // ── Delete team handler ──
   const handleDeleteTeam = async (teamId: string, teamName: string) => {
-    const ok = window.confirm(`Delete team "${teamName}"? This removes all picks for this team.`)
-    if (!ok) return
-
+    if (!window.confirm(`Delete team "${teamName}"? This removes all picks.`)) return
     setSaving(true)
     try {
       await deleteTeam(teamId)
@@ -99,88 +97,70 @@ export function PicksPage() {
     }
   }
 
-  // ── Rename team handler ──
   const startRename = (teamId: string, currentName: string) => {
-    if (isLocked) return
+    if (isLocked && !isAdmin) return
     setRenamingTeamId(teamId)
     setRenameValue(currentName)
   }
 
   const handleRename = async () => {
     const trimmed = renameValue.trim()
-    if (!trimmed || !renamingTeamId) {
-      setRenamingTeamId(null)
-      setRenameValue('')
-      return
-    }
-
+    if (!trimmed || !renamingTeamId) { setRenamingTeamId(null); setRenameValue(''); return }
     setSaving(true)
     try {
       await updateTeamName(renamingTeamId, trimmed)
       await refresh()
-      addToast(`Team renamed to "${trimmed}"`, 'success')
+      addToast(`Renamed to "${trimmed}"`, 'success')
     } catch (err) {
-      addToast(err instanceof Error ? err.message : 'Failed to rename team', 'error')
+      addToast(err instanceof Error ? err.message : 'Failed to rename', 'error')
     } finally {
-      setSaving(false)
-      setRenamingTeamId(null)
-      setRenameValue('')
+      setSaving(false); setRenamingTeamId(null); setRenameValue('')
     }
   }
 
   const handleRenameKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      handleRename()
-    } else if (e.key === 'Escape') {
-      setRenamingTeamId(null)
-      setRenameValue('')
-    }
+    if (e.key === 'Enter') handleRename()
+    else if (e.key === 'Escape') { setRenamingTeamId(null); setRenameValue('') }
   }
 
-  // ── Empty state: no teams ──
-  if (myTeams.length === 0 && !creatingTeam) {
-    return (
-      <div className={styles.container}>
-        <h1 className={styles.title}>My Picks</h1>
-        {isLocked ? (
-          <div className={styles.lockedBanner}>
-            <span className={styles.lockIcon}>&#128274;</span>
-            The pool is locked. No teams were created before the deadline.
-          </div>
-        ) : (
-          <div className={styles.emptyState}>
-            <span className={styles.emptyIcon}>&#127948;</span>
-            <span className={styles.emptyTitle}>Create your first team</span>
-            <span className={styles.emptySubtitle}>
-              Pick a team name and start drafting golfers for the Masters.
-            </span>
-            <button
-              className={styles.createBtn}
-              onClick={() => setCreatingTeam(true)}
-            >
-              + New Team
-            </button>
-          </div>
-        )}
-      </div>
-    )
-  }
+  // Can edit if: pool unlocked, OR admin
+  const canEdit = !isLocked || isAdmin
 
-  // ── Main view ──
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>My Picks</h1>
+      <div className={styles.titleRow}>
+        <h1 className={styles.title}>
+          {isManagingOther ? `Editing: ${effectiveUser?.name ?? 'User'}` : 'My Picks'}
+        </h1>
 
-      {isLocked && (
-        <div className={styles.lockedBanner}>
-          <span className={styles.lockIcon}>&#128274;</span>
-          Pool is locked &mdash; picks are final
-        </div>
+        {/* Admin user selector */}
+        {isAdmin && (
+          <select
+            className={styles.userSelect}
+            value={effectiveUserId ?? ''}
+            onChange={e => {
+              setManagingUserId(e.target.value || null)
+              setActiveTeamId(null)
+            }}
+          >
+            <option value={currentUser.id}>My teams</option>
+            {users.filter(u => u.id !== currentUser.id).map(u => (
+              <option key={u.id} value={u.id}>{u.name} ({u.fullName ?? u.email})</option>
+            ))}
+          </select>
+        )}
+      </div>
+
+      {isLocked && !isAdmin && (
+        <div className={styles.lockedBanner}>Pool is locked — picks are final</div>
+      )}
+      {isLocked && isAdmin && (
+        <div className={styles.lockedBanner}>Pool is locked — admin editing mode</div>
       )}
 
       {/* Team tab bar */}
       <div className={styles.tabBar}>
-        {myTeams.map(t => {
+        {visibleTeams.map(t => {
           const isActive = t.id === activeTeamId
           const isRenaming = renamingTeamId === t.id
 
@@ -205,35 +185,25 @@ export function PicksPage() {
               className={`${styles.tab} ${isActive ? styles.tabActive : ''}`}
               onClick={() => setActiveTeamId(t.id)}
               onDoubleClick={() => startRename(t.id, t.teamName)}
-              title={isLocked ? t.teamName : 'Double-click to rename'}
+              title={canEdit ? 'Double-click to rename' : t.teamName}
             >
               {t.teamName}
-              {!isLocked && (
+              {canEdit && (
                 <span
                   className={`${styles.tabDelete} ${isActive ? '' : styles.tabDeleteInactive}`}
-                  onClick={e => {
-                    e.stopPropagation()
-                    handleDeleteTeam(t.id, t.teamName)
-                  }}
+                  onClick={e => { e.stopPropagation(); handleDeleteTeam(t.id, t.teamName) }}
                   role="button"
                   tabIndex={0}
-                  onKeyDown={e => {
-                    if (e.key === 'Enter') {
-                      e.stopPropagation()
-                      handleDeleteTeam(t.id, t.teamName)
-                    }
-                  }}
-                  title={`Delete ${t.teamName}`}
+                  onKeyDown={e => { if (e.key === 'Enter') { e.stopPropagation(); handleDeleteTeam(t.id, t.teamName) } }}
                 >
-                  &#x2715;
+                  &times;
                 </span>
               )}
             </button>
           )
         })}
 
-        {/* New team inline input or button */}
-        {!isLocked && (
+        {canEdit && (
           creatingTeam ? (
             <input
               className={styles.inlineInput}
@@ -241,37 +211,33 @@ export function PicksPage() {
               value={newTeamName}
               onChange={e => setNewTeamName(e.target.value)}
               onKeyDown={handleCreateKeyDown}
-              onBlur={() => {
-                if (!newTeamName.trim()) {
-                  setCreatingTeam(false)
-                  setNewTeamName('')
-                }
-              }}
+              onBlur={() => { if (!newTeamName.trim()) { setCreatingTeam(false); setNewTeamName('') } }}
               disabled={saving}
               autoFocus
               maxLength={24}
             />
           ) : (
-            <button
-              className={styles.newTeamBtn}
-              onClick={() => setCreatingTeam(true)}
-              disabled={saving}
-            >
+            <button className={styles.newTeamBtn} onClick={() => setCreatingTeam(true)} disabled={saving}>
               + New Team
             </button>
           )
         )}
       </div>
 
-      {/* Golfer picker for active team */}
+      {/* Golfer picker */}
       {activeTeamId && <GolferPicker teamId={activeTeamId} />}
 
-      {/* Edge case: creating first team */}
-      {!activeTeamId && myTeams.length === 0 && creatingTeam && (
+      {/* Empty states */}
+      {visibleTeams.length === 0 && !creatingTeam && (
         <div className={styles.emptyState}>
-          <span className={styles.emptySubtitle}>
-            Type a team name above and press Enter to create it.
+          <span className={styles.emptyTitle}>
+            {canEdit ? 'Create a team to get started' : 'No teams'}
           </span>
+          {canEdit && (
+            <button className={styles.createBtn} onClick={() => setCreatingTeam(true)}>
+              + New Team
+            </button>
+          )}
         </div>
       )}
     </div>

@@ -34,8 +34,7 @@ export function HomePage() {
     return (
       <div className={styles.grid}>
         <div className={styles.emptyState}>
-          <span className={styles.emptyIcon}>&#9971;</span>
-          <p className={styles.emptyText}>No teams yet. Create your team on the Picks page!</p>
+          <p className={styles.emptyText}>No teams yet — head to the <strong>Picks</strong> page to create your team.</p>
         </div>
       </div>
     )

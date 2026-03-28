@@ -57,8 +57,11 @@ export function Layout({ children }: { children: ReactNode }) {
     <>
       <header className={styles.header}>
         <Link to="/" className={styles.brand}>
-          <span className={styles.brandIcon}>&#9971;</span>
-          <span className={styles.brandText}>Masters Fantasy Golf</span>
+          <svg className={styles.brandIcon} viewBox="0 0 20 24" width="16" height="20">
+            <rect x="9" y="2" width="2" height="20" fill="var(--masters-gold)" rx="1" />
+            <path d="M11 2 L19 6 L11 10 Z" fill="var(--masters-gold)" />
+          </svg>
+          <span className={styles.brandText}>MASTERS POOL</span>
         </Link>
 
         <div className={styles.headerRight}>
@@ -68,14 +71,6 @@ export function Layout({ children }: { children: ReactNode }) {
           >
             Home
           </Link>
-          {currentUser && (
-            <Link
-              to="/picks"
-              className={`${styles.navLink} ${location.pathname === '/picks' ? styles.navLinkActive : ''}`}
-            >
-              Picks
-            </Link>
-          )}
           <Link
             to="/rules"
             className={`${styles.navLink} ${location.pathname === '/rules' ? styles.navLinkActive : ''}`}

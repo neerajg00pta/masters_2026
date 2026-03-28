@@ -89,9 +89,10 @@ export async function fetchAllData(): Promise<AllData> {
 
 /** Create a new user and return the created record */
 export async function createUser(input: { name: string; email: string; fullName: string }): Promise<User> {
+  const id = `u${Date.now()}`
   const { data, error } = await supabase
     .from('users')
-    .insert({ name: input.name, email: input.email, full_name: input.fullName })
+    .insert({ id, name: input.name, email: input.email, full_name: input.fullName })
     .select()
     .single()
 
@@ -112,9 +113,10 @@ export async function createUser(input: { name: string; email: string; fullName:
 
 /** Create a new team for a user */
 export async function createTeam(userId: string, teamName: string): Promise<Team> {
+  const id = `t${Date.now()}`
   const { data, error } = await supabase
     .from('teams')
-    .insert({ user_id: userId, team_name: teamName })
+    .insert({ id, user_id: userId, team_name: teamName })
     .select()
     .single()
 
@@ -160,9 +162,10 @@ export async function updateTeamName(teamId: string, name: string): Promise<void
 
 /** Add a golfer to a team */
 export async function addSelection(teamId: string, golferId: string, isRandom: boolean): Promise<Selection> {
+  const id = `s${Date.now()}`
   const { data, error } = await supabase
     .from('selections')
-    .insert({ team_id: teamId, golfer_id: golferId, is_random: isRandom })
+    .insert({ id, team_id: teamId, golfer_id: golferId, is_random: isRandom })
     .select()
     .single()
 
@@ -272,6 +275,7 @@ export async function deleteUser(userId: string): Promise<void> {
 /** Upsert golfers from the masters field data */
 export async function upsertGolfers(field: MastersFieldEntry[]): Promise<number> {
   const rows = field.map((entry, idx) => ({
+    id: `g${idx + 1}`,
     name: entry.name,
     odds: entry.odds,
     odds_numeric: entry.oddsNumeric,
@@ -281,10 +285,18 @@ export async function upsertGolfers(field: MastersFieldEntry[]): Promise<number>
 
   const { error, count } = await supabase
     .from('golfers')
-    .upsert(rows, { onConflict: 'name', count: 'exact' })
+    .upsert(rows, { onConflict: 'id', count: 'exact' })
 
   if (error) throw new Error(error.message)
   return count ?? rows.length
+}
+
+/** Auto-seed golfers if table is empty */
+export async function seedGolfersIfEmpty(field: MastersFieldEntry[]): Promise<boolean> {
+  const { count } = await supabase.from('golfers').select('id', { count: 'exact', head: true })
+  if (count && count > 0) return false
+  await upsertGolfers(field)
+  return true
 }
 
 /** Update a single golfer field */
@@ -321,7 +333,8 @@ export async function updateGolfer(
 export async function bulkAddSelections(
   assignments: Array<{ teamId: string; golferId: string }>
 ): Promise<void> {
-  const rows = assignments.map(a => ({
+  const rows = assignments.map((a, i) => ({
+    id: `sr${Date.now()}${i}`,
     team_id: a.teamId,
     golfer_id: a.golferId,
     is_random: true,

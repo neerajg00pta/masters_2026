@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState, useCallback, type ReactNode } from 'react'
 import type { Config, User, Team, Golfer, Selection, ScoreSnapshot } from '../lib/types'
-import { fetchAllData } from '../lib/data-service'
+import { fetchAllData, seedGolfersIfEmpty } from '../lib/data-service'
+import { MASTERS_2026_FIELD } from '../lib/masters-field'
 import { POLL_INTERVAL_MS } from '../lib/config'
 
 interface DataState {
@@ -49,7 +50,13 @@ export function DataProvider({ children }: { children: ReactNode }) {
   }, [])
 
   useEffect(() => {
-    refresh()
+    const init = async () => {
+      // Auto-seed golfers on first load if table is empty
+      const seeded = await seedGolfersIfEmpty(MASTERS_2026_FIELD)
+      if (seeded) console.log('Auto-seeded Masters field')
+      await refresh()
+    }
+    init()
     const interval = setInterval(refresh, POLL_INTERVAL_MS)
     return () => clearInterval(interval)
   }, [refresh])
