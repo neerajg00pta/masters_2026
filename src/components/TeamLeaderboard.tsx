@@ -6,192 +6,201 @@ import styles from './TeamLeaderboard.module.css'
 
 const STARRED_KEY = 'masters_starred_teams'
 
-interface TeamLeaderboardProps {
+interface Props {
   entries: TeamLeaderboardEntry[]
   payoutMap: Map<string, PayoutPosition>
   currentUserId: string | null
 }
 
 function readStarred(): Set<string> {
-  try {
-    const raw = localStorage.getItem(STARRED_KEY)
-    if (raw) return new Set(JSON.parse(raw) as string[])
-  } catch { /* ignore */ }
+  try { const r = localStorage.getItem(STARRED_KEY); if (r) return new Set(JSON.parse(r)); } catch {}
   return new Set()
 }
+function writeStarred(ids: Set<string>) { localStorage.setItem(STARRED_KEY, JSON.stringify([...ids])) }
 
-function writeStarred(ids: Set<string>) {
-  localStorage.setItem(STARRED_KEY, JSON.stringify([...ids]))
-}
-
-export function TeamLeaderboard({ entries, payoutMap, currentUserId }: TeamLeaderboardProps) {
+export function TeamLeaderboard({ entries, payoutMap, currentUserId }: Props) {
   const [collapsed, setCollapsed] = useState(false)
   const [expanded, setExpanded] = useState<Set<string>>(() => {
-    if (!currentUserId) return new Set<string>()
+    if (!currentUserId) return new Set()
     return new Set(entries.filter(e => e.user.id === currentUserId).map(e => e.team.id))
   })
-  const [starred, setStarred] = useState<Set<string>>(readStarred)
+  const [starred, setStarred] = useState(readStarred)
 
   useEffect(() => {
     if (!currentUserId) return
     setExpanded(prev => {
-      const own = entries.filter(e => e.user.id === currentUserId).map(e => e.team.id)
-      const next = new Set(prev)
-      for (const id of own) next.add(id)
-      return next
+      const n = new Set(prev)
+      entries.filter(e => e.user.id === currentUserId).forEach(e => n.add(e.team.id))
+      return n
     })
   }, [currentUserId, entries])
 
-  const toggleExpand = useCallback((teamId: string) => {
-    setExpanded(prev => { const n = new Set(prev); n.has(teamId) ? n.delete(teamId) : n.add(teamId); return n })
+  const toggleExpand = useCallback((id: string) => {
+    setExpanded(p => { const n = new Set(p); n.has(id) ? n.delete(id) : n.add(id); return n })
   }, [])
 
-  const toggleStar = useCallback((e: React.MouseEvent, teamId: string) => {
-    e.stopPropagation()
-    setStarred(prev => { const n = new Set(prev); n.has(teamId) ? n.delete(teamId) : n.add(teamId); writeStarred(n); return n })
+  const toggleStar = useCallback((ev: React.MouseEvent, id: string) => {
+    ev.stopPropagation()
+    setStarred(p => { const n = new Set(p); n.has(id) ? n.delete(id) : n.add(id); writeStarred(n); return n })
   }, [])
 
-  // Sort: own teams first, starred, non-DQ by rank, DQ last
+  // Full field in pure rank order (DQ at bottom)
   const sorted = [...entries].sort((a, b) => {
-    const aOwn = currentUserId && a.user.id === currentUserId ? 0 : 1
-    const bOwn = currentUserId && b.user.id === currentUserId ? 0 : 1
-    if (aOwn !== bOwn) return aOwn - bOwn
-    const aStar = starred.has(a.team.id) ? 0 : 1
-    const bStar = starred.has(b.team.id) ? 0 : 1
-    if (aStar !== bStar) return aStar - bStar
     if (a.isDisqualified !== b.isDisqualified) return a.isDisqualified ? 1 : -1
     return a.rank - b.rank
   })
 
   return (
     <div className={styles.panel}>
-      <div className={styles.panelHeader} onClick={() => setCollapsed(c => !c)}>
-        <span className={styles.panelTitle}>Leaderboard</span>
-        <span className={`${styles.chevron} ${collapsed ? styles.chevronCollapsed : ''}`}>&#9660;</span>
+      <div className={styles.header} onClick={() => setCollapsed(c => !c)}>
+        <span className={styles.headerTitle}>Leaderboard</span>
+        <span className={`${styles.chev} ${collapsed ? styles.chevClosed : ''}`}>&#9660;</span>
       </div>
-
       {!collapsed && (
-        <div className={styles.panelBody}>
-          {sorted.length === 0 ? (
-            <div className={styles.empty}>No teams yet.</div>
-          ) : sorted.map(entry => (
-            <TeamRow
-              key={entry.team.id}
-              entry={entry}
-              payout={payoutMap.get(entry.team.id) ?? null}
-              isOwn={currentUserId === entry.user.id}
-              isExpanded={expanded.has(entry.team.id)}
-              isStarred={starred.has(entry.team.id)}
-              onToggleExpand={() => toggleExpand(entry.team.id)}
-              onToggleStar={(e) => toggleStar(e, entry.team.id)}
-            />
-          ))}
+        <div className={styles.body}>
+          {sorted.length === 0 ? <div className={styles.empty}>No teams yet.</div> : <>
+            {/* Pinned section: own + starred teams */}
+            {(() => {
+              const pinned = sorted.filter(e =>
+                (currentUserId && e.user.id === currentUserId) || starred.has(e.team.id)
+              )
+              if (pinned.length === 0) return null
+              return (
+                <>
+                  {pinned.map(e => (
+                    <Row key={`pin-${e.team.id}`} entry={e}
+                      payout={payoutMap.get(e.team.id) ?? null}
+                      isOwn={currentUserId === e.user.id}
+                      isExpanded={expanded.has(e.team.id)}
+                      isStarred={starred.has(e.team.id) || (currentUserId === e.user.id)}
+                      onExpand={() => toggleExpand(e.team.id)}
+                      onStar={ev => toggleStar(ev, e.team.id)}
+                    />
+                  ))}
+                  <div className={styles.divider} />
+                </>
+              )
+            })()}
+            {/* Full field */}
+            {sorted.map(e => (
+              <Row key={e.team.id} entry={e}
+                payout={payoutMap.get(e.team.id) ?? null}
+                isOwn={currentUserId === e.user.id}
+                isExpanded={expanded.has(e.team.id)}
+                isStarred={starred.has(e.team.id) || (currentUserId === e.user.id)}
+                onExpand={() => toggleExpand(e.team.id)}
+                onStar={ev => toggleStar(ev, e.team.id)}
+              />
+            ))}
+          </>}
         </div>
       )}
     </div>
   )
 }
 
-interface TeamRowProps {
-  entry: TeamLeaderboardEntry
-  payout: PayoutPosition
-  isOwn: boolean
-  isExpanded: boolean
-  isStarred: boolean
-  onToggleExpand: () => void
-  onToggleStar: (e: React.MouseEvent) => void
-}
-
-function TeamRow({ entry, payout, isOwn, isExpanded, isStarred, onToggleExpand, onToggleStar }: TeamRowProps) {
-  const rowClasses = [
-    styles.teamRow,
-    isOwn ? styles.ownRow : '',
-    entry.isDisqualified ? styles.dqRow : '',
-    payout === 'first' ? styles.payoutFirst : '',
-    payout === 'second' ? styles.payoutSecond : '',
-    payout === 'last' || payout === 'middle' ? styles.payoutBronze : '',
-    isExpanded ? styles.teamRowExpanded : '',
+function Row({ entry, payout, isOwn, isExpanded, isStarred, onExpand, onStar }: {
+  entry: TeamLeaderboardEntry; payout: PayoutPosition; isOwn: boolean
+  isExpanded: boolean; isStarred: boolean; onExpand: () => void; onStar: (e: React.MouseEvent) => void
+}) {
+  const cls = [
+    styles.row,
+    isOwn ? styles.rowOwn : '',
+    entry.isDisqualified ? styles.rowDq : '',
+    payout === 'first' ? styles.rowFirst : '',
+    payout === 'second' ? styles.rowSecond : '',
+    (payout === 'last' || payout === 'middle') ? styles.rowBronze : '',
+    isExpanded ? styles.rowOpen : '',
   ].filter(Boolean).join(' ')
+
+  const hasMoney = payout === 'first' || payout === 'second' || payout === 'last' || payout === 'middle'
 
   return (
     <>
-      <div className={rowClasses} onClick={onToggleExpand}>
-        <span className={styles.rank}>
-          {entry.isDisqualified ? <span className={styles.dqBadge}>DQ</span> : entry.rankDisplay}
-        </span>
-
-        <span className={styles.delta}>
-          {entry.rankDelta !== null && entry.rankDelta > 0 && <span className={styles.deltaUp}>&#9650;{entry.rankDelta}</span>}
-          {entry.rankDelta !== null && entry.rankDelta < 0 && <span className={styles.deltaDown}>&#9660;{Math.abs(entry.rankDelta)}</span>}
-        </span>
-
-        <div className={styles.teamInfo}>
-          <span className={styles.teamName}>{entry.team.teamName}</span>
-          <span className={styles.ownerName}>{entry.user.name}</span>
+      <div className={cls} onClick={onExpand}>
+        {/* Position */}
+        <div className={styles.pos}>
+          {entry.isDisqualified ? <span className={styles.dqBadge}>DQ</span> : (
+            <span className={styles.posNum}>{entry.rankDisplay}</span>
+          )}
         </div>
 
-        <div className={styles.scoreBlock}>
-          {entry.isLive && !entry.isDisqualified && (
-            <span className={styles.livePill}><span className={styles.liveDot} />LIVE</span>
-          )}
-          <span className={styles.aggScore}>
-            {entry.isDisqualified ? '—' : formatScore(entry.aggregateScore)}
+        {/* Team + owner */}
+        <div className={styles.team}>
+          <span className={styles.teamName}>
+            {entry.team.teamName}
+            {hasMoney && <span className={styles.moneyPill}>$</span>}
+            {entry.isLive && !entry.isDisqualified && (
+              <span className={styles.livePill}><span className={styles.liveDot} />LIVE</span>
+            )}
           </span>
-          {entry.behind !== null && entry.behind > 0 && (
-            <span className={styles.behind}>+{entry.behind}</span>
-          )}
+          <span className={styles.owner}>{entry.user.name}</span>
         </div>
 
-        <button
-          className={`${styles.starBtn} ${isStarred || isOwn ? styles.starActive : ''}`}
-          onClick={onToggleStar}
-        >
+        {/* Score */}
+        <div className={styles.score}>
+          {entry.isDisqualified ? '—' : formatScore(entry.aggregateScore)}
+        </div>
+
+        {/* Movement — the big fun indicator */}
+        <div className={styles.move}>
+          <Movement delta={entry.rankDelta} />
+        </div>
+
+        {/* Star */}
+        <button className={`${styles.star} ${isStarred || isOwn ? styles.starOn : ''}`} onClick={onStar}>
           {isStarred || isOwn ? '\u2605' : '\u2606'}
         </button>
       </div>
 
-      {isExpanded && <GolferDetail scoredGolfers={entry.scoredGolfers} />}
+      {isExpanded && <Detail golfers={entry.scoredGolfers} />}
     </>
   )
 }
 
-function GolferDetail({ scoredGolfers }: { scoredGolfers: ScoredGolfer[] }) {
+function Movement({ delta }: { delta: number | null }) {
+  if (delta === null) return <span className={styles.moveNone}>—</span>
+  if (delta === 0) return <span className={styles.moveFlat}>—</span>
+  if (delta > 0) return (
+    <span className={styles.moveUp}>
+      <span className={styles.moveArrow}>&#9650;</span>
+      <span className={styles.moveNum}>{delta}</span>
+    </span>
+  )
+  return (
+    <span className={styles.moveDown}>
+      <span className={styles.moveArrow}>&#9660;</span>
+      <span className={styles.moveNum}>{Math.abs(delta)}</span>
+    </span>
+  )
+}
+
+function Detail({ golfers }: { golfers: ScoredGolfer[] }) {
   return (
     <div className={styles.detail}>
-      <table className={styles.detailTable}>
+      <table className={styles.dtable}>
         <thead>
-          <tr>
-            <th>Golfer</th>
-            <th>Adj</th>
-            <th>Masters</th>
-            <th>Dups</th>
-            <th>Thru</th>
-          </tr>
+          <tr><th>Golfer</th><th>Adj</th><th>Masters</th><th>Dups</th><th>Thru</th></tr>
         </thead>
         <tbody>
-          {scoredGolfers.map((sg, idx) => {
-            const isCounting = idx === COUNTING_GOLFERS - 1 && idx < scoredGolfers.length - 1
+          {golfers.map((sg, i) => {
+            const counting = i === COUNTING_GOLFERS - 1 && i < golfers.length - 1
             const live = isGolferLive(sg.golfer.thru)
-
             return (
-              <tr
-                key={sg.golfer.id}
-                className={[
-                  isCounting ? styles.countingLine : '',
-                  sg.isCut ? styles.cutRow : '',
-                ].filter(Boolean).join(' ') || undefined}
-              >
+              <tr key={sg.golfer.id} className={[
+                counting ? styles.cutLine : '', sg.isCut ? styles.cutRow : '',
+              ].filter(Boolean).join(' ') || undefined}>
                 <td>
-                  <span className={styles.golferName}>
+                  <span className={styles.gName}>
                     {sg.golfer.name}
                     {sg.isRandom && <span className={styles.rndPill}>RND</span>}
                     {live && !sg.isCut && <span className={styles.livePill}><span className={styles.liveDot} />LIVE</span>}
                   </span>
                 </td>
-                <td className={styles.numCell}>{formatScore(sg.adjScore)}</td>
-                <td className={styles.numCell}>{sg.isCut ? 'CUT' : formatScore(sg.golfer.scoreToPar)}</td>
-                <td className={styles.numCell}>{sg.dupPenalty > 0 ? `+${sg.dupPenalty}` : '-'}</td>
-                <td className={styles.numCell}>{sg.isCut ? 'X' : (sg.golfer.thru || '--')}</td>
+                <td className={styles.num}>{formatScore(sg.adjScore)}</td>
+                <td className={styles.num}>{sg.isCut ? 'CUT' : formatScore(sg.golfer.scoreToPar)}</td>
+                <td className={styles.num}>{sg.dupPenalty > 0 ? `+${sg.dupPenalty}` : '-'}</td>
+                <td className={styles.num}>{sg.isCut ? 'X' : (sg.golfer.thru || '--')}</td>
               </tr>
             )
           })}
