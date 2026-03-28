@@ -97,37 +97,6 @@ export function AdminGolfersPage() {
     }
   }
 
-  const handleAutoMatch = async () => {
-    if (liveScoring.unmatchedEspn.length === 0) return
-    setSaving(true)
-    let matched = 0
-    try {
-      for (const espn of liveScoring.unmatchedEspn) {
-        const espnLower = espn.name.toLowerCase()
-        const espnParts = espnLower.split(/\s+/)
-        const espnLast = espnParts[espnParts.length - 1]
-        const pool = golfers.find(g => {
-          if (g.espnName) return false
-          const poolLower = g.name.toLowerCase()
-          if (poolLower === espnLower) return true
-          const poolParts = poolLower.split(/\s+/)
-          const poolLast = poolParts[poolParts.length - 1]
-          return poolLast === espnLast && poolParts[0][0] === espnParts[0][0]
-        })
-        if (pool) {
-          await updateGolfer(pool.id, { espnName: espn.name })
-          matched++
-        }
-      }
-      await refresh()
-      addToast(matched > 0 ? `Auto-matched ${matched} golfers` : 'No additional matches found', matched > 0 ? 'success' : 'info')
-    } catch {
-      addToast('Auto-match failed', 'error')
-    } finally {
-      setSaving(false)
-    }
-  }
-
   const downloadCsv = () => {
     const header = 'Sort,Name,ESPN Name,Odds,Score To Par,Today,Thru,Status,Locked'
     const rows = golfers.map(g =>
@@ -161,53 +130,56 @@ export function AdminGolfersPage() {
         <button className={styles.csvBtn} onClick={downloadCsv}>Download CSV</button>
       </div>
 
-      {/* ESPN Matching — only shows when we have ESPN data */}
-      {liveScoring.unmatchedEspn.length > 0 && (
+      {/* ESPN Matching — shows unmatched POOL golfers (the ones we care about) */}
+      {liveScoring.unmatchedPool.length > 0 && (
         <section className={styles.section}>
           <div className={styles.sectionHeader}>
             <h2 className={styles.sectionTitle}>
-              Unmatched ESPN Golfers ({liveScoring.unmatchedEspn.length})
+              Unmatched Pool Golfers ({liveScoring.unmatchedPool.length})
             </h2>
-            <button className={`${styles.btn} ${styles.btnSm}`} onClick={handleAutoMatch} disabled={saving}>
-              Auto-Match
-            </button>
           </div>
           <div className={styles.tip} style={{ margin: '0 14px 8px', borderRadius: 4 }}>
-            Pick a pool golfer for each ESPN name. Or edit pool golfer names in the Field table below to match, then re-run Auto-Match.
+            These pool golfers couldn't be auto-matched to ESPN. Pick the correct ESPN name, or edit the pool golfer name in the Field table to match ESPN and wait for next poll.
           </div>
           <div className={styles.tableWrap}>
             <table className={styles.table}>
               <thead>
                 <tr>
-                  <th style={{ width: '40%' }}>ESPN Name</th>
-                  <th style={{ width: '40%' }}>Pool Golfer</th>
-                  <th style={{ width: '20%', textAlign: 'center' }}></th>
+                  <th style={{ width: '30%' }}>Pool Name</th>
+                  <th style={{ width: '70px', textAlign: 'center' }}>Pool ID</th>
+                  <th style={{ width: '35%' }}>ESPN Match</th>
+                  <th style={{ width: '15%', textAlign: 'center' }}></th>
                 </tr>
               </thead>
               <tbody>
-                {liveScoring.unmatchedEspn.map(espn => (
-                  <tr key={espn.id} className={`${styles.row} ${styles.rowUnmatched}`}>
-                    <td style={{ fontWeight: 500 }}>{espn.name}</td>
+                {[...liveScoring.unmatchedPool]
+                  .sort((a, b) => a.name.localeCompare(b.name))
+                  .map(poolG => (
+                  <tr key={poolG.id} className={`${styles.row} ${styles.rowUnmatched}`}>
+                    <td style={{ fontWeight: 500 }}>{poolG.name}</td>
+                    <td style={{ textAlign: 'center', fontSize: 10, color: 'var(--text-muted)', fontFamily: 'monospace' }}>{poolG.id}</td>
                     <td>
                       <select
                         className={styles.matchSelect}
-                        value={espnAssignments.get(espn.name) ?? ''}
+                        value={espnAssignments.get(poolG.id) ?? ''}
                         onChange={e => {
                           const val = e.target.value
-                          setEspnAssignments(prev => { const next = new Map(prev); if (val) next.set(espn.name, val); else next.delete(espn.name); return next })
+                          setEspnAssignments(prev => { const next = new Map(prev); if (val) next.set(poolG.id, val); else next.delete(poolG.id); return next })
                         }}
                       >
-                        <option value="">— select pool golfer —</option>
-                        {golfers.filter(g => !g.espnName).map(g => (
-                          <option key={g.id} value={g.id}>{g.name} ({g.id})</option>
+                        <option value="">— select ESPN golfer —</option>
+                        {[...liveScoring.unmatchedEspn]
+                          .sort((a, b) => a.name.localeCompare(b.name))
+                          .map(espn => (
+                          <option key={espn.id} value={espn.name}>{espn.name}</option>
                         ))}
                       </select>
                     </td>
                     <td style={{ textAlign: 'center' }}>
-                      {espnAssignments.get(espn.name) ? (
+                      {espnAssignments.get(poolG.id) ? (
                         <button className={styles.matchBtn}
                           disabled={saving}
-                          onClick={() => handleAssignEspn(espn.name, espnAssignments.get(espn.name)!)}>
+                          onClick={() => handleAssignEspn(espnAssignments.get(poolG.id)!, poolG.id)}>
                           Link
                         </button>
                       ) : null}

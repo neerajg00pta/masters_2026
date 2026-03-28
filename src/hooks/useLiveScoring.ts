@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import type { Golfer, Team, User, Selection, ScoreSnapshot } from '../lib/types'
 import { fetchESPNLeaderboard, matchESPNToPool, type ESPNGolfer } from '../lib/espn'
-import { updateGolferScores, saveSnapshots } from '../lib/data-service'
+import { updateGolferScores, updateGolfer, saveSnapshots } from '../lib/data-service'
 import { computeTeamLeaderboard } from '../lib/scoring'
 
 const POLL_INTERVAL_MS = 30_000 // 30 seconds
@@ -11,6 +11,8 @@ export interface LiveScoringState {
   lastPoll: Date | null
   error: string | null
   unmatchedEspn: ESPNGolfer[]
+  unmatchedPool: Golfer[]
+  allEspnGolfers: ESPNGolfer[]
 }
 
 /**
@@ -31,6 +33,8 @@ export function useLiveScoring(
   const [lastPoll, setLastPoll] = useState<Date | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [unmatchedEspn, setUnmatchedEspn] = useState<ESPNGolfer[]>([])
+  const [unmatchedPool, setUnmatchedPool] = useState<Golfer[]>([])
+  const [allEspnGolfers, setAllEspnGolfers] = useState<ESPNGolfer[]>([])
   const intervalRef = useRef<ReturnType<typeof setInterval>>(null)
   const golfersRef = useRef(golfers)
   golfersRef.current = golfers
@@ -41,17 +45,28 @@ export function useLiveScoring(
     setIsPolling(true)
     try {
       const espnGolfers = await fetchESPNLeaderboard()
+      setAllEspnGolfers(espnGolfers)
 
       const currentGolfers = golfersRef.current
-      const { matched, unmatched } = matchESPNToPool(espnGolfers, currentGolfers)
+      const { matched, unmatched, unmatchedPool: unPool } = matchESPNToPool(espnGolfers, currentGolfers)
       setUnmatchedEspn(unmatched)
+      setUnmatchedPool(unPool)
 
-      // Build updates for matched golfers whose scores are not locked
+      // Auto-persist espn_name for new fuzzy matches (done once, then persisted)
+      for (const match of matched) {
+        const poolGolfer = currentGolfers.find(g => g.id === match.poolGolferId)
+        if (poolGolfer && !poolGolfer.espnName) {
+          // New match — persist it so we don't re-fuzzy-match next time
+          await updateGolfer(match.poolGolferId, { espnName: match.espnName })
+        }
+      }
+
+      // Build score updates for matched golfers whose scores are not locked
       const updates: Array<{ id: string; scoreToPar: number; today: number; thru: string; status: Golfer['status'] }> = []
       for (const match of matched) {
         const poolGolfer = currentGolfers.find(g => g.id === match.poolGolferId)
         if (!poolGolfer) continue
-        if (poolGolfer.scoreLocked) continue // skip manually edited
+        if (poolGolfer.scoreLocked) continue
 
         const changed =
           poolGolfer.scoreToPar !== match.scoreToPar ||
@@ -130,5 +145,5 @@ export function useLiveScoring(
     }
   }, [enabled, poll])
 
-  return { isPolling, lastPoll, error, unmatchedEspn }
+  return { isPolling, lastPoll, error, unmatchedEspn, unmatchedPool, allEspnGolfers }
 }

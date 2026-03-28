@@ -8,6 +8,8 @@ const LiveScoringContext = createContext<LiveScoringState>({
   lastPoll: null,
   error: null,
   unmatchedEspn: [],
+  unmatchedPool: [],
+  allEspnGolfers: [],
 })
 
 export function LiveScoringProvider({ children }: { children: ReactNode }) {
