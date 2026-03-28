@@ -6,222 +6,148 @@
   overflow: hidden;
   box-shadow: 0 1px 4px rgba(0,0,0,0.05);
 }
-
-.header {
+.hdr {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 12px 16px; background: var(--masters-green); color: #fff;
+  padding: 10px 14px; background: var(--masters-green); color: #fff;
   cursor: pointer; user-select: none;
 }
-
-.headerTitle { font-size: 13px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; }
-.chev { font-size: 11px; transition: transform 0.2s; opacity: 0.7; }
+.hdrTitle { font-size: 12px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; }
+.chev { font-size: 10px; transition: transform 0.2s; opacity: 0.7; }
 .chevClosed { transform: rotate(-90deg); }
 .body { overflow: hidden; }
 
-/* ═══ Row: Pos | Team | Score | Move | Star ═══ */
+/* ═══ Row: Pos | Info+badges | Score | Delta | Star ═══ */
 .row {
   display: grid;
-  grid-template-columns: 36px 1fr 48px 44px 22px;
+  grid-template-columns: 38px 1fr 52px 44px 22px;
   align-items: center;
   gap: 4px;
-  padding: 6px 10px;
+  padding: 5px 10px;
   border-bottom: 1px solid var(--border-muted);
-  border-left: 4px solid transparent;
+  border-left: 3px solid transparent;
   cursor: pointer;
   transition: background 0.1s;
   font-variant-numeric: tabular-nums;
 }
-
 .row:hover { background: var(--bg-elevated); }
 .rowOpen { background: var(--bg-primary); }
-
-/* ── Money — all same gold tint ── */
-.rowFirst, .rowSecond, .rowBronze {
-  background: linear-gradient(90deg, rgba(255,215,0,0.12) 0%, rgba(255,215,0,0.03) 50%, transparent 100%);
+.rowMoney {
+  background: linear-gradient(90deg, rgba(255,215,0,0.10) 0%, rgba(255,215,0,0.02) 50%, transparent 100%);
   border-left-color: var(--masters-gold-dark);
 }
-
-/* ── Own team — blue marker, distinct from money ── */
-.rowOwn {
-  border-left-color: var(--accent-blue) !important;
+.rowOwn { border-left-color: var(--accent-blue) !important; }
+.rowOwn .name::before {
+  content: ''; display: inline-block; width: 6px; height: 6px;
+  border-radius: 50%; background: var(--accent-blue); margin-right: 5px; flex-shrink: 0;
 }
-
-.rowOwn .teamName::before {
-  content: '';
-  display: inline-block;
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--accent-blue);
-  margin-right: 5px;
-  flex-shrink: 0;
+.rowOwn.rowMoney {
+  background: linear-gradient(90deg, rgba(255,215,0,0.10) 0%, rgba(255,215,0,0.02) 50%, transparent 100%);
 }
-
-/* Own + money: blue border wins, gold bg still shows */
-.rowOwn.rowFirst, .rowOwn.rowSecond, .rowOwn.rowBronze {
-  background: linear-gradient(90deg, rgba(255,215,0,0.12) 0%, rgba(255,215,0,0.03) 50%, transparent 100%);
-}
-
 .rowDq { opacity: 0.4; }
 
-/* ── Position — consistent for all ranks ── */
-.pos { text-align: center; }
-
-.posNum {
-  font-weight: 800;
-  font-size: 13px;
-  color: var(--text-primary);
-  line-height: 1;
+/* ── Pos ── */
+.pos {
+  font-weight: 800; font-size: 13px; color: var(--text-primary);
+  text-align: center; line-height: 1;
 }
-
 .dqBadge {
-  font-size: 10px; font-weight: 800; color: var(--accent-red);
-  background: rgba(209,36,47,0.1); padding: 2px 6px; border-radius: 4px;
+  font-size: 9px; font-weight: 800; color: var(--accent-red);
+  background: rgba(209,36,47,0.1); padding: 1px 4px; border-radius: 3px;
 }
 
-/* ── Team info ── */
-.team { min-width: 0; display: flex; align-items: center; gap: 5px; }
-
-.teamName {
+/* ── Info: name + owner + badges inline ── */
+.info {
+  display: flex; align-items: center; gap: 5px;
+  min-width: 0; overflow: hidden;
+}
+.name {
   font-weight: 700; font-size: 13px; color: var(--text-primary);
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  display: inline-flex; align-items: center; gap: 5px;
-}
-
-.ownerInline {
-  font-weight: 400;
-  font-size: 11px;
-  color: var(--text-muted);
-  margin-left: 2px;
-}
-
-.ownerInline::before { content: '·'; margin-right: 3px; }
-
-/* ── Score ── */
-.score {
-  font-weight: 800;
-  font-size: 15px;
-  color: var(--text-primary);
-  text-align: center;
-  letter-spacing: -0.3px;
-  line-height: 1;
-}
-
-/* ── Movement — THE fun thing ── */
-.move {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.moveUp {
-  display: flex; align-items: center; gap: 1px;
-  color: #fff; background: var(--accent-green);
-  padding: 3px 8px; border-radius: 6px;
-  font-weight: 800; line-height: 1;
-}
-
-.moveDown {
-  display: flex; align-items: center; gap: 1px;
-  color: #fff; background: var(--accent-red);
-  padding: 3px 8px; border-radius: 6px;
-  font-weight: 800; line-height: 1;
-}
-
-.moveArrow { font-size: 10px; }
-.moveNum { font-size: 14px; }
-
-.moveFlat, .moveNone {
-  font-size: 12px; color: var(--text-muted); font-weight: 600;
-}
-
-/* ── Pills ── */
-.moneyPill {
-  display: inline-flex; align-items: center; justify-content: center;
-  font-size: 10px; font-weight: 900; color: #fff;
-  background: var(--masters-green); width: 18px; height: 18px;
-  border-radius: 50%; line-height: 1;
-}
-
-.livePill {
-  display: inline-flex; align-items: center; gap: 3px;
-  font-size: 9px; font-weight: 800; color: #fff;
-  background: var(--accent-green);
-  padding: 2px 7px 2px 5px; border-radius: 10px;
-  letter-spacing: 0.5px;
-  animation: pulse-badge 2s ease-in-out infinite;
-  white-space: nowrap;
-}
-
-.liveDot {
-  width: 5px; height: 5px; border-radius: 50%; background: #fff;
-}
-
-@keyframes pulse-badge {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.65; }
-}
-
-.rndPill {
   display: inline-flex; align-items: center;
-  font-size: 9px; font-weight: 800; color: var(--text-muted);
-  background: var(--bg-elevated); border: 1px solid var(--border-default);
-  padding: 1px 6px; border-radius: 10px; letter-spacing: 0.5px;
+  flex-shrink: 1; min-width: 0;
 }
+.owner {
+  font-size: 11px; color: var(--text-muted); white-space: nowrap; flex-shrink: 0;
+}
+
+/* ── Pills: $, LIVE, RND — consistent size ── */
+.pill {
+  display: inline-flex; align-items: center; gap: 3px;
+  font-size: 8px; font-weight: 800; letter-spacing: 0.4px;
+  padding: 1px 5px; border-radius: 8px; white-space: nowrap;
+  flex-shrink: 0; line-height: 1.4;
+}
+.pillLive {
+  color: #fff; background: var(--accent-green);
+  animation: pulse-badge 2s ease-in-out infinite;
+}
+.pillGrey {
+  color: var(--text-muted); background: var(--bg-elevated);
+  border: 1px solid var(--border-default);
+}
+.liveDot { width: 4px; height: 4px; border-radius: 50%; background: #fff; }
+@keyframes pulse-badge { 0%, 100% { opacity: 1; } 50% { opacity: 0.65; } }
+
+/* ── Score — fixed-width pill ── */
+.score {
+  font-weight: 800; font-size: 15px; color: var(--text-primary);
+  text-align: center; line-height: 1;
+  min-width: 44px;
+  background: var(--bg-elevated);
+  border-radius: 6px;
+  padding: 3px 0;
+}
+
+/* ── Delta — colored numbers, no pill ── */
+.delta {
+  text-align: center; font-weight: 800; font-size: 12px; line-height: 1;
+  min-width: 36px;
+}
+.deltaUp { color: var(--accent-green); }
+.deltaDown { color: var(--accent-red); }
+.deltaFlat { color: var(--text-muted); font-size: 10px; }
 
 /* ── Star ── */
 .star {
   background: none; border: none; cursor: pointer;
-  font-size: 16px; padding: 0; line-height: 1;
+  font-size: 14px; padding: 0; line-height: 1;
   color: var(--border-default); transition: all 0.12s;
 }
-.star:hover { color: var(--masters-gold); transform: scale(1.2); }
+.star:hover { color: var(--masters-gold); transform: scale(1.15); }
 .starOn { color: var(--masters-gold) !important; }
 
-/* ═══ Expanded Detail ═══ */
+/* ═══ Divider ═══ */
+.divider { height: 0; border-bottom: 2px solid var(--masters-green); margin: 0 10px; opacity: 0.3; }
+
+/* ═══ Detail — tight, centered ═══ */
 .detail {
-  padding: 0 10px 2px; background: var(--bg-primary);
+  padding: 0 10px 4px;
+  background: var(--bg-primary);
   border-bottom: 2px solid var(--border-default);
+  display: flex;
+  justify-content: center;
 }
-
-.dtable {
-  width: 100%; border-collapse: collapse;
+.dt {
+  border-collapse: collapse;
   font-size: 11px; font-variant-numeric: tabular-nums;
-  table-layout: fixed;
+  width: auto; min-width: 320px; max-width: 500px;
 }
-
-.dtable th {
-  text-align: left; font-size: 8px; font-weight: 700;
-  color: var(--text-muted); text-transform: uppercase;
-  letter-spacing: 0.8px; padding: 2px 4px;
-  border-bottom: 1px solid var(--border-muted);
+.dt th {
+  font-size: 8px; font-weight: 700; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 0.6px;
+  padding: 2px 6px; border-bottom: 1px solid var(--border-muted);
+  text-align: right;
 }
-
-.dtable th:nth-child(1) { width: auto; }
-.dtable th:nth-child(2) { width: 40px; text-align: right; }
-.dtable th:nth-child(3) { width: 52px; text-align: right; }
-.dtable th:nth-child(4) { width: 36px; text-align: right; }
-.dtable th:nth-child(5) { width: 32px; text-align: right; }
-
-.dtable td { padding: 2px 4px; border-bottom: 1px solid var(--border-muted); }
-.dtable tr:last-child td { border-bottom: none; }
-.dtable td:not(:first-child) { text-align: right; }
-
-.num { text-align: right; font-weight: 600; }
-.cutLine td { border-bottom: 2.5px solid var(--masters-green) !important; }
+.dt td {
+  padding: 2px 6px; border-bottom: 1px solid var(--border-muted);
+  text-align: right; font-weight: 600;
+}
+.dt tr:last-child td { border-bottom: none; }
+.dtName { text-align: left !important; }
+.dt td:first-child { text-align: left; font-weight: 500; white-space: nowrap; }
+.dt th:first-child { text-align: left; }
+.cutLine td { border-bottom: 2px solid var(--masters-green) !important; }
 .cutRow td { color: var(--text-muted); font-style: italic; }
 
-.gName {
-  display: inline-flex; align-items: center; gap: 6px; font-weight: 500;
-}
-
-/* ═══ Divider ═══ */
-.divider {
-  height: 0;
-  border-bottom: 2px solid var(--masters-green);
-  margin: 0 14px;
-  opacity: 0.3;
-}
-
 /* ═══ Empty ═══ */
-.empty { padding: 32px 16px; text-align: center; color: var(--text-muted); font-size: 13px; }
+.empty { padding: 24px 14px; text-align: center; color: var(--text-muted); font-size: 13px; }
