@@ -35,54 +35,89 @@ export async function fetchESPNLeaderboard(): Promise<ESPNGolfer[]> {
 
   const events = data?.events ?? []
   for (const event of events) {
-    const competitions = event?.competitions ?? []
-    for (const competition of competitions) {
-      const competitors = competition?.competitors ?? []
-      for (const competitor of competitors) {
-        const athlete = competitor?.athlete ?? {}
-        const statusText = competitor?.status?.type?.description ?? ''
+    // Get current round from competition status
+    const competition = event?.competitions?.[0]
+    if (!competition) continue
+    const currentRound = competition?.status?.period ?? 0
+    const competitors = competition?.competitors ?? []
 
-        // Parse score from the competitor's score field (e.g. "-13", "+2", "E")
-        let scoreToPar = 0
-        const scoreStr = String(competitor?.score ?? '0')
-        if (scoreStr === 'E') scoreToPar = 0
-        else scoreToPar = parseInt(scoreStr, 10) || 0
+    for (const competitor of competitors) {
+      const athlete = competitor?.athlete ?? {}
+      const name = athlete.displayName ?? ''
+      if (!name) continue
 
-        // Parse today and thru from linescores or status
-        let today = 0
-        let thru = ''
+      // Overall score-to-par: competitor.score (number or string like "-13", "+2", "E")
+      let scoreToPar = 0
+      const scoreVal = competitor?.score
+      if (typeof scoreVal === 'number') {
+        scoreToPar = scoreVal
+      } else if (typeof scoreVal === 'string') {
+        if (scoreVal === 'E') scoreToPar = 0
+        else scoreToPar = parseInt(scoreVal, 10) || 0
+      }
 
-        // Try statistics array first
-        const stats = competitor?.statistics ?? []
-        for (const stat of stats) {
-          if (stat.name === 'scoreToPar') scoreToPar = parseInt(stat.value, 10) || 0
-          if (stat.name === 'today') today = parseInt(stat.value, 10) || 0
-          if (stat.name === 'thru') thru = stat.displayValue ?? ''
+      // Today's score and thru from linescores for current round
+      let today = 0
+      let thru = ''
+      const linescores = competitor?.linescores ?? []
+
+      // Try statistics array (some formats have this)
+      const stats = competitor?.statistics ?? []
+      for (const stat of stats) {
+        if (stat.name === 'today') today = parseInt(stat.value, 10) || 0
+        if (stat.name === 'thru') thru = stat.displayValue ?? ''
+      }
+
+      // If no stats, derive from linescores
+      if (!thru && currentRound > 0) {
+        const currentRoundScore = linescores.find(
+          (ls: { period: number }) => ls.period === currentRound
+        )
+        if (currentRoundScore) {
+          const roundDisplay = currentRoundScore.displayValue
+          if (roundDisplay && roundDisplay !== '-' && roundDisplay !== null) {
+            // Player has a score for current round
+            today = parseInt(roundDisplay, 10) || 0
+            // If the round has a value (strokes), player has finished or is playing
+            if (currentRoundScore.value && currentRoundScore.value > 0) {
+              thru = 'F' // completed this round
+            }
+          }
         }
 
-        // Fallback: parse thru from status
-        if (!thru) {
-          thru = competitor?.status?.thru?.displayValue ?? ''
-        }
-
-        let status: ESPNGolfer['status'] = 'active'
-        const stLower = statusText.toLowerCase()
-        if (stLower.includes('cut')) status = 'cut'
-        if (stLower.includes('wd') || stLower.includes('withdrawn')) status = 'withdrawn'
-
-        const name = athlete.displayName ?? ''
-        if (name) {
-          golfers.push({
-            id: String(athlete.id ?? competitor.id ?? ''),
-            name,
-            scoreToPar,
-            today,
-            thru,
-            status,
-            position: competitor.status?.position?.displayName ?? String(competitor.order ?? ''),
-          })
+        // Check if player hasn't started current round
+        const completedRounds = linescores.filter(
+          (ls: { value: number | null }) => ls.value && ls.value > 0
+        ).length
+        if (completedRounds < currentRound) {
+          // Still playing or hasn't started
+          if (!thru) thru = '--'
         }
       }
+
+      // For completed tournaments or between rounds, check if all rounds done
+      if (!thru) {
+        const completedRounds = linescores.filter(
+          (ls: { value: number | null }) => ls.value && ls.value > 0
+        ).length
+        if (completedRounds >= 2) thru = 'F' // at least through the cut
+      }
+
+      // Status: cut/withdrawn detection
+      let status: ESPNGolfer['status'] = 'active'
+      const statusDesc = (competitor?.status?.type?.description ?? '').toLowerCase()
+      if (statusDesc.includes('cut')) status = 'cut'
+      else if (statusDesc.includes('wd') || statusDesc.includes('withdrawn')) status = 'withdrawn'
+
+      golfers.push({
+        id: String(athlete.id ?? competitor.id ?? ''),
+        name,
+        scoreToPar,
+        today,
+        thru,
+        status,
+        position: String(competitor.order ?? ''),
+      })
     }
   }
 
@@ -91,7 +126,6 @@ export async function fetchESPNLeaderboard(): Promise<ESPNGolfer[]> {
 
 // === Name normalization & fuzzy matching ===
 
-/** Normalize a name for matching: lowercase, strip suffixes, trim */
 function normalize(name: string): string {
   return name
     .toLowerCase()
@@ -100,41 +134,26 @@ function normalize(name: string): string {
     .trim()
 }
 
-/** Split into [first, last] parts */
 function nameParts(name: string): { first: string; last: string } {
   const parts = normalize(name).split(/\s+/)
-  return {
-    first: parts[0] ?? '',
-    last: parts[parts.length - 1] ?? '',
-  }
+  return { first: parts[0] ?? '', last: parts[parts.length - 1] ?? '' }
 }
 
-/** Check if two names are a fuzzy match */
 export function fuzzyMatch(a: string, b: string): boolean {
   const na = normalize(a)
   const nb = normalize(b)
-
-  // Exact
   if (na === nb) return true
-
-  // Substring (either direction)
   if (na.includes(nb) || nb.includes(na)) return true
-
-  // Last name match + first initial
   const pa = nameParts(a)
   const pb = nameParts(b)
-  if (pa.last === pb.last && pa.first[0] === pb.first[0]) return true
-
+  if (pa.last === pb.last && pa.first && pb.first && pa.first[0] === pb.first[0]) return true
   return false
 }
 
 /**
  * Match ESPN golfers to pool golfers.
- *
- * Pass 1: By stored espn_name (exact, most reliable — persisted from previous match)
+ * Pass 1: By stored espn_name (persisted link — most reliable)
  * Pass 2: By fuzzy name match
- *
- * Returns matched pairs and unmatched ESPN golfers.
  */
 export function matchESPNToPool(
   espnGolfers: ESPNGolfer[],
@@ -144,13 +163,11 @@ export function matchESPNToPool(
   const usedPoolIds = new Set<string>()
   const matchedEspnIds = new Set<string>()
 
-  // Pass 1: match by stored espn_name (persisted link)
+  // Pass 1: by stored espn_name
   for (const espn of espnGolfers) {
     const espnLower = espn.name.toLowerCase().trim()
     const pool = poolGolfers.find(g =>
-      !usedPoolIds.has(g.id) &&
-      g.espnName &&
-      g.espnName.toLowerCase().trim() === espnLower
+      !usedPoolIds.has(g.id) && g.espnName && g.espnName.toLowerCase().trim() === espnLower
     )
     if (pool) {
       usedPoolIds.add(pool.id)
@@ -162,7 +179,7 @@ export function matchESPNToPool(
     }
   }
 
-  // Pass 2: fuzzy name match for remaining
+  // Pass 2: fuzzy name match
   for (const espn of espnGolfers) {
     if (matchedEspnIds.has(espn.id)) continue
     const pool = poolGolfers.find(g =>
