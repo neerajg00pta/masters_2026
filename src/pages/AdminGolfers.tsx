@@ -15,24 +15,18 @@ export function AdminGolfersPage() {
   const liveScoring = useLiveScoringState()
 
   const [saving, setSaving] = useState(false)
-  const [cutSelection, setCutSelection] = useState<Set<string>>(new Set())
-
-  // Debounced saves
   const debounceRef = useRef<ReturnType<typeof setTimeout>>(null)
 
-  // ESPN match state
+  // ESPN assignment state
   const [espnAssignments, setEspnAssignments] = useState<Map<string, string>>(new Map())
 
   if (!isAdmin) {
     return <div className={styles.forbidden}>Admin access required.</div>
   }
 
-  // Stats
   const activeCount = golfers.filter(g => g.status === 'active').length
   const cutCount = golfers.filter(g => g.status === 'cut').length
   const wdCount = golfers.filter(g => g.status === 'withdrawn').length
-
-  // === Controls ===
 
   const handleRefreshField = async () => {
     setSaving(true)
@@ -46,28 +40,6 @@ export function AdminGolfersPage() {
       setSaving(false)
     }
   }
-
-  const handleMarkCut = async () => {
-    if (cutSelection.size === 0) {
-      addToast('Select golfers to mark as cut', 'error')
-      return
-    }
-    setSaving(true)
-    try {
-      for (const golferId of cutSelection) {
-        await updateGolfer(golferId, { status: 'cut' })
-      }
-      await refresh()
-      setCutSelection(new Set())
-      addToast(`${cutSelection.size} golfers marked as cut`, 'success')
-    } catch {
-      addToast('Failed to mark cut', 'error')
-    } finally {
-      setSaving(false)
-    }
-  }
-
-  // === Debounced Golfer Updates ===
 
   const debouncedUpdate = (golferId: string, updates: Parameters<typeof updateGolfer>[1]) => {
     if (debounceRef.current) clearTimeout(debounceRef.current)
@@ -101,6 +73,7 @@ export function AdminGolfersPage() {
     try {
       await updateGolfer(golferId, { scoreLocked: !current })
       await refresh()
+      addToast(current ? 'Score unlocked — live updates will resume' : 'Score locked — live updates blocked', 'info')
     } catch {
       addToast('Failed to toggle lock', 'error')
     } finally {
@@ -108,22 +81,17 @@ export function AdminGolfersPage() {
     }
   }
 
-  // === ESPN Matching ===
-
+  // ESPN matching
   const handleAssignEspn = async (espnName: string, poolGolferId: string) => {
     if (!poolGolferId) return
     setSaving(true)
     try {
       await updateGolfer(poolGolferId, { espnName })
       await refresh()
-      setEspnAssignments(prev => {
-        const next = new Map(prev)
-        next.delete(espnName)
-        return next
-      })
+      setEspnAssignments(prev => { const next = new Map(prev); next.delete(espnName); return next })
       addToast(`Mapped "${espnName}"`, 'success')
     } catch {
-      addToast('Failed to assign ESPN name', 'error')
+      addToast('Failed to assign', 'error')
     } finally {
       setSaving(false)
     }
@@ -136,11 +104,10 @@ export function AdminGolfersPage() {
     try {
       for (const espn of liveScoring.unmatchedEspn) {
         const espnLower = espn.name.toLowerCase()
-        // Fuzzy: try last-name match
         const espnParts = espnLower.split(/\s+/)
         const espnLast = espnParts[espnParts.length - 1]
         const pool = golfers.find(g => {
-          if (g.espnName) return false // already mapped
+          if (g.espnName) return false
           const poolLower = g.name.toLowerCase()
           if (poolLower === espnLower) return true
           const poolParts = poolLower.split(/\s+/)
@@ -153,16 +120,13 @@ export function AdminGolfersPage() {
         }
       }
       await refresh()
-      if (matched > 0) addToast(`Auto-matched ${matched} golfers`, 'success')
-      else addToast('No additional matches found', 'info')
+      addToast(matched > 0 ? `Auto-matched ${matched} golfers` : 'No additional matches found', matched > 0 ? 'success' : 'info')
     } catch {
       addToast('Auto-match failed', 'error')
     } finally {
       setSaving(false)
     }
   }
-
-  // === CSV Export ===
 
   const downloadCsv = () => {
     const header = 'Sort,Name,ESPN Name,Odds,Score To Par,Today,Thru,Status,Locked'
@@ -173,21 +137,9 @@ export function AdminGolfersPage() {
     const blob = new Blob([csv], { type: 'text/csv' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
-    a.href = url
-    a.download = 'masters-golfer-scores.csv'
-    a.click()
+    a.href = url; a.download = 'masters-golfer-scores.csv'; a.click()
     URL.revokeObjectURL(url)
     addToast('CSV downloaded', 'success')
-  }
-
-  // Toggle cut selection
-  const toggleCutSelect = (golferId: string) => {
-    setCutSelection(prev => {
-      const next = new Set(prev)
-      if (next.has(golferId)) next.delete(golferId)
-      else next.add(golferId)
-      return next
-    })
   }
 
   return (
@@ -197,72 +149,32 @@ export function AdminGolfersPage() {
         <div className={styles.stats}>
           <span className={styles.statActive}>{activeCount} active</span>
           <span className={styles.statCut}>{cutCount} cut</span>
-          <span className={styles.statWd}>{wdCount} wd</span>
+          {wdCount > 0 && <span className={styles.statWd}>{wdCount} wd</span>}
         </div>
         {saving && <span className={styles.savingBadge}>Saving...</span>}
       </div>
 
-      {/* Controls */}
       <div className={styles.controls}>
-        <button
-          className={`${styles.btn} ${styles.btnPrimary}`}
-          onClick={handleRefreshField}
-          disabled={saving}
-        >
+        <button className={`${styles.btn} ${styles.btnPrimary}`} onClick={handleRefreshField} disabled={saving}>
           Refresh Masters Field
         </button>
-        <button
-          className={styles.csvBtn}
-          onClick={downloadCsv}
-        >
-          Download CSV
-        </button>
+        <button className={styles.csvBtn} onClick={downloadCsv}>Download CSV</button>
       </div>
 
-      {/* Mark Cut Section */}
-      {golfers.filter(g => g.status === 'active').length > 0 && (
-        <div className={styles.cutSection}>
-          <div className={styles.cutTitle}>
-            Mark Cut
-            {cutSelection.size > 0 && (
-              <button
-                className={`${styles.btn} ${styles.btnDanger} ${styles.btnSm}`}
-                onClick={handleMarkCut}
-                disabled={saving}
-                style={{ marginLeft: 12 }}
-              >
-                Cut {cutSelection.size} golfer{cutSelection.size !== 1 ? 's' : ''}
-              </button>
-            )}
-          </div>
-          <div className={styles.cutList}>
-            {golfers
-              .filter(g => g.status === 'active')
-              .map(g => (
-                <button
-                  key={g.id}
-                  className={`${styles.cutChip} ${cutSelection.has(g.id) ? styles.cutChipSelected : ''}`}
-                  onClick={() => toggleCutSelect(g.id)}
-                >
-                  {g.name}
-                </button>
-              ))}
-          </div>
-        </div>
-      )}
+      {/* Name matching tip */}
+      <div className={styles.tip}>
+        <strong>Name matching:</strong> Edit the Name column to match what ESPN uses.
+        Selections reference golfer IDs, so renaming is safe.
+        The Lock column prevents live scoring from overwriting manual score edits.
+      </div>
 
-      {/* ESPN Matching (when live scoring is on) */}
+      {/* ESPN Matching — only when live scoring + unmatched */}
       {config.liveScoring && liveScoring.unmatchedEspn.length > 0 && (
         <div className={styles.matchSection}>
           <div className={styles.matchTitle}>
-            Unmatched ESPN Golfers ({liveScoring.unmatchedEspn.length})
-            <button
-              className={`${styles.btn} ${styles.btnSm}`}
-              onClick={handleAutoMatch}
-              disabled={saving}
-              style={{ marginLeft: 12 }}
-            >
-              Auto-Match All
+            Unmatched ESPN Names ({liveScoring.unmatchedEspn.length})
+            <button className={`${styles.btn} ${styles.btnSm}`} onClick={handleAutoMatch} disabled={saving} style={{ marginLeft: 12 }}>
+              Auto-Match
             </button>
           </div>
           {liveScoring.unmatchedEspn.map(espn => (
@@ -273,26 +185,15 @@ export function AdminGolfersPage() {
                 value={espnAssignments.get(espn.name) ?? ''}
                 onChange={e => {
                   const val = e.target.value
-                  setEspnAssignments(prev => {
-                    const next = new Map(prev)
-                    if (val) next.set(espn.name, val)
-                    else next.delete(espn.name)
-                    return next
-                  })
+                  setEspnAssignments(prev => { const next = new Map(prev); if (val) next.set(espn.name, val); else next.delete(espn.name); return next })
                 }}
               >
-                <option value="">-- Select pool golfer --</option>
-                {golfers
-                  .filter(g => !g.espnName)
-                  .map(g => (
-                    <option key={g.id} value={g.id}>{g.name}</option>
-                  ))}
+                <option value="">— Select pool golfer —</option>
+                {golfers.filter(g => !g.espnName).map(g => (
+                  <option key={g.id} value={g.id}>{g.name}</option>
+                ))}
               </select>
-              <button
-                className={styles.matchBtn}
-                disabled={!espnAssignments.get(espn.name) || saving}
-                onClick={() => handleAssignEspn(espn.name, espnAssignments.get(espn.name) ?? '')}
-              >
+              <button className={styles.matchBtn} disabled={!espnAssignments.get(espn.name) || saving} onClick={() => handleAssignEspn(espn.name, espnAssignments.get(espn.name) ?? '')}>
                 Assign
               </button>
             </div>
@@ -318,8 +219,7 @@ export function AdminGolfersPage() {
                 <th className={styles.thToday}>Today</th>
                 <th className={styles.thThru}>Thru</th>
                 <th className={styles.thStatus}>Status</th>
-                <th className={styles.thLocked}>Lock</th>
-                <th className={styles.thActions}></th>
+                <th className={styles.thLocked} title="Lock prevents live scoring from overwriting">Lock</th>
               </tr>
             </thead>
             <tbody>
@@ -342,11 +242,7 @@ export function AdminGolfersPage() {
 }
 
 function GolferRow({
-  golfer,
-  onDebouncedUpdate,
-  onStatusChange,
-  onLockToggle,
-  saving,
+  golfer, onDebouncedUpdate, onStatusChange, onLockToggle, saving,
 }: {
   golfer: Golfer
   onDebouncedUpdate: (id: string, updates: Parameters<typeof updateGolfer>[1]) => void
@@ -370,70 +266,32 @@ function GolferRow({
     <tr className={rowClass}>
       <td className={styles.sortNum}>{golfer.sortOrder}</td>
       <td>
-        <input
-          className={styles.textInput}
-          value={localName}
-          onChange={e => {
-            setLocalName(e.target.value)
-            onDebouncedUpdate(golfer.id, { name: e.target.value })
-          }}
-        />
+        <input className={styles.textInput} value={localName}
+          onChange={e => { setLocalName(e.target.value); onDebouncedUpdate(golfer.id, { name: e.target.value }) }} />
       </td>
       <td>
-        <input
-          className={styles.textInput}
-          value={localEspn}
-          placeholder="ESPN name"
-          onChange={e => {
-            setLocalEspn(e.target.value)
-            onDebouncedUpdate(golfer.id, { espnName: e.target.value || null })
-          }}
-        />
+        <input className={styles.textInput} value={localEspn} placeholder="auto-matched"
+          onChange={e => { setLocalEspn(e.target.value); onDebouncedUpdate(golfer.id, { espnName: e.target.value || null }) }} />
       </td>
       <td className={styles.oddsCell}>{golfer.odds ?? '\u2014'}</td>
       <td>
-        <input
-          className={`${styles.scoreInput} ${golfer.scoreLocked ? styles.lockedInput : ''}`}
-          type="number"
-          value={localScore}
-          onChange={e => {
-            setLocalScore(e.target.value)
-            const num = parseInt(e.target.value, 10)
-            if (!isNaN(num)) onDebouncedUpdate(golfer.id, { scoreToPar: num })
-          }}
-        />
+        <input className={`${styles.scoreInput} ${golfer.scoreLocked ? styles.lockedInput : ''}`}
+          type="number" value={localScore}
+          onChange={e => { setLocalScore(e.target.value); const n = parseInt(e.target.value, 10); if (!isNaN(n)) onDebouncedUpdate(golfer.id, { scoreToPar: n }) }} />
       </td>
       <td>
-        <input
-          className={`${styles.scoreInput} ${golfer.scoreLocked ? styles.lockedInput : ''}`}
-          type="number"
-          value={localToday}
-          onChange={e => {
-            setLocalToday(e.target.value)
-            const num = parseInt(e.target.value, 10)
-            if (!isNaN(num)) onDebouncedUpdate(golfer.id, { today: num })
-          }}
-        />
+        <input className={`${styles.scoreInput} ${golfer.scoreLocked ? styles.lockedInput : ''}`}
+          type="number" value={localToday}
+          onChange={e => { setLocalToday(e.target.value); const n = parseInt(e.target.value, 10); if (!isNaN(n)) onDebouncedUpdate(golfer.id, { today: n }) }} />
       </td>
       <td>
-        <input
-          className={styles.textInput}
-          value={localThru}
-          placeholder="F"
+        <input className={styles.textInput} value={localThru} placeholder="F"
           style={{ width: 48, textAlign: 'center' }}
-          onChange={e => {
-            setLocalThru(e.target.value)
-            onDebouncedUpdate(golfer.id, { thru: e.target.value })
-          }}
-        />
+          onChange={e => { setLocalThru(e.target.value); onDebouncedUpdate(golfer.id, { thru: e.target.value }) }} />
       </td>
       <td>
-        <select
-          className={styles.statusSelect}
-          value={golfer.status}
-          onChange={e => onStatusChange(golfer.id, e.target.value as Golfer['status'])}
-          disabled={saving}
-        >
+        <select className={styles.statusSelect} value={golfer.status}
+          onChange={e => onStatusChange(golfer.id, e.target.value as Golfer['status'])} disabled={saving}>
           <option value="active">active</option>
           <option value="cut">cut</option>
           <option value="withdrawn">wd</option>
@@ -444,12 +302,11 @@ function GolferRow({
           className={`${styles.lockToggle} ${golfer.scoreLocked ? styles.lockToggleOn : ''}`}
           onClick={() => onLockToggle(golfer.id, golfer.scoreLocked)}
           disabled={saving}
-          title={golfer.scoreLocked ? 'Score locked (click to unlock)' : 'Click to lock score'}
+          title={golfer.scoreLocked ? 'Locked — live scoring won\'t overwrite. Click to unlock.' : 'Unlocked — live scoring will update. Click to lock.'}
         >
-          {golfer.scoreLocked ? 'L' : '\u2014'}
+          {golfer.scoreLocked ? '🔒' : '—'}
         </button>
       </td>
-      <td></td>
     </tr>
   )
 }

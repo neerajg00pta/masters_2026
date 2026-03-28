@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
-import type { Golfer } from '../lib/types'
+import type { Golfer, Team, User, Selection, ScoreSnapshot } from '../lib/types'
 import { fetchESPNLeaderboard, matchESPNToPool, type ESPNGolfer } from '../lib/espn'
-import { updateGolferScores } from '../lib/data-service'
+import { updateGolferScores, saveSnapshots } from '../lib/data-service'
+import { computeTeamLeaderboard } from '../lib/scoring'
 
 const POLL_INTERVAL_MS = 30_000 // 30 seconds
 
@@ -20,6 +21,10 @@ export interface LiveScoringState {
 export function useLiveScoring(
   enabled: boolean,
   golfers: Golfer[],
+  teams: Team[],
+  users: User[],
+  selections: Selection[],
+  snapshots: ScoreSnapshot[],
   onRefresh: () => Promise<void>,
 ): LiveScoringState {
   const [isPolling, setIsPolling] = useState(false)
@@ -29,6 +34,7 @@ export function useLiveScoring(
   const intervalRef = useRef<ReturnType<typeof setInterval>>(null)
   const golfersRef = useRef(golfers)
   golfersRef.current = golfers
+  const snapshotSavedRef = useRef(false)
 
   const poll = useCallback(async () => {
     if (document.hidden) return // skip when tab is backgrounded
@@ -69,6 +75,29 @@ export function useLiveScoring(
       }
 
       await onRefresh()
+
+      // Auto-snapshot: when ALL active (non-cut, non-wd) golfers have thru="F"
+      const activeGolfers = golfersRef.current.filter(g => g.status === 'active')
+      const allFinished = activeGolfers.length > 0 && activeGolfers.every(g => g.thru === 'F')
+      if (allFinished && !snapshotSavedRef.current) {
+        try {
+          const entries = computeTeamLeaderboard(teams, users, golfersRef.current, selections, snapshots, null)
+          const snapshotData = entries
+            .filter(e => !e.isDisqualified)
+            .map(e => ({ teamId: e.team.id, aggregateScore: e.aggregateScore, rank: e.rank }))
+          if (snapshotData.length > 0) {
+            await saveSnapshots(snapshotData)
+            snapshotSavedRef.current = true
+            console.log('Auto-saved daily snapshot')
+          }
+        } catch (err) {
+          console.error('Auto-snapshot failed:', err)
+        }
+      }
+      // Reset snapshot flag when a new round starts (not all finished anymore)
+      if (!allFinished) {
+        snapshotSavedRef.current = false
+      }
 
       setError(null)
       setLastPoll(new Date())

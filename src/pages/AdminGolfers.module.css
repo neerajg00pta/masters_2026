@@ -352,46 +352,18 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* Mark cut section */
+/* Tip box */
 
-.cutSection {
-  background: var(--bg-surface);
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-lg);
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.cutTitle {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--accent-red);
-}
-
-.cutList {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-.cutChip {
-  padding: 4px 10px;
-  border-radius: 14px;
-  border: 1px solid var(--border-default);
-  background: var(--bg-elevated);
+.tip {
+  padding: 10px 14px;
+  background: rgba(0, 103, 71, 0.04);
+  border: 1px solid rgba(0, 103, 71, 0.12);
+  border-radius: var(--radius);
   font-size: 12px;
-  cursor: pointer;
-  transition: all 0.15s;
+  color: var(--text-secondary);
+  line-height: 1.5;
 }
 
-.cutChip:hover {
-  border-color: var(--accent-red);
-}
-
-.cutChipSelected {
-  background: rgba(209, 36, 47, 0.12);
-  color: var(--accent-red);
-  border-color: var(--accent-red);
+.tip strong {
+  color: var(--masters-green);
 }

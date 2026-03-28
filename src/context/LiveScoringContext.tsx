@@ -12,9 +12,9 @@ const LiveScoringContext = createContext<LiveScoringState>({
 
 export function LiveScoringProvider({ children }: { children: ReactNode }) {
   const { isAdmin } = useAuth()
-  const { config, golfers, refresh } = useData()
+  const { config, golfers, teams, users, selections, snapshots, refresh } = useData()
 
-  const state = useLiveScoring(isAdmin && config.liveScoring, golfers, refresh)
+  const state = useLiveScoring(isAdmin && config.liveScoring, golfers, teams, users, selections, snapshots, refresh)
 
   return (
     <LiveScoringContext.Provider value={state}>
