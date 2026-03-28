@@ -66,10 +66,16 @@ export function Layout({ children }: { children: ReactNode }) {
 
         <div className={styles.headerRight}>
           <Link
-            to="/"
-            className={`${styles.navLink} ${location.pathname === '/' ? styles.navLinkActive : ''}`}
+            to="/live"
+            className={`${styles.navLink} ${location.pathname === '/live' ? styles.navLinkActive : ''}`}
           >
-            Home
+            Live
+          </Link>
+          <Link
+            to="/teams"
+            className={`${styles.navLink} ${location.pathname === '/teams' ? styles.navLinkActive : ''}`}
+          >
+            Teams
           </Link>
           <Link
             to="/rules"

@@ -5,20 +5,22 @@ import { computeTeamLeaderboard, computePlayerLeaderboard, getPayoutPosition } f
 import type { PayoutPosition } from '../lib/scoring'
 import { TeamLeaderboard } from '../components/TeamLeaderboard'
 import { PlayerLeaderboard } from '../components/PlayerLeaderboard'
-import styles from './Home.module.css'
+import styles from './Live.module.css'
 
-export function HomePage() {
+export function LivePage() {
   const { teams, users, golfers, selections, snapshots, tick } = useData()
   const { currentUser } = useAuth()
 
   const teamEntries = useMemo(
     () => computeTeamLeaderboard(teams, users, golfers, selections, snapshots, currentUser?.id ?? null),
-    [teams, users, golfers, selections, snapshots, currentUser, tick]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [teams, users, golfers, selections, snapshots, currentUser, tick],
   )
 
   const playerEntries = useMemo(
     () => computePlayerLeaderboard(golfers, selections, teams),
-    [golfers, selections, teams, tick]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [golfers, selections, teams, tick],
   )
 
   const payoutMap = useMemo(() => {
@@ -32,10 +34,8 @@ export function HomePage() {
 
   if (teams.length === 0) {
     return (
-      <div className={styles.grid}>
-        <div className={styles.emptyState}>
-          <p className={styles.emptyText}>No teams yet — head to the <strong>Picks</strong> page to create your team.</p>
-        </div>
+      <div className={styles.emptyState}>
+        <p className={styles.emptyText}>No teams yet — head to the Teams page to get started.</p>
       </div>
     )
   }
@@ -47,9 +47,7 @@ export function HomePage() {
         payoutMap={payoutMap}
         currentUserId={currentUser?.id ?? null}
       />
-      <PlayerLeaderboard
-        entries={playerEntries}
-      />
+      <PlayerLeaderboard entries={playerEntries} />
     </div>
   )
 }

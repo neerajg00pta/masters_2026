@@ -5,12 +5,11 @@ import { useToast } from '../context/ToastContext'
 import { createTeam, deleteTeam, updateTeamName, removeSelection } from '../lib/data-service'
 import { PICKS_PER_TEAM } from '../lib/types'
 import { GolferPicker } from '../components/GolferPicker'
-import styles from './Picks.module.css'
+import styles from './Teams.module.css'
 
-export { PicksView }
-export function PicksPage() { return <PicksView /> }
+export function TeamsPage() { return <TeamsView /> }
 
-function PicksView() {
+function TeamsView() {
   const { config, teams, users, golfers, selections, refresh } = useData()
   const { currentUser, isAdmin } = useAuth()
   const { addToast } = useToast()
