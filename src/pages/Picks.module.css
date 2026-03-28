@@ -1,5 +1,5 @@
 .container {
-  max-width: 960px;
+  max-width: 1100px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
@@ -12,256 +12,210 @@
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  flex-wrap: wrap;
 }
 
-.title {
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--text-primary);
-}
+.title { font-size: 18px; font-weight: 700; color: var(--text-primary); }
 
 .userSelect {
-  padding: 6px 10px;
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius);
-  background: var(--bg-surface);
-  color: var(--text-primary);
-  font-size: 12px;
-  font-weight: 600;
-  outline: none;
-  cursor: pointer;
+  padding: 6px 10px; border: 1px solid var(--border-default); border-radius: var(--radius);
+  background: var(--bg-surface); color: var(--text-primary); font-size: 12px; font-weight: 600;
 }
 
-.userSelect:focus {
-  border-color: var(--masters-green);
+.lockedBanner {
+  padding: 10px 16px; background: var(--bg-elevated); border: 1px solid var(--border-default);
+  border-radius: var(--radius); font-size: 13px; color: var(--text-secondary);
 }
 
-/* Not logged in */
+/* Auth prompt */
 .authPrompt {
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  padding: 48px 24px; text-align: center;
+}
+.authTitle { font-size: 16px; font-weight: 700; color: var(--text-primary); }
+.authSubtitle { font-size: 13px; color: var(--text-secondary); }
+
+/* ═══ Main two-column layout ═══ */
+.picksLayout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+@media (max-width: 740px) {
+  .picksLayout { grid-template-columns: 1fr; }
+}
+
+/* ─── Left: Teams column ─── */
+.teamsColumn {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 12px;
-  padding: 48px 24px;
-  text-align: center;
+  gap: 10px;
+  position: sticky;
+  top: calc(var(--header-height) + 16px);
 }
 
-.authIcon {
-  font-size: 36px;
-}
-
-.authTitle {
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--text-primary);
-}
-
-.authSubtitle {
-  font-size: 13px;
-  color: var(--text-secondary);
-}
-
-/* ─── Team tabs bar ─── */
-.tabBar {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  flex-wrap: wrap;
-  padding: 4px;
-  background: var(--bg-elevated);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border-default);
-}
-
-.tab {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  padding: 6px 14px;
-  border-radius: var(--radius);
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text-secondary);
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  transition: all 0.12s;
-  white-space: nowrap;
-}
-
-.tab:hover {
+/* Team card */
+.teamCard {
   background: var(--bg-surface);
-  color: var(--text-primary);
-}
-
-.tabActive {
-  background: var(--masters-green);
-  color: #ffffff;
-}
-
-.tabActive:hover {
-  background: var(--masters-green-light);
-  color: #ffffff;
-}
-
-/* Delete X button on tab */
-.tabDelete {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  font-size: 11px;
-  line-height: 1;
-  background: transparent;
-  border: none;
+  border: 2px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
   cursor: pointer;
-  color: rgba(255, 255, 255, 0.6);
-  transition: all 0.12s;
-  padding: 0;
-  margin-left: 2px;
+  transition: border-color 0.15s, box-shadow 0.15s;
 }
 
-.tabDelete:hover {
-  background: rgba(255, 255, 255, 0.2);
-  color: #ffffff;
+.teamCard:hover { border-color: var(--border-default); box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+
+.teamCardActive {
+  border-color: var(--masters-green);
+  box-shadow: 0 0 0 1px var(--masters-green), 0 2px 12px rgba(0, 103, 71, 0.12);
 }
 
-.tabDeleteInactive {
-  color: var(--text-muted);
-}
+.teamCardComplete { }
 
-.tabDeleteInactive:hover {
-  background: rgba(209, 36, 47, 0.12);
-  color: var(--accent-red);
-}
+.teamCardActive .cardHeader { background: var(--masters-green); color: #fff; }
 
-/* New team button */
-.newTeamBtn {
+/* Card header */
+.cardHeader {
   display: flex;
   align-items: center;
-  gap: 4px;
-  padding: 6px 12px;
-  border-radius: var(--radius);
+  justify-content: space-between;
+  padding: 10px 12px;
+  background: var(--bg-elevated);
+  border-bottom: 1px solid var(--border-muted);
+  gap: 8px;
+}
+
+.cardName {
   font-size: 13px;
-  font-weight: 600;
-  color: var(--masters-green);
-  background: transparent;
-  border: 1px dashed var(--masters-green);
-  cursor: pointer;
-  transition: all 0.12s;
+  font-weight: 700;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.newTeamBtn:hover {
-  background: rgba(0, 103, 71, 0.06);
+.cardMeta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
 }
 
-/* Inline name input */
-.inlineInput {
-  padding: 4px 10px;
-  border-radius: var(--radius);
-  border: 2px solid var(--masters-green);
-  background: var(--bg-input);
-  color: var(--text-primary);
-  font-size: 13px;
-  font-weight: 600;
-  outline: none;
-  width: 140px;
+.pickBadge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-variant-numeric: tabular-nums;
 }
 
-.inlineInput::placeholder {
-  color: var(--text-muted);
-  font-weight: 400;
+.pickBadgeComplete {
+  background: rgba(46, 160, 67, 0.15);
+  color: var(--accent-green);
 }
+
+.pickBadgeIncomplete {
+  background: rgba(255, 215, 0, 0.2);
+  color: var(--masters-gold-dark);
+}
+
+.editingBadge {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  padding: 2px 5px;
+  border-radius: 3px;
+  background: var(--masters-gold);
+  color: #000;
+}
+
+.teamCardActive .editingBadge { background: rgba(255,255,255,0.25); color: #fff; }
+.teamCardActive .pickBadgeComplete { background: rgba(255,255,255,0.2); color: #fff; }
+.teamCardActive .pickBadgeIncomplete { background: rgba(255,255,255,0.2); color: var(--masters-gold); }
+
+.cardDeleteBtn {
+  width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;
+  border-radius: 50%; border: none; background: transparent; color: var(--text-muted);
+  font-size: 14px; cursor: pointer; flex-shrink: 0;
+}
+.cardDeleteBtn:hover { background: rgba(209,36,47,0.1); color: var(--accent-red); }
+.teamCardActive .cardDeleteBtn { color: rgba(255,255,255,0.5); }
+.teamCardActive .cardDeleteBtn:hover { background: rgba(255,255,255,0.15); color: #fff; }
+
+/* Golfer rows inside card */
+.cardGolfers { display: flex; flex-direction: column; }
+
+.cardGolferRow {
+  display: flex; align-items: center; gap: 6px;
+  padding: 6px 12px; border-bottom: 1px solid var(--border-muted);
+  font-size: 12px;
+}
+.cardGolferRow:last-child { border-bottom: none; }
+
+.cardGolferName {
+  flex: 1; font-weight: 500; color: var(--text-primary);
+  min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  display: flex; align-items: center; gap: 4px;
+}
+
+.rndBadge {
+  font-size: 8px; font-weight: 700; padding: 1px 4px; border-radius: 3px;
+  background: var(--bg-elevated); color: var(--text-muted); letter-spacing: 0.3px;
+}
+
+.cardGolferOdds { font-size: 11px; color: var(--text-muted); flex-shrink: 0; }
+
+.cardRemoveBtn {
+  width: 18px; height: 18px; display: flex; align-items: center; justify-content: center;
+  border: none; background: transparent; color: var(--text-muted); font-size: 14px;
+  cursor: pointer; border-radius: 50%; flex-shrink: 0;
+}
+.cardRemoveBtn:hover { background: rgba(209,36,47,0.1); color: var(--accent-red); }
+.cardRemoveBtn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+.cardGolferRowEmpty {
+  padding: 6px 12px; border-bottom: 1px solid var(--border-muted);
+}
+.cardGolferRowEmpty:last-child { border-bottom: none; }
+
+.cardEmptySlot { font-size: 11px; color: var(--border-default); font-style: italic; }
+
+.cardEmpty { padding: 16px 12px; text-align: center; font-size: 11px; color: var(--text-muted); }
 
 /* Rename input */
 .renameInput {
-  padding: 4px 10px;
-  border-radius: var(--radius);
-  border: 2px solid var(--masters-green);
-  background: var(--bg-input);
-  color: var(--text-primary);
-  font-size: 13px;
-  font-weight: 600;
-  outline: none;
-  width: 120px;
+  padding: 2px 6px; border: 1px solid var(--masters-gold); border-radius: 3px;
+  background: rgba(255,255,255,0.15); font-size: 13px; font-weight: 700;
+  outline: none; min-width: 80px; color: inherit;
 }
 
-/* ─── Empty state (no teams) ─── */
-.emptyState {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
-  padding: 48px 24px;
-  background: var(--bg-surface);
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-lg);
-  text-align: center;
+/* New team */
+.newTeamBtn {
+  padding: 12px; border-radius: var(--radius-lg); font-size: 13px; font-weight: 600;
+  color: var(--masters-green); background: transparent; border: 2px dashed var(--border-default);
+  cursor: pointer; transition: all 0.15s; text-align: center;
+}
+.newTeamBtn:hover { border-color: var(--masters-green); background: rgba(0,103,71,0.03); }
+.newTeamBtn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.newTeamCard {
+  background: var(--bg-surface); border: 2px dashed var(--masters-green);
+  border-radius: var(--radius-lg); padding: 12px;
 }
 
-.emptyIcon {
-  font-size: 40px;
+.newTeamInput {
+  width: 100%; padding: 8px 10px; border: 1px solid var(--masters-green);
+  border-radius: var(--radius); background: var(--bg-input); color: var(--text-primary);
+  font-size: 13px; font-weight: 600; outline: none;
 }
+.newTeamInput::placeholder { color: var(--text-muted); font-weight: 400; }
 
-.emptyTitle {
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--text-primary);
-}
+/* Right: picker column */
+.pickerColumn { min-width: 0; }
 
-.emptySubtitle {
-  font-size: 13px;
-  color: var(--text-secondary);
-  max-width: 320px;
-}
-
-.createBtn {
-  padding: 10px 24px;
-  border-radius: var(--radius);
-  font-size: 14px;
-  font-weight: 700;
-  color: #ffffff;
-  background: var(--masters-green);
-  border: none;
-  cursor: pointer;
-  transition: background 0.15s;
-}
-
-.createBtn:hover {
-  background: var(--masters-green-light);
-}
-
-.createBtn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-/* Locked banner */
-.lockedBanner {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 16px;
-  background: var(--bg-elevated);
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius);
-  font-size: 13px;
-  color: var(--text-secondary);
-}
-
-.lockIcon {
-  font-size: 14px;
-}
-
-/* Section heading for picker */
-.sectionLabel {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+.pickerEmpty {
+  padding: 48px 24px; text-align: center; font-size: 13px; color: var(--text-muted);
+  background: var(--bg-surface); border: 1px solid var(--border-default); border-radius: var(--radius-lg);
 }
