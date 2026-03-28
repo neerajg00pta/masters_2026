@@ -362,6 +362,7 @@ export function AdminPage() {
           <table className={styles.table}>
             <thead>
               <tr>
+                <th style={{ width: 28 }}></th>
                 <th>Full Name</th>
                 <th>Display</th>
                 <th>Email</th>
@@ -374,6 +375,18 @@ export function AdminPage() {
             <tbody>
               {users.map(user => (
                 <tr key={user.id}>
+                  <td style={{ textAlign: 'center' }}>
+                    <button
+                      className={styles.linkIcon}
+                      onClick={() => copyLink(user.email)}
+                      title="Copy invite link"
+                    >
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                        <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+                      </svg>
+                    </button>
+                  </td>
                   <td>
                     {editingCell?.userId === user.id && editingCell.field === 'fullName' ? (
                       <input
@@ -443,9 +456,6 @@ export function AdminPage() {
                   </td>
                   <td className={styles.teamsCell}>
                     {teamCountByUser.get(user.id) ?? 0}
-                    <button className={styles.copyLinkBtn} onClick={() => copyLink(user.email)}>
-                      invite
-                    </button>
                   </td>
                   <td>
                     <button

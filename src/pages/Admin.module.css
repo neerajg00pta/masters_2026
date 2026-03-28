@@ -255,19 +255,22 @@
   gap: 4px;
 }
 
-.copyLinkBtn {
+.linkIcon {
   background: none;
   border: none;
-  color: var(--accent-blue);
+  color: var(--text-muted);
   cursor: pointer;
-  font-size: 11px;
-  padding: 2px 6px;
-  border-radius: 3px;
-  transition: background 0.15s;
+  padding: 3px;
+  border-radius: 4px;
+  transition: all 0.12s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.copyLinkBtn:hover {
-  background: rgba(9, 105, 218, 0.1);
+.linkIcon:hover {
+  color: var(--accent-blue);
+  background: rgba(9, 105, 218, 0.08);
 }
 
 .teamsCell {
