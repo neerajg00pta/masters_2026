@@ -17,9 +17,9 @@
 /* ═══ Row: Pos | $ | Team | Score | Delta | Star ═══ */
 .row {
   display: grid;
-  grid-template-columns: 36px 18px 1fr 48px 48px 22px;
+  grid-template-columns: 36px 16px 1fr 52px 48px 22px;
   align-items: center;
-  gap: 2px;
+  gap: 0;
   padding: 5px 8px;
   border-bottom: 1px solid var(--border-muted);
   border-left: 3px solid transparent;
@@ -30,7 +30,7 @@
 .row:hover { background: var(--bg-elevated); }
 .rowOpen { background: var(--bg-primary); }
 .rowMoney {
-  background: linear-gradient(90deg, rgba(255,215,0,0.10) 0%, rgba(255,215,0,0.02) 50%, transparent 100%);
+  background: rgba(255,215,0,0.15);
   border-left-color: var(--masters-gold-dark);
 }
 .rowOwn {
@@ -65,14 +65,14 @@
   background: var(--accent-green); flex-shrink: 0;
 }
 
-/* Score — plain centered number */
+/* Score */
 .score {
   font-weight: 800; font-size: 14px; color: var(--text-primary);
-  text-align: center; line-height: 1;
+  text-align: right; line-height: 1; padding-right: 6px;
 }
 
-/* Delta — colored numbers, larger */
-.delta { text-align: center; font-weight: 800; font-size: 14px; line-height: 1; }
+/* Delta */
+.delta { text-align: right; font-weight: 800; font-size: 14px; line-height: 1; padding-right: 4px; }
 .up { color: var(--accent-green); }
 .down { color: var(--accent-red); }
 .flat { color: var(--text-muted); font-size: 11px; }
