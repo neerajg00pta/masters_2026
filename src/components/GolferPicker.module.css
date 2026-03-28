@@ -40,8 +40,8 @@
 }
 .searchClear:hover { color: var(--text-primary); }
 
-/* List */
-.list { max-height: 560px; overflow-y: auto; }
+/* List — fills available height */
+.list { max-height: calc(100vh - 200px); overflow-y: auto; }
 
 .row {
   display: flex; align-items: center; gap: 10px;
