@@ -134,11 +134,12 @@ function PlayerRow({ entry, rank, isCut, live, isExpanded, rounds, onToggle }: {
   return (
     <>
       <tr className={trCls} onClick={onToggle} style={{ cursor: 'pointer' }}>
-        <td className={styles.linkCell}>
+        <td className={styles.iconsCell}>
+          {live && !isCut && <span className={styles.liveDot} />}
           {entry.golfer.mastersId && (
             <a href={getMastersUrl(entry.golfer.mastersId)} target="_blank" rel="noopener noreferrer"
               className={styles.linkIcon} onClick={e => e.stopPropagation()} title="View on masters.com">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" />
               </svg>
             </a>
@@ -150,7 +151,6 @@ function PlayerRow({ entry, rank, isCut, live, isExpanded, rounds, onToggle }: {
             {entry.golfer.flagUrl && <img src={entry.golfer.flagUrl} alt="" className={styles.flag} />}
             {entry.isOnRandomTeam && <span className={styles.rndPill}>RND</span>}
             {entry.golfer.name}
-            {live && !isCut && <span className={styles.liveDot} />}
           </span>
         </td>
         <td>{formatScore(entry.adjScore)}</td>

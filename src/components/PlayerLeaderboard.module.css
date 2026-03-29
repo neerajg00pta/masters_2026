@@ -60,8 +60,8 @@
   top: 0;
 }
 
-/* Column widths — Link, Rank, Player, Adj, Masters, Dups, Thru */
-.table thead th:nth-child(1) { width: 20px; }
+/* Column widths — Icons, Rank, Player, Adj, Masters, Dups, Thru */
+.table thead th:nth-child(1) { width: 30px; }
 .table thead th:nth-child(2) { width: 36px; }
 .table thead th:nth-child(3) { width: auto; }
 .table thead th:nth-child(4) { width: 15%; }
@@ -128,9 +128,14 @@
   font-style: italic;
 }
 
-.linkCell {
+/* Icons cell: dot + link together */
+.iconsCell {
   padding: 0 2px !important;
   text-align: center !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
 }
 
 .linkIcon {
@@ -139,11 +144,20 @@
   justify-content: center;
   color: var(--text-muted);
   transition: color 0.12s;
-  padding: 2px;
 }
 
 .linkIcon:hover {
   color: var(--masters-green);
+}
+
+/* Live dot */
+.liveDot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent-green);
+  flex-shrink: 0;
 }
 
 .flag {
@@ -179,16 +193,7 @@
   min-width: 28px;
 }
 
-/* === Live dot === */
-.liveDot {
-  display: inline-block;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--accent-green);
-  margin-left: 4px;
-  flex-shrink: 0;
-}
+
 
 /* === Scorecard === */
 .scorecardRow td {
