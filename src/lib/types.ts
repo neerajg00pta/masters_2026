@@ -106,10 +106,11 @@ export function formatScore(score: number): string {
   return `${score}`
 }
 
-/** Check if a golfer is currently on the course (thru 1-17) */
+/** Check if a golfer is currently on the course (thru is purely a number 1-17) */
 export function isGolferLive(thru: string): boolean {
+  if (!/^\d+$/.test(thru.trim())) return false
   const n = parseInt(thru, 10)
-  return !isNaN(n) && n >= 1 && n <= 17
+  return n >= 1 && n <= 17
 }
 
 /** Deterministic color from user ID */
