@@ -260,11 +260,6 @@ function TeamsView() {
                     <span className={`${styles.statusBadge} ${isReady ? styles.statusReady : styles.statusDraft}`}>
                       {isReady ? 'READY' : 'DRAFT'} {pickCount}/{PICKS_PER_TEAM}
                     </span>
-                    {canEdit && hasFivePicks && !isReady && (
-                      <button className={styles.saveBtn} onClick={handleConfirm} disabled={saving}>
-                        Submit Picks
-                      </button>
-                    )}
                     {canEdit && (
                       <button
                         className={styles.cardDeleteBtn}
@@ -319,6 +314,13 @@ function TeamsView() {
                     )}
                   </div>
                 </div>
+
+                {/* Submit Picks — full-width pulsating pill below picks */}
+                {canEdit && hasFivePicks && !isReady && (
+                  <button className={styles.saveBtn} onClick={handleConfirm} disabled={saving}>
+                    Submit Picks
+                  </button>
+                )}
               </div>
             )
           })}
