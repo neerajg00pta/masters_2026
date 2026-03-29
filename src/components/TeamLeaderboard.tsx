@@ -129,6 +129,10 @@ function Row({ entry, moneyStr, hasMoney, isOwn, isOpen, isStar, onToggle, onSta
   return (
     <>
       <div className={cls} onClick={onToggle}>
+        <span className={styles.liveCol}>
+          {entry.isLive && !entry.isDisqualified && <span className={styles.liveDot} />}
+        </span>
+
         <span className={styles.pos}>
           {entry.isDisqualified ? <span className={styles.dq}>DQ</span> : entry.rankDisplay}
         </span>
@@ -137,7 +141,6 @@ function Row({ entry, moneyStr, hasMoney, isOwn, isOpen, isStar, onToggle, onSta
 
         <span className={styles.team}>
           {entry.team.teamName}
-          {entry.isLive && !entry.isDisqualified && <span className={styles.liveDot} />}
         </span>
 
         <span className={styles.score}>

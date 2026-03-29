@@ -130,9 +130,12 @@
 
 /* Icons cell: dot + link together */
 .iconsCell {
-  padding: 0 2px !important;
+  padding: 0 !important;
   text-align: center !important;
-  display: flex;
+}
+
+.iconsWrap {
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 2px;
