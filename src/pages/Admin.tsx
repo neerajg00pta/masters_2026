@@ -327,7 +327,46 @@ export function AdminPage() {
           {' | '}
           Live: {config.liveScoring ? 'ON' : 'OFF'}
           {' | '}
-          Last snapshot: {snapshots.length > 0 ? snapshots[0].snapshotDate : 'none'}
+          Last snapshot: {snapshots.length > 0 ? new Date(snapshots[0].snapshotDate + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'none'}
+        </div>
+        <div className={styles.controls} style={{ marginTop: 8 }}>
+          <button className={`${styles.btn} ${styles.btnSm}`} onClick={() => {
+            const header = 'Team,Owner,OwnerEmail,Paid,Pick1,Pick2,Pick3,Pick4,Pick5,Random'
+            const rows = readyTeams.map(t => {
+              const owner = users.find(u => u.id === t.userId)
+              const sels = selections.filter(s => s.teamId === t.id)
+              const picks = sels.filter(s => !s.isRandom).map(s => golfers.find(g => g.id === s.golferId)?.name ?? '?')
+              const rnd = sels.find(s => s.isRandom)
+              const rndName = rnd ? (golfers.find(g => g.id === rnd.golferId)?.name ?? '?') : ''
+              while (picks.length < 5) picks.push('')
+              return `"${t.teamName}","${owner?.fullName ?? owner?.name ?? ''}","${owner?.email ?? ''}",${owner?.paid ? 'Y' : 'N'},"${picks[0]}","${picks[1]}","${picks[2]}","${picks[3]}","${picks[4]}","${rndName}"`
+            })
+            const csv = [header, ...rows].join('\n')
+            const blob = new Blob([csv], { type: 'text/csv' })
+            const url = URL.createObjectURL(blob)
+            const a = document.createElement('a'); a.href = url; a.download = 'teams.csv'; a.click()
+            URL.revokeObjectURL(url)
+          }}>
+            Download Teams CSV
+          </button>
+          <button className={`${styles.btn} ${styles.btnSm}`} onClick={async () => {
+            const { computeTeamLeaderboard } = await import('../lib/scoring')
+            const lb = computeTeamLeaderboard(teams, users, golfers, selections, snapshots, null)
+            const header = 'Rank,Team,Owner,Golfer,IsRandom,AdjScore,MastersScore,DupPenalty,Thru,Status'
+            const rows: string[] = []
+            for (const e of lb) {
+              for (const sg of e.scoredGolfers) {
+                rows.push(`${e.rankDisplay},"${e.team.teamName}","${e.user.fullName ?? e.user.name}","${sg.golfer.name}",${sg.isRandom ? 'Y' : 'N'},${sg.adjScore},${sg.golfer.scoreToPar},${sg.dupPenalty},"${sg.golfer.thru}","${sg.golfer.status}"`)
+              }
+            }
+            const csv = [header, ...rows].join('\n')
+            const blob = new Blob([csv], { type: 'text/csv' })
+            const url = URL.createObjectURL(blob)
+            const a = document.createElement('a'); a.href = url; a.download = 'results.csv'; a.click()
+            URL.revokeObjectURL(url)
+          }}>
+            Download Results CSV
+          </button>
         </div>
       </section>
 
