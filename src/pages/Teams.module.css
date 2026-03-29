@@ -193,25 +193,22 @@
 
 .saveBtn {
   display: block; width: 100%; padding: 10px 20px; margin: 0;
-  border-radius: 999px; font-size: 14px; font-weight: 800; letter-spacing: 0.5px;
-  background: linear-gradient(135deg, var(--masters-green), #00a854);
+  border-radius: 0; font-size: 14px; font-weight: 800; letter-spacing: 0.5px;
+  background: var(--masters-green);
   color: #fff; border: none; cursor: pointer;
   animation: savePulse 1.5s ease-in-out infinite;
-  box-shadow: 0 0 0 0 rgba(0, 103, 71, 0.6);
-  border-top: 1px solid var(--border-muted);
-  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+  border-top: 1px solid rgba(255,255,255,0.15);
 }
 .saveBtn:hover {
   animation: none;
-  background: linear-gradient(135deg, #005c38, #00a854);
-  box-shadow: 0 4px 16px rgba(0, 103, 71, 0.4);
+  background: #005c38;
 }
 .saveBtn:disabled { opacity: 0.4; cursor: not-allowed; animation: none; }
 
 @keyframes savePulse {
-  0% { box-shadow: 0 0 0 0 rgba(0, 103, 71, 0.6); background: linear-gradient(135deg, var(--masters-green), #00a854); }
-  50% { box-shadow: 0 0 0 10px rgba(0, 103, 71, 0); background: linear-gradient(135deg, #00a854, #00c965); }
-  100% { box-shadow: 0 0 0 0 rgba(0, 103, 71, 0); background: linear-gradient(135deg, var(--masters-green), #00a854); }
+  0% { background: var(--masters-green); }
+  50% { background: #00c965; }
+  100% { background: var(--masters-green); }
 }
 
 .cardDeleteBtn {
