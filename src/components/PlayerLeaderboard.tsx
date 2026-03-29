@@ -136,9 +136,6 @@ function PlayerRow({ entry, rank, isCut, live, isExpanded, rounds, onToggle }: {
       <tr className={trCls} onClick={onToggle} style={{ cursor: 'pointer' }}>
         <td className={styles.iconsCell}>
           <span className={styles.iconsWrap}>
-            <span className={styles.dotSlot}>
-              {live && !isCut && <span className={styles.liveDot} />}
-            </span>
             <span className={styles.linkSlot}>
               {entry.golfer.mastersId && (
                 <a href={getMastersUrl(entry.golfer.mastersId)} target="_blank" rel="noopener noreferrer"
@@ -148,6 +145,9 @@ function PlayerRow({ entry, rank, isCut, live, isExpanded, rounds, onToggle }: {
                   </svg>
                 </a>
               )}
+            </span>
+            <span className={styles.dotSlot}>
+              {live && !isCut && <span className={styles.liveDot} />}
             </span>
           </span>
         </td>
