@@ -51,10 +51,7 @@ export function AdminPage() {
   }
 
   // Team readiness
-  const readyTeams = teams.filter(t => {
-    const picks = selections.filter(s => s.teamId === t.id && !s.isRandom)
-    return picks.length >= 5
-  })
+  const readyTeams = teams.filter(t => t.confirmed)
   const totalCollected = readyTeams.length * ENTRY_FEE
 
   // === Pool Controls ===

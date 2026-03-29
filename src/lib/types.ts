@@ -20,6 +20,7 @@ export interface Team {
   id: string
   userId: string
   teamName: string
+  confirmed: boolean
   createdAt: string
 }
 

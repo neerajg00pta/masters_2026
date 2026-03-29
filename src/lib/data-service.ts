@@ -50,6 +50,7 @@ export async function fetchAllData(): Promise<AllData> {
     id: r.id as string,
     userId: r.user_id as string,
     teamName: r.team_name as string,
+    confirmed: (r.confirmed as boolean) ?? false,
     createdAt: r.created_at as string,
   }))
 
@@ -129,6 +130,7 @@ export async function createTeam(userId: string, teamName: string): Promise<Team
     id: data.id,
     userId: data.user_id,
     teamName: data.team_name,
+    confirmed: data.confirmed ?? false,
     createdAt: data.created_at,
   }
 }
@@ -161,11 +163,24 @@ export async function updateTeamName(teamId: string, name: string): Promise<void
   if (error) throw new Error(error.message)
 }
 
+/** Set team confirmed status */
+export async function setTeamConfirmed(teamId: string, confirmed: boolean): Promise<void> {
+  const { error } = await supabase
+    .from('teams')
+    .update({ confirmed })
+    .eq('id', teamId)
+  if (error) throw new Error(error.message)
+}
+
 // === Selection mutations ===
 
-/** Add a golfer to a team */
+/** Add a golfer to a team (auto-unconfirms) */
 export async function addSelection(teamId: string, golferId: string, isRandom: boolean): Promise<Selection> {
   const id = `s${Date.now()}`
+  // Unconfirm team when editing picks (unless it's a random assignment)
+  if (!isRandom) {
+    await supabase.from('teams').update({ confirmed: false }).eq('id', teamId)
+  }
   const { data, error } = await supabase
     .from('selections')
     .insert({ id, team_id: teamId, golfer_id: golferId, is_random: isRandom })
@@ -183,8 +198,9 @@ export async function addSelection(teamId: string, golferId: string, isRandom: b
   }
 }
 
-/** Remove a golfer from a team */
+/** Remove a golfer from a team (auto-unconfirms) */
 export async function removeSelection(teamId: string, golferId: string): Promise<void> {
+  await supabase.from('teams').update({ confirmed: false }).eq('id', teamId)
   const { error } = await supabase
     .from('selections')
     .delete()

@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from 'react'
 import { useData } from '../context/DataContext'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
-import { createTeam, deleteTeam, updateTeamName, removeSelection, createUser } from '../lib/data-service'
+import { createTeam, deleteTeam, updateTeamName, removeSelection, createUser, setTeamConfirmed } from '../lib/data-service'
 import { PICKS_PER_TEAM } from '../lib/types'
 import { GolferPicker } from '../components/GolferPicker'
 import styles from './Teams.module.css'
@@ -213,12 +213,24 @@ function TeamsView() {
             const userPicks = teamSels.filter(s => !s.isRandom)
             const randomSel = teamSels.find(s => s.isRandom)
             const pickCount = userPicks.length
-            const isComplete = pickCount >= PICKS_PER_TEAM
+            const hasFivePicks = pickCount >= PICKS_PER_TEAM
+            const isReady = t.confirmed && hasFivePicks
+
+            const handleConfirm = async (ev: React.MouseEvent) => {
+              ev.stopPropagation()
+              setSaving(true)
+              try {
+                await setTeamConfirmed(t.id, true)
+                await refresh()
+                addToast(`"${t.teamName}" is locked in!`, 'success')
+              } catch { addToast('Failed to save', 'error') }
+              finally { setSaving(false) }
+            }
 
             return (
               <div
                 key={t.id}
-                className={`${styles.teamCard} ${isActive ? styles.teamCardActive : ''} ${isComplete ? styles.teamCardComplete : ''}`}
+                className={`${styles.teamCard} ${isActive ? styles.teamCardActive : ''} ${isReady ? styles.teamCardComplete : ''}`}
                 onClick={() => setActiveTeamId(t.id)}
               >
                 {/* Card header */}
@@ -245,9 +257,14 @@ function TeamsView() {
                     </span>
                   )}
                   <div className={styles.cardMeta}>
-                    <span className={`${styles.statusBadge} ${isComplete ? styles.statusReady : styles.statusDraft}`}>
-                      {isComplete ? 'READY' : 'DRAFT'} {pickCount}/{PICKS_PER_TEAM}
+                    <span className={`${styles.statusBadge} ${isReady ? styles.statusReady : styles.statusDraft}`}>
+                      {isReady ? 'READY' : 'DRAFT'} {pickCount}/{PICKS_PER_TEAM}
                     </span>
+                    {canEdit && hasFivePicks && !isReady && (
+                      <button className={styles.saveBtn} onClick={handleConfirm} disabled={saving}>
+                        Save
+                      </button>
+                    )}
                     {canEdit && (
                       <button
                         className={styles.cardDeleteBtn}

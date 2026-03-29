@@ -191,6 +191,14 @@
 .teamCardActive .statusReady { background: rgba(255,255,255,0.2); color: #fff; }
 .teamCardActive .statusDraft { background: rgba(255,255,255,0.2); color: var(--masters-gold); }
 
+.saveBtn {
+  padding: 3px 10px; border-radius: var(--radius); font-size: 11px; font-weight: 700;
+  background: var(--masters-green); color: #fff; border: none; cursor: pointer;
+  transition: opacity 0.12s; flex-shrink: 0;
+}
+.saveBtn:hover { opacity: 0.85; }
+.saveBtn:disabled { opacity: 0.4; cursor: not-allowed; }
+
 .cardDeleteBtn {
   width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;
   border-radius: 50%; border: none; background: transparent; color: var(--text-muted);
