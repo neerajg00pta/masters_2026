@@ -48,11 +48,11 @@
 
 .table thead th {
   text-align: left;
-  font-size: 10px;
-  font-weight: 600;
+  font-size: 9px;
+  font-weight: 700;
   color: var(--text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.6px;
   padding: 6px 6px;
   border-bottom: 1px solid var(--border-default);
   background: var(--bg-elevated);
@@ -60,13 +60,13 @@
   top: 0;
 }
 
-/* Column widths — Rank, Player, Adj, Masters, Dups, Thru */
-.table thead th:nth-child(1) { width: 38px; }
+/* Column widths — spread evenly, Rank narrow, rest balanced */
+.table thead th:nth-child(1) { width: 36px; }
 .table thead th:nth-child(2) { width: auto; }
-.table thead th:nth-child(3) { width: 42px; }
-.table thead th:nth-child(4) { width: 52px; }
-.table thead th:nth-child(5) { width: 36px; }
-.table thead th:nth-child(6) { width: 48px; }
+.table thead th:nth-child(3) { width: 16%; }
+.table thead th:nth-child(4) { width: 16%; }
+.table thead th:nth-child(5) { width: 12%; }
+.table thead th:nth-child(6) { width: 14%; }
 
 .sortableTh {
   cursor: pointer;
@@ -83,16 +83,22 @@
 }
 
 .table thead th:not(:nth-child(2)) {
-  text-align: right;
+  text-align: center;
 }
 
 .table tbody td {
-  padding: 4px 4px;
+  padding: 5px 4px;
   border-bottom: 1px solid var(--border-muted);
 }
 
 .table tbody td:not(:nth-child(2)) {
-  text-align: right;
+  text-align: center;
+}
+
+/* Adj score — heavier weight, the key number */
+.table tbody td:nth-child(3) {
+  font-weight: 700;
+  font-size: 13px;
 }
 
 .table tbody tr:last-child td {
