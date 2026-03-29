@@ -71,9 +71,10 @@ export function TeamLeaderboard({ entries, payoutMap, currentUserId }: Props) {
 
   const renderRow = (e: TeamLeaderboardEntry, prefix: string) => {
     const key = `${prefix}${e.team.id}`
-    const hasMoney = !!(payoutMap.get(e.team.id))
+    const payout = payoutMap.get(e.team.id) ?? null
+    const moneyStr = payout === 'first' ? '$$$' : payout === 'second' ? '$$' : payout ? '$' : ''
     return (
-      <Row key={key} entry={e} hasMoney={hasMoney}
+      <Row key={key} entry={e} moneyStr={moneyStr} hasMoney={!!payout}
         isOwn={currentUserId === e.user.id}
         isOpen={expanded.has(key)}
         isStar={starred.has(e.team.id)}
@@ -112,8 +113,8 @@ export function TeamLeaderboard({ entries, payoutMap, currentUserId }: Props) {
   )
 }
 
-function Row({ entry, hasMoney, isOwn, isOpen, isStar, onToggle, onStar }: {
-  entry: TeamLeaderboardEntry; hasMoney: boolean; isOwn: boolean
+function Row({ entry, moneyStr, hasMoney, isOwn, isOpen, isStar, onToggle, onStar }: {
+  entry: TeamLeaderboardEntry; moneyStr: string; hasMoney: boolean; isOwn: boolean
   isOpen: boolean; isStar: boolean; onToggle: () => void; onStar: (e: React.MouseEvent) => void
 }) {
   const cls = [
@@ -131,7 +132,7 @@ function Row({ entry, hasMoney, isOwn, isOpen, isStar, onToggle, onStar }: {
           {entry.isDisqualified ? <span className={styles.dq}>DQ</span> : entry.rankDisplay}
         </span>
 
-        <span className={styles.money}>{hasMoney ? '$' : ''}</span>
+        <span className={styles.money}>{moneyStr}</span>
 
         <span className={styles.team}>
           {entry.team.teamName}
