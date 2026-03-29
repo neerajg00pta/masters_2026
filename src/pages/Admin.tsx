@@ -115,6 +115,23 @@ export function AdminPage() {
     }
   }
 
+  const forceSnapshot = async () => {
+    setSaving(true)
+    try {
+      const { computeTeamLeaderboard } = await import('../lib/scoring')
+      const lb = computeTeamLeaderboard(teams, users, golfers, selections, snapshots, null)
+      const data = lb.filter(e => !e.isDisqualified).map(e => ({ teamId: e.team.id, aggregateScore: e.aggregateScore, rank: e.rank }))
+      const { saveSnapshots } = await import('../lib/data-service')
+      await saveSnapshots(data)
+      await refresh()
+      addToast(`Snapshot saved (${data.length} teams)`, 'success')
+    } catch {
+      addToast('Failed to save snapshot', 'error')
+    } finally {
+      setSaving(false)
+    }
+  }
+
   const toggleLiveScoring = async () => {
     const willEnable = !config.liveScoring
     setSaving(true)
@@ -289,6 +306,14 @@ export function AdminPage() {
             disabled={saving}
           >
             {config.liveScoring ? 'Live Scoring ON' : 'Live Scoring OFF'}
+          </button>
+
+          <button
+            className={`${styles.btn} ${styles.btnSm}`}
+            onClick={forceSnapshot}
+            disabled={saving}
+          >
+            Force Snapshot
           </button>
         </div>
 
