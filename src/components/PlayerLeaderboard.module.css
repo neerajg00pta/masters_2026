@@ -61,12 +61,12 @@
 }
 
 /* Column widths — Rank, Player, Adj, Masters, Dups, Thru */
-.table thead th:nth-child(1) { width: 42px; }
+.table thead th:nth-child(1) { width: 38px; }
 .table thead th:nth-child(2) { width: auto; }
-.table thead th:nth-child(3) { width: 46px; }
+.table thead th:nth-child(3) { width: 42px; }
 .table thead th:nth-child(4) { width: 52px; }
-.table thead th:nth-child(5) { width: 38px; }
-.table thead th:nth-child(6) { width: 52px; }
+.table thead th:nth-child(5) { width: 36px; }
+.table thead th:nth-child(6) { width: 48px; }
 
 .sortableTh {
   cursor: pointer;
@@ -87,7 +87,7 @@
 }
 
 .table tbody td {
-  padding: 4px 6px;
+  padding: 4px 4px;
   border-bottom: 1px solid var(--border-muted);
 }
 
@@ -109,6 +109,10 @@
   align-items: center;
   gap: 4px;
   font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
 }
 
 .randomPlayer .playerName {
