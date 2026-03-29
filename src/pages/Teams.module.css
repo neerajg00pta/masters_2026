@@ -87,6 +87,7 @@
 }
 .authInput:focus { border-color: var(--masters-green); }
 .authInput::placeholder { color: var(--text-muted); }
+.authSubtext { font-size: 12px; color: var(--text-muted); margin-top: -8px; }
 .authError { font-size: 12px; color: var(--accent-red); font-weight: 600; }
 .authBtn {
   padding: 10px; border-radius: var(--radius); background: var(--masters-green);
