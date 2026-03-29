@@ -4,6 +4,11 @@
   display: flex;
   flex-direction: column;
   gap: 24px;
+  min-width: 0;
+}
+
+@media (max-width: 600px) {
+  .admin { gap: 16px; }
 }
 
 .forbidden {
@@ -30,13 +35,23 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+@media (max-width: 480px) {
+  .section { padding: 10px; }
 }
 
 .sectionHeader {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px 12px;
   flex-wrap: wrap;
+}
+
+@media (max-width: 480px) {
+  .sectionHeader { gap: 4px 8px; }
 }
 
 .sectionTitle {

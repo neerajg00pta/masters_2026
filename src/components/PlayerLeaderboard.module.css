@@ -71,15 +71,22 @@
 
 @media (max-width: 480px) {
   .table { font-size: 11px; }
-  .table thead th:nth-child(1) { width: 28px; }
-  .table thead th:nth-child(2) { width: 32px; }
-  .table thead th:nth-child(4) { width: 38px; }
-  .table thead th:nth-child(5) { width: 44px; }
-  .table thead th:nth-child(6) { width: 32px; }
-  .table thead th:nth-child(7) { width: 28px; }
-  .table thead th { font-size: 8px; padding: 4px 2px; }
+  .table thead th:nth-child(1) { width: 20px; }
+  .table thead th:nth-child(2) { width: 28px; }
+  .table thead th:nth-child(4) { width: 34px; }
+  .table thead th:nth-child(5) { width: 40px; }
+  .table thead th:nth-child(6) { width: 28px; }
+  .table thead th:nth-child(7) { width: 24px; }
+  .table thead th { font-size: 8px; padding: 4px 2px; letter-spacing: 0; }
   .table tbody td { padding: 4px 2px; }
   .table tbody td:nth-child(4) { font-size: 12px; }
+  .iconsCell { padding: 0 !important; }
+  .iconsWrap { gap: 0; justify-content: center; }
+  .linkSlot { width: 10px; }
+  .dotSlot { width: 6px; }
+  .flag { display: none; }
+  .playerName { gap: 3px; font-size: 11px; }
+  .rank { font-size: 11px; min-width: 0; }
 }
 
 .thLink { padding: 0 !important; }

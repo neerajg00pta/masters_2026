@@ -201,6 +201,12 @@
 .main {
   flex: 1;
   padding: 16px;
+  min-width: 0;
+  overflow-x: hidden;
+}
+
+@media (max-width: 480px) {
+  .main { padding: 10px; }
 }
 
 .loading {
