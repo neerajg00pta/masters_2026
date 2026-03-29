@@ -7,7 +7,7 @@ import styles from './Layout.module.css'
 
 export function Layout({ children }: { children: ReactNode }) {
   const { currentUser, login, logout, isAdmin, activateAdmin, deactivateAdmin } = useAuth()
-  const { loading } = useData()
+  const { loading, config } = useData()
   const { addToast } = useToast()
   const [emailInput, setEmailInput] = useState('')
   const [loginError, setLoginError] = useState(false)
@@ -66,18 +66,22 @@ export function Layout({ children }: { children: ReactNode }) {
         </Link>
 
         <div className={styles.headerRight}>
-          <Link
-            to="/live"
-            className={`${styles.navLink} ${location.pathname === '/live' ? styles.navLinkActive : ''}`}
-          >
-            Live
-          </Link>
-          <Link
-            to="/teams"
-            className={`${styles.navLink} ${location.pathname === '/teams' ? styles.navLinkActive : ''}`}
-          >
-            Teams
-          </Link>
+          {(config.poolLocked || isAdmin) && (
+            <Link
+              to="/live"
+              className={`${styles.navLink} ${location.pathname === '/live' ? styles.navLinkActive : ''}`}
+            >
+              Live
+            </Link>
+          )}
+          {(!config.poolLocked || isAdmin) && (
+            <Link
+              to="/teams"
+              className={`${styles.navLink} ${location.pathname === '/teams' ? styles.navLinkActive : ''}`}
+            >
+              Teams
+            </Link>
+          )}
           <Link
             to="/rules"
             className={`${styles.navLink} ${location.pathname === '/rules' ? styles.navLinkActive : ''}`}
