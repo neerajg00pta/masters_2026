@@ -1,6 +1,7 @@
 import { useState, useCallback, useRef, useEffect } from 'react'
 import type { TeamLeaderboardEntry } from '../lib/types'
 import { formatScore, isGolferLive, COUNTING_GOLFERS } from '../lib/types'
+import { getMastersUrl } from '../lib/masters-ids'
 import type { PayoutPosition } from '../lib/scoring'
 import styles from './TeamLeaderboard.module.css'
 
@@ -175,7 +176,12 @@ function Detail({ entry }: { entry: TeamLeaderboardEntry }) {
               <tr key={sg.golfer.id} className={[cut ? styles.cutLine : '', sg.isCut ? styles.cutRow : ''].filter(Boolean).join(' ') || undefined}>
                 <td className={styles.dtL}>
                   {live && !sg.isCut && <span className={styles.liveDot} />}
-                  {sg.golfer.name}
+                  {sg.golfer.mastersId ? (
+                    <a href={getMastersUrl(sg.golfer.mastersId)} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} style={{ color: 'inherit', textDecoration: 'none' }}
+                      onMouseEnter={e => (e.currentTarget.style.color = 'var(--masters-green)', e.currentTarget.style.textDecoration = 'underline')}
+                      onMouseLeave={e => (e.currentTarget.style.color = 'inherit', e.currentTarget.style.textDecoration = 'none')}
+                    >{sg.golfer.name}</a>
+                  ) : sg.golfer.name}
                   {sg.isRandom && <span className={styles.rnd}>RND</span>}
                 </td>
                 <td>{formatScore(sg.adjScore)}</td>

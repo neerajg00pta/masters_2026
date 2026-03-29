@@ -15,7 +15,7 @@ export interface ESPNGolfer {
 /** Result of matching an ESPN golfer to a pool golfer */
 export interface MatchResult {
   poolGolferId: string
-  espnGolferId: string
+  espnId: string
   espnName: string
   scoreToPar: number
   today: number
@@ -217,8 +217,27 @@ export function matchESPNToPool(
   const usedPoolIds = new Set<string>()
   const matchedEspnIds = new Set<string>()
 
+  const makeResult = (poolId: string, espn: ESPNGolfer): MatchResult => ({
+    poolGolferId: poolId, espnId: espn.id, espnName: espn.name,
+    scoreToPar: espn.scoreToPar, today: espn.today, thru: espn.thru,
+    status: espn.status, flagUrl: espn.flagUrl,
+  })
+
+  // Pass 0: by stored ESPN ID (most reliable — persisted from previous match)
+  for (const espn of espnGolfers) {
+    const pool = poolGolfers.find(g =>
+      !usedPoolIds.has(g.id) && g.espnId && g.espnId === espn.id
+    )
+    if (pool) {
+      usedPoolIds.add(pool.id)
+      matchedEspnIds.add(espn.id)
+      matched.push(makeResult(pool.id, espn))
+    }
+  }
+
   // Pass 1: by stored espn_name
   for (const espn of espnGolfers) {
+    if (matchedEspnIds.has(espn.id)) continue
     const espnLower = espn.name.toLowerCase().trim()
     const pool = poolGolfers.find(g =>
       !usedPoolIds.has(g.id) && g.espnName && g.espnName.toLowerCase().trim() === espnLower
@@ -226,11 +245,7 @@ export function matchESPNToPool(
     if (pool) {
       usedPoolIds.add(pool.id)
       matchedEspnIds.add(espn.id)
-      matched.push({
-        poolGolferId: pool.id, espnGolferId: espn.id, espnName: espn.name,
-        scoreToPar: espn.scoreToPar, today: espn.today, thru: espn.thru,
-        status: espn.status, flagUrl: espn.flagUrl,
-      })
+      matched.push(makeResult(pool.id, espn))
     }
   }
 
@@ -243,11 +258,7 @@ export function matchESPNToPool(
     if (pool) {
       usedPoolIds.add(pool.id)
       matchedEspnIds.add(espn.id)
-      matched.push({
-        poolGolferId: pool.id, espnGolferId: espn.id, espnName: espn.name,
-        scoreToPar: espn.scoreToPar, today: espn.today, thru: espn.thru,
-        status: espn.status, flagUrl: espn.flagUrl,
-      })
+      matched.push(makeResult(pool.id, espn))
     }
   }
 

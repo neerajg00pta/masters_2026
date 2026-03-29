@@ -3,6 +3,7 @@ import type { Golfer, Team, User, Selection, ScoreSnapshot } from '../lib/types'
 import { fetchESPNLeaderboard, matchESPNToPool, type ESPNGolfer } from '../lib/espn'
 import { updateGolferScores, updateGolfer, saveSnapshots } from '../lib/data-service'
 import { computeTeamLeaderboard } from '../lib/scoring'
+import { ESPN_TO_MASTERS } from '../lib/masters-ids'
 
 const POLL_INTERVAL_MS = 30_000 // 30 seconds
 
@@ -52,15 +53,20 @@ export function useLiveScoring(
       setUnmatchedEspn(unmatched)
       setUnmatchedPool(unPool)
 
-      // Auto-persist espn_name and flagUrl for new matches
+      // Auto-persist espnId, espnName, flagUrl, mastersId for new/updated matches
       for (const match of matched) {
         const poolGolfer = currentGolfers.find(g => g.id === match.poolGolferId)
-        if (poolGolfer && !poolGolfer.espnName) {
-          const updates: Parameters<typeof updateGolfer>[1] = { espnName: match.espnName }
-          if (match.flagUrl) updates.flagUrl = match.flagUrl
+        if (!poolGolfer) continue
+        const updates: Parameters<typeof updateGolfer>[1] = {}
+        if (!poolGolfer.espnId && match.espnId) updates.espnId = match.espnId
+        if (!poolGolfer.espnName) updates.espnName = match.espnName
+        if (!poolGolfer.flagUrl && match.flagUrl) updates.flagUrl = match.flagUrl
+        if (!poolGolfer.mastersId && match.espnId) {
+          const mid = ESPN_TO_MASTERS.get(match.espnId)
+          if (mid) updates.mastersId = mid
+        }
+        if (Object.keys(updates).length > 0) {
           await updateGolfer(match.poolGolferId, updates)
-        } else if (poolGolfer && match.flagUrl && !poolGolfer.flagUrl) {
-          await updateGolfer(match.poolGolferId, { flagUrl: match.flagUrl })
         }
       }
 

@@ -67,6 +67,8 @@ export async function fetchAllData(): Promise<AllData> {
     sortOrder: (r.sort_order as number) ?? 999,
     scoreLocked: (r.score_locked as boolean) ?? false,
     flagUrl: (r.flag_url as string) ?? null,
+    espnId: (r.espn_id as string) ?? null,
+    mastersId: (r.masters_id as string) ?? null,
   }))
 
   const selections: Selection[] = (selectionsRes.data ?? []).map((r: Record<string, unknown>) => ({
@@ -312,6 +314,8 @@ export async function updateGolfer(
     status: Golfer['status']
     scoreLocked: boolean
     flagUrl: string | null
+    espnId: string | null
+    mastersId: string | null
   }>
 ): Promise<void> {
   const payload: Record<string, unknown> = {}
@@ -323,6 +327,8 @@ export async function updateGolfer(
   if (updates.status !== undefined) payload.status = updates.status
   if (updates.scoreLocked !== undefined) payload.score_locked = updates.scoreLocked
   if (updates.flagUrl !== undefined) payload.flag_url = updates.flagUrl
+  if (updates.espnId !== undefined) payload.espn_id = updates.espnId
+  if (updates.mastersId !== undefined) payload.masters_id = updates.mastersId
 
   const { error } = await supabase
     .from('golfers')

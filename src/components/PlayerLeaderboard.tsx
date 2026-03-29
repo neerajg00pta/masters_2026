@@ -2,6 +2,7 @@ import { useState, useMemo, useCallback, useRef } from 'react'
 import type { PlayerLeaderboardEntry } from '../lib/types'
 import { formatScore, isGolferLive, CUT_SCORE } from '../lib/types'
 import { fetchScorecards, type RoundScorecard } from '../lib/espn'
+import { getMastersUrl } from '../lib/masters-ids'
 import styles from './PlayerLeaderboard.module.css'
 
 interface PlayerLeaderboardProps {
@@ -137,7 +138,9 @@ function PlayerRow({ entry, rank, isCut, live, isExpanded, rounds, onToggle }: {
           <span className={styles.playerName}>
             {entry.golfer.flagUrl && <img src={entry.golfer.flagUrl} alt="" className={styles.flag} />}
             {entry.isOnRandomTeam && <span className={styles.rndPill}>RND</span>}
-            {entry.golfer.name}
+            {entry.golfer.mastersId ? (
+              <a href={getMastersUrl(entry.golfer.mastersId)} target="_blank" rel="noopener noreferrer" className={styles.playerLink}>{entry.golfer.name}</a>
+            ) : entry.golfer.name}
             {live && !isCut && <span className={styles.liveDot} />}
           </span>
         </td>

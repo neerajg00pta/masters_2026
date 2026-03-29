@@ -37,6 +37,8 @@ export interface Golfer {
   sortOrder: number
   scoreLocked: boolean
   flagUrl: string | null
+  espnId: string | null
+  mastersId: string | null
 }
 
 export interface Selection {
