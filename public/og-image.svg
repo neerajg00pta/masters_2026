@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#006747"/>
+  <!-- Subtle pattern -->
+  <rect x="0" y="0" width="1200" height="630" fill="url(#grad)" opacity="0.3"/>
+  <defs>
+    <linearGradient id="grad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#004d35"/>
+      <stop offset="100%" stop-color="#1a7d5a"/>
+    </linearGradient>
+  </defs>
+  <!-- Flag -->
+  <rect x="540" y="80" width="12" height="200" rx="6" fill="#FFD700"/>
+  <path d="M552 80 L660 120 L552 160 Z" fill="#FFD700"/>
+  <!-- Text -->
+  <text x="600" y="360" text-anchor="middle" font-family="Georgia, serif" font-size="72" font-weight="bold" fill="#FFD700" letter-spacing="6">MASTERS 2026</text>
+  <text x="600" y="420" text-anchor="middle" font-family="Arial, sans-serif" font-size="28" fill="rgba(255,255,255,0.8)">Fantasy Golf Pool</text>
+  <text x="600" y="470" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" fill="rgba(255,255,255,0.5)">Draft your team · Track live scores · Compete for the green jacket</text>
+  <!-- Bottom bar -->
+  <rect x="0" y="600" width="1200" height="30" fill="#004d35"/>
+</svg>
