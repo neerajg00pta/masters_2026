@@ -36,6 +36,7 @@ export interface Golfer {
   status: 'active' | 'cut' | 'withdrawn'
   sortOrder: number
   scoreLocked: boolean
+  flagUrl: string | null
 }
 
 export interface Selection {

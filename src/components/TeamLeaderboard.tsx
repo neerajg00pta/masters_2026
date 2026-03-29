@@ -4,12 +4,14 @@ import { formatScore, isGolferLive, COUNTING_GOLFERS } from '../lib/types'
 import type { PayoutPosition } from '../lib/scoring'
 import styles from './TeamLeaderboard.module.css'
 
-const STARRED_KEY = 'masters_starred_teams'
-function readStarred(): Set<string> {
-  try { const r = localStorage.getItem(STARRED_KEY); if (r) return new Set(JSON.parse(r)); } catch {}
+function starKey(userId: string | null) { return `masters_stars_${userId ?? 'anon'}` }
+function readStarred(userId: string | null): Set<string> {
+  try { const r = localStorage.getItem(starKey(userId)); if (r) return new Set(JSON.parse(r)); } catch {}
   return new Set()
 }
-function writeStarred(ids: Set<string>) { localStorage.setItem(STARRED_KEY, JSON.stringify([...ids])) }
+function writeStarred(userId: string | null, ids: Set<string>) {
+  localStorage.setItem(starKey(userId), JSON.stringify([...ids]))
+}
 
 interface Props {
   entries: TeamLeaderboardEntry[]
@@ -20,16 +22,23 @@ interface Props {
 export function TeamLeaderboard({ entries, payoutMap, currentUserId }: Props) {
   const [collapsed, setCollapsed] = useState(false)
   const [expanded, setExpanded] = useState<Set<string>>(new Set())
-  const [starred, setStarred] = useState(readStarred)
+  const [starred, setStarred] = useState(() => readStarred(currentUserId))
   const [search, setSearch] = useState('')
 
-  // Auto-expand pinned cards once
+  // Auto-star own teams + auto-expand pinned, once
   const didInit = useRef(false)
   useEffect(() => {
     if (didInit.current || !currentUserId) return
-    const own = entries.filter(e => e.user.id === currentUserId).map(e => `p-${e.team.id}`)
-    if (own.length > 0) {
-      setExpanded(new Set(own))
+    const ownIds = entries.filter(e => e.user.id === currentUserId).map(e => e.team.id)
+    if (ownIds.length > 0) {
+      setStarred(prev => {
+        const n = new Set(prev)
+        let changed = false
+        for (const id of ownIds) { if (!n.has(id)) { n.add(id); changed = true } }
+        if (changed) writeStarred(currentUserId, n)
+        return n
+      })
+      setExpanded(new Set(ownIds.map(id => `p-${id}`)))
       didInit.current = true
     }
   }, [currentUserId, entries])
@@ -39,15 +48,17 @@ export function TeamLeaderboard({ entries, payoutMap, currentUserId }: Props) {
   }, [])
   const toggleStar = useCallback((ev: React.MouseEvent, id: string) => {
     ev.stopPropagation()
-    setStarred(p => { const n = new Set(p); n.has(id) ? n.delete(id) : n.add(id); writeStarred(n); return n })
-  }, [])
+    setStarred(p => {
+      const n = new Set(p); n.has(id) ? n.delete(id) : n.add(id)
+      writeStarred(currentUserId, n); return n
+    })
+  }, [currentUserId])
 
   const sorted = [...entries].sort((a, b) => {
     if (a.isDisqualified !== b.isDisqualified) return a.isDisqualified ? 1 : -1
     return a.rank - b.rank
   })
 
-  // Filter by search
   const filtered = search.trim() ? sorted.filter(e => {
     const q = search.toLowerCase()
     return e.team.teamName.toLowerCase().includes(q)
@@ -55,9 +66,8 @@ export function TeamLeaderboard({ entries, payoutMap, currentUserId }: Props) {
       || e.user.name.toLowerCase().includes(q)
   }) : sorted
 
-  const pinned = (search.trim() ? filtered : sorted).filter(e =>
-    (currentUserId && e.user.id === currentUserId) || starred.has(e.team.id)
-  )
+  // Pinned = starred teams (includes own unless user unstarred them)
+  const pinned = (search.trim() ? [] : sorted.filter(e => starred.has(e.team.id)))
 
   const renderRow = (e: TeamLeaderboardEntry, prefix: string) => {
     const key = `${prefix}${e.team.id}`
@@ -66,33 +76,38 @@ export function TeamLeaderboard({ entries, payoutMap, currentUserId }: Props) {
       <Row key={key} entry={e} hasMoney={hasMoney}
         isOwn={currentUserId === e.user.id}
         isOpen={expanded.has(key)}
-        isStar={starred.has(e.team.id) || currentUserId === e.user.id}
+        isStar={starred.has(e.team.id)}
         onToggle={() => toggle(key)}
         onStar={ev => toggleStar(ev, e.team.id)} />
     )
   }
 
   return (
-    <div className={styles.panel}>
-      <div className={styles.hdr} onClick={() => setCollapsed(c => !c)}>
-        <span className={styles.hdrT}>Leaderboard</span>
-        <span className={`${styles.chev} ${collapsed ? styles.chevC : ''}`}>&#9660;</span>
-      </div>
-      {!collapsed && <div className={styles.body}>
-        <div className={styles.searchBar}>
-          <input className={styles.searchInput} type="text" placeholder="Find team or player..."
-            value={search} onChange={e => setSearch(e.target.value)} />
-          {search && <button className={styles.searchClear} onClick={() => setSearch('')}>&times;</button>}
+    <div>
+      {/* Pinned section — above the main panel */}
+      {!search.trim() && pinned.length > 0 && (
+        <div className={styles.pinnedSection}>
+          {pinned.map(e => renderRow(e, 'p-'))}
         </div>
-        {sorted.length === 0 ? <div className={styles.empty}>No teams yet.</div> : <>
-          {!search.trim() && pinned.length > 0 && <>
-            {pinned.map(e => renderRow(e, 'p-'))}
-            <div className={styles.divider} />
-          </>}
-          {filtered.length === 0 ? <div className={styles.empty}>No matches for "{search}"</div> :
-            filtered.map(e => renderRow(e, ''))}
-        </>}
-      </div>}
+      )}
+
+      {/* Main leaderboard panel */}
+      <div className={styles.panel}>
+        <div className={styles.hdr} onClick={() => setCollapsed(c => !c)}>
+          <span className={styles.hdrT}>Leaderboard</span>
+          <span className={`${styles.chev} ${collapsed ? styles.chevC : ''}`}>&#9660;</span>
+        </div>
+        {!collapsed && <div className={styles.body}>
+          <div className={styles.searchBar}>
+            <input className={styles.searchInput} type="text" placeholder="Find team or player..."
+              value={search} onChange={e => setSearch(e.target.value)} />
+            {search && <button className={styles.searchClear} onClick={() => setSearch('')}>&times;</button>}
+          </div>
+          {sorted.length === 0 ? <div className={styles.empty}>No teams yet.</div> :
+            filtered.length === 0 ? <div className={styles.empty}>No matches for &ldquo;{search}&rdquo;</div> :
+              filtered.map(e => renderRow(e, ''))}
+        </div>}
+      </div>
     </div>
   )
 }

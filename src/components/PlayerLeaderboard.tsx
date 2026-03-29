@@ -131,6 +131,7 @@ export function PlayerLeaderboard({ entries }: PlayerLeaderboardProps) {
                       <td className={styles.rank}>{isCut ? '' : rankDisplays[idx]}</td>
                       <td>
                         <span className={styles.playerName}>
+                          {entry.golfer.flagUrl && <img src={entry.golfer.flagUrl} alt="" className={styles.flag} />}
                           {entry.isOnRandomTeam && <span className={styles.rndPill}>RND</span>}
                           {entry.golfer.name}
                           {live && !isCut && (

@@ -16,6 +16,7 @@ export function Layout({ children }: { children: ReactNode }) {
 
   // Hidden admin activation: type "admin" anywhere on the page
   const keyBuffer = useRef('')
+  const longPressRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return
@@ -107,7 +108,12 @@ export function Layout({ children }: { children: ReactNode }) {
                   </button>
                 </nav>
               )}
-              <span className={styles.userName}>{currentUser.fullName ?? currentUser.name}</span>
+              <span
+                className={styles.userName}
+                onTouchStart={() => { longPressRef.current = setTimeout(() => { if (activateAdmin()) addToast('Admin mode activated', 'success') }, 500) }}
+                onTouchEnd={() => { if (longPressRef.current) clearTimeout(longPressRef.current) }}
+                onTouchCancel={() => { if (longPressRef.current) clearTimeout(longPressRef.current) }}
+              >{currentUser.fullName ?? currentUser.name}</span>
               <button onClick={logout} className={styles.logoutBtn}>
                 Log out
               </button>

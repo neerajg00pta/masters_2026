@@ -52,12 +52,15 @@ export function useLiveScoring(
       setUnmatchedEspn(unmatched)
       setUnmatchedPool(unPool)
 
-      // Auto-persist espn_name for new fuzzy matches (done once, then persisted)
+      // Auto-persist espn_name and flagUrl for new matches
       for (const match of matched) {
         const poolGolfer = currentGolfers.find(g => g.id === match.poolGolferId)
         if (poolGolfer && !poolGolfer.espnName) {
-          // New match — persist it so we don't re-fuzzy-match next time
-          await updateGolfer(match.poolGolferId, { espnName: match.espnName })
+          const updates: Parameters<typeof updateGolfer>[1] = { espnName: match.espnName }
+          if (match.flagUrl) updates.flagUrl = match.flagUrl
+          await updateGolfer(match.poolGolferId, updates)
+        } else if (poolGolfer && match.flagUrl && !poolGolfer.flagUrl) {
+          await updateGolfer(match.poolGolferId, { flagUrl: match.flagUrl })
         }
       }
 

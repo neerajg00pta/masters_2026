@@ -102,8 +102,15 @@
 .star:hover { color: var(--masters-gold); }
 .starOn { color: var(--masters-gold) !important; }
 
-/* ═══ Divider ═══ */
-.divider { height: 0; border-bottom: 2px solid var(--masters-green); margin: 0 8px; opacity: 0.25; }
+/* ═══ Pinned section — above the panel ═══ */
+.pinnedSection {
+  margin-bottom: 10px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+}
 
 /* ═══ Detail ═══ */
 .detail {
