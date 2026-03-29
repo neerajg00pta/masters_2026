@@ -70,64 +70,46 @@ function TeamsView() {
   // Keep teams in creation order (no reordering)
   const sortedTeams = visibleTeams
 
-  // Inline auth state for Teams page
+  // Auth modal state — shown on demand when user tries to act
+  const [showAuth, setShowAuth] = useState(false)
   const [authEmail, setAuthEmail] = useState('')
   const [authName, setAuthName] = useState('')
   const [authMode, setAuthMode] = useState<'login' | 'register'>('login')
   const [authError, setAuthError] = useState('')
   const [authSaving, setAuthSaving] = useState(false)
 
-  if (!currentUser) {
-    const handleAuth = async (e: React.FormEvent) => {
-      e.preventDefault()
-      setAuthError('')
-      const email = authEmail.trim().toLowerCase()
-      if (!email) { setAuthError('Enter your email'); return }
+  const requireAuth = () => {
+    if (!currentUser) { setShowAuth(true); return true }
+    return false
+  }
 
-      if (authMode === 'login') {
-        if (!login(email)) setAuthError('Email not found — register below')
-      } else {
-        const name = authName.trim()
-        if (!name) { setAuthError('Enter your name'); return }
-        if (users.some(u => u.email?.toLowerCase() === email)) { setAuthError('Email already registered — sign in instead'); return }
-        setAuthSaving(true)
-        try {
-          const newUser = await createUser({ name, email, fullName: name })
-          loginDirect(newUser)
-          await refresh()
-          addToast(`Welcome, ${name}!`, 'success')
-        } catch (err) {
-          setAuthError(err instanceof Error ? err.message : 'Failed to register')
-        } finally { setAuthSaving(false) }
-      }
+  const handleAuth = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setAuthError('')
+    const email = authEmail.trim().toLowerCase()
+    if (!email) { setAuthError('Enter your email'); return }
+    if (authMode === 'login') {
+      if (!login(email)) setAuthError('Email not found — register below')
+      else setShowAuth(false)
+    } else {
+      const name = authName.trim()
+      if (!name) { setAuthError('Enter your name'); return }
+      if (users.some(u => u.email?.toLowerCase() === email)) { setAuthError('Email already registered — sign in instead'); return }
+      setAuthSaving(true)
+      try {
+        const newUser = await createUser({ name, email, fullName: name })
+        loginDirect(newUser)
+        await refresh()
+        addToast(`Welcome, ${name}!`, 'success')
+        setShowAuth(false)
+      } catch (err) {
+        setAuthError(err instanceof Error ? err.message : 'Failed to register')
+      } finally { setAuthSaving(false) }
     }
-
-    return (
-      <div className={styles.container}>
-        <div className={styles.authPrompt}>
-          <h2 className={styles.authTitle}>{authMode === 'login' ? 'Sign In' : 'Join the Pool'}</h2>
-          <form onSubmit={handleAuth} className={styles.authForm}>
-            {authMode === 'register' && (
-              <input className={styles.authInput} value={authName} onChange={e => setAuthName(e.target.value)}
-                placeholder="Your name" autoFocus />
-            )}
-            <input className={styles.authInput} type="email" value={authEmail} onChange={e => setAuthEmail(e.target.value)}
-              placeholder="Your email" autoFocus={authMode === 'login'} />
-            {authError && <div className={styles.authError}>{authError}</div>}
-            <button className={styles.authBtn} type="submit" disabled={authSaving}>
-              {authMode === 'login' ? 'Sign In' : authSaving ? 'Joining...' : 'Join'}
-            </button>
-          </form>
-          <button className={styles.authToggle}
-            onClick={() => { setAuthMode(m => m === 'login' ? 'register' : 'login'); setAuthError('') }}>
-            {authMode === 'login' ? 'New player? Register here' : 'Already have an account? Sign in'}
-          </button>
-        </div>
-      </div>
-    )
   }
 
   const handleCreateTeam = async () => {
+    if (requireAuth()) return
     const trimmed = newTeamName.trim()
     if (!trimmed || !currentUser) return
     setSaving(true)
@@ -340,7 +322,7 @@ function TeamsView() {
                 />
               </div>
             ) : (
-              <button className={styles.newTeamBtn} onClick={() => setCreatingTeam(true)} disabled={saving}>
+              <button className={styles.newTeamBtn} onClick={() => { if (!requireAuth()) setCreatingTeam(true) }} disabled={saving}>
                 + New Team
               </button>
             )
@@ -360,6 +342,31 @@ function TeamsView() {
           )}
         </div>
       </div>
+
+      {/* Auth modal overlay */}
+      {showAuth && (
+        <div className={styles.authOverlay} onClick={() => setShowAuth(false)}>
+          <div className={styles.authPrompt} onClick={e => e.stopPropagation()}>
+            <h2 className={styles.authTitle}>{authMode === 'login' ? 'Sign In' : 'Join the Pool'}</h2>
+            <form onSubmit={handleAuth} className={styles.authForm}>
+              {authMode === 'register' && (
+                <input className={styles.authInput} value={authName} onChange={e => setAuthName(e.target.value)}
+                  placeholder="Your name" autoFocus />
+              )}
+              <input className={styles.authInput} type="email" value={authEmail} onChange={e => setAuthEmail(e.target.value)}
+                placeholder="Your email" autoFocus={authMode === 'login'} />
+              {authError && <div className={styles.authError}>{authError}</div>}
+              <button className={styles.authBtn} type="submit" disabled={authSaving}>
+                {authMode === 'login' ? 'Sign In' : authSaving ? 'Joining...' : 'Join'}
+              </button>
+            </form>
+            <button className={styles.authToggle}
+              onClick={() => { setAuthMode(m => m === 'login' ? 'register' : 'login'); setAuthError('') }}>
+              {authMode === 'login' ? 'New player? Register here' : 'Already have an account? Sign in'}
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
