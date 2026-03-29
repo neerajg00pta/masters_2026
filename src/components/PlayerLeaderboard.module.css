@@ -108,7 +108,7 @@
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .randomPlayer .playerName {
@@ -148,23 +148,111 @@
   min-width: 28px;
 }
 
-/* === Live badge === */
-.liveBadge {
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-  font-size: 9px;
-  font-weight: 700;
-  color: var(--accent-green);
-  margin-left: 4px;
-}
-
+/* === Live dot === */
 .liveDot {
-  width: 5px;
-  height: 5px;
+  display: inline-block;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
   background: var(--accent-green);
-  animation: pulse-green 1.5s infinite;
+  margin-left: 4px;
+  flex-shrink: 0;
+}
+
+/* === Scorecard === */
+.scorecardRow td {
+  padding: 0 !important;
+  background: var(--bg-primary);
+  border-bottom: 2px solid var(--border-default) !important;
+}
+
+.scorecardLoading {
+  padding: 12px; text-align: center; font-size: 11px; color: var(--text-muted);
+}
+
+.scorecard {
+  padding: 6px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.scRound {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.scRoundLabel {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-muted);
+  min-width: 52px;
+  text-align: right;
+}
+
+.scHoles {
+  display: flex;
+  gap: 6px;
+  flex: 1;
+}
+
+.scNine {
+  display: flex;
+  gap: 1px;
+}
+
+.scCell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 22px;
+  padding: 1px 0;
+  border-radius: 2px;
+}
+
+.scHoleNum {
+  font-size: 7px;
+  color: var(--text-muted);
+  line-height: 1;
+}
+
+.scStroke {
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.3;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Eagle or better: gold circle */
+.scEagle .scStroke {
+  border-radius: 50%;
+  border: 2px solid var(--masters-gold-dark);
+  color: var(--masters-gold-dark);
+  background: rgba(255, 215, 0, 0.1);
+}
+
+/* Birdie: green circle */
+.scBirdie .scStroke {
+  border-radius: 50%;
+  border: 2px solid var(--accent-green);
+  color: var(--accent-green);
+}
+
+/* Bogey: black square border */
+.scBogey .scStroke {
+  border: 2px solid var(--text-primary);
+}
+
+/* Double bogey+: red double border square */
+.scDouble .scStroke {
+  border: 2px solid var(--accent-red);
+  color: var(--accent-red);
+  box-shadow: inset 0 0 0 1px var(--accent-red);
 }
 
 /* === Empty state === */

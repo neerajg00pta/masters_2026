@@ -123,6 +123,59 @@ export async function fetchESPNLeaderboard(): Promise<ESPNGolfer[]> {
   return golfers
 }
 
+/** Hole score from ESPN scorecard */
+export interface HoleScore {
+  hole: number
+  strokes: number
+  relative: string  // "E", "-1", "-2", "+1", "+2", etc.
+}
+
+export interface RoundScorecard {
+  round: number
+  displayValue: string  // "-2", "E", "+3"
+  holes: HoleScore[]
+}
+
+/** Fetch hole-by-hole scorecards from the old scoreboard endpoint */
+export async function fetchScorecards(): Promise<Map<string, RoundScorecard[]>> {
+  const url = 'https://site.api.espn.com/apis/site/v2/sports/golf/pga/scoreboard'
+  const res = await fetch(url)
+  if (!res.ok) return new Map()
+  const data = await res.json()
+
+  const result = new Map<string, RoundScorecard[]>()
+  const competitors = data?.events?.[0]?.competitions?.[0]?.competitors ?? []
+
+  for (const c of competitors) {
+    const name = c?.athlete?.displayName ?? ''
+    if (!name) continue
+
+    const rounds: RoundScorecard[] = []
+    for (const ls of c?.linescores ?? []) {
+      const holes: HoleScore[] = []
+      for (const h of ls?.linescores ?? []) {
+        holes.push({
+          hole: h.period ?? 0,
+          strokes: Math.round(h.value ?? 0),
+          relative: h?.scoreType?.displayValue ?? 'E',
+        })
+      }
+      if (holes.length > 0) {
+        rounds.push({
+          round: ls.period ?? 0,
+          displayValue: ls.displayValue ?? '',
+          holes,
+        })
+      }
+    }
+    if (rounds.length > 0) {
+      result.set(name.toLowerCase(), rounds)
+    }
+  }
+
+  return result
+}
+
 // === Name normalization & fuzzy matching ===
 
 function normalize(name: string): string {
