@@ -18,9 +18,10 @@ interface Props {
   entries: TeamLeaderboardEntry[]
   payoutMap: Map<string, PayoutPosition>
   currentUserId: string | null
+  compact?: boolean
 }
 
-export function TeamLeaderboard({ entries, payoutMap, currentUserId }: Props) {
+export function TeamLeaderboard({ entries, payoutMap, currentUserId, compact }: Props) {
   const [collapsed, setCollapsed] = useState(false)
   const [expanded, setExpanded] = useState<Set<string>>(new Set())
   const [starred, setStarred] = useState(() => readStarred(currentUserId))
@@ -85,7 +86,7 @@ export function TeamLeaderboard({ entries, payoutMap, currentUserId }: Props) {
   }
 
   return (
-    <div>
+    <div className={compact ? styles.compact : ''}>
       {/* Pinned section — above the main panel */}
       {!search.trim() && pinned.length > 0 && (
         <div className={styles.pinnedSection}>

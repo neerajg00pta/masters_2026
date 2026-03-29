@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { useData } from '../context/DataContext'
 import { useAuth } from '../context/AuthContext'
 import { computeTeamLeaderboard, computePlayerLeaderboard, getPayoutPosition } from '../lib/scoring'
@@ -32,6 +32,9 @@ export function LivePage() {
     return map
   }, [teamEntries])
 
+  const [compact, setCompact] = useState(() => localStorage.getItem('masters_compact') === '1')
+  const toggleCompact = () => setCompact(p => { const v = !p; localStorage.setItem('masters_compact', v ? '1' : '0'); return v })
+
   if (teams.length === 0) {
     return (
       <div className={styles.emptyState}>
@@ -41,13 +44,27 @@ export function LivePage() {
   }
 
   return (
-    <div className={styles.grid}>
-      <TeamLeaderboard
-        entries={teamEntries}
-        payoutMap={payoutMap}
-        currentUserId={currentUser?.id ?? null}
-      />
-      <PlayerLeaderboard entries={playerEntries} />
+    <div>
+      <div className={styles.toolbar}>
+        <button className={`${styles.compactBtn} ${compact ? styles.compactBtnOn : ''}`} onClick={toggleCompact} title={compact ? 'Normal view' : 'Compact view'}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            {compact ? (
+              <><line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="18" x2="21" y2="18" /></>
+            ) : (
+              <><line x1="3" y1="4" x2="21" y2="4" /><line x1="3" y1="10" x2="21" y2="10" /><line x1="3" y1="16" x2="21" y2="16" /><line x1="3" y1="22" x2="21" y2="22" /></>
+            )}
+          </svg>
+        </button>
+      </div>
+      <div className={styles.grid}>
+        <TeamLeaderboard
+          entries={teamEntries}
+          payoutMap={payoutMap}
+          currentUserId={currentUser?.id ?? null}
+          compact={compact}
+        />
+        <PlayerLeaderboard entries={playerEntries} compact={compact} />
+      </div>
     </div>
   )
 }

@@ -7,6 +7,7 @@ import styles from './PlayerLeaderboard.module.css'
 
 interface PlayerLeaderboardProps {
   entries: PlayerLeaderboardEntry[]
+  compact?: boolean
 }
 
 type SortKey = 'adj' | 'masters' | 'dups' | 'name' | 'odds' | 'thru'
@@ -25,7 +26,7 @@ function computeRanks(entries: PlayerLeaderboardEntry[]): string[] {
   return ranks.map(r => (counts.get(r) ?? 0) > 1 ? `T${r}` : `${r}`)
 }
 
-export function PlayerLeaderboard({ entries }: PlayerLeaderboardProps) {
+export function PlayerLeaderboard({ entries, compact }: PlayerLeaderboardProps) {
   const [collapsed, setCollapsed] = useState(false)
   const [sortKey, setSortKey] = useState<SortKey>('adj')
   const [sortDir, setSortDir] = useState<SortDir>('asc')
@@ -80,7 +81,7 @@ export function PlayerLeaderboard({ entries }: PlayerLeaderboardProps) {
   const thCls = (key: SortKey) => `${styles.sortableTh} ${sortKey === key ? styles.sortableThActive : ''}`
 
   return (
-    <div className={styles.panel}>
+    <div className={`${styles.panel} ${compact ? styles.compact : ''}`}>
       <div className={styles.panelHeader} onClick={() => setCollapsed(c => !c)}>
         <span className={styles.panelTitle}>Field</span>
         <span className={`${styles.chevron} ${collapsed ? styles.chevronCollapsed : ''}`}>&#9660;</span>

@@ -341,3 +341,19 @@
   color: var(--text-muted);
   font-size: 13px;
 }
+
+/* === Compact mode === */
+.compact .panelHeader { padding: 6px 10px; }
+.compact .panelTitle { font-size: 10px; }
+.compact .table { font-size: 11px; }
+.compact .table thead th { font-size: 8px; padding: 3px 4px; }
+.compact .table tbody td { padding: 2px 3px; }
+.compact .table tbody td:nth-child(4) { font-size: 11px; }
+.compact .rank { font-size: 10px; }
+.compact .playerName { font-size: 11px; }
+.compact .flag { width: 13px; height: 10px; }
+.compact .scorecard { padding: 4px 8px; gap: 2px; }
+.compact .scRoundLabel { font-size: 9px; min-width: 44px; }
+.compact .scCell { width: 19px; }
+.compact .scHoleNum { font-size: 6px; }
+.compact .scStroke { font-size: 10px; width: 16px; height: 16px; }

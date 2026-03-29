@@ -160,3 +160,21 @@
 
 /* ═══ Empty ═══ */
 .empty { padding: 24px 14px; text-align: center; color: var(--text-muted); font-size: 13px; }
+
+/* ═══ Compact mode ═══ */
+.compact .hdr { padding: 6px 10px; }
+.compact .hdrT { font-size: 10px; letter-spacing: 1px; }
+.compact .searchBar { padding: 4px 6px; }
+.compact .searchInput { padding: 3px 24px 3px 6px; font-size: 11px; }
+.compact .row { padding: 2px 6px; grid-template-columns: 10px 30px 24px 1fr 44px 40px 20px; }
+.compact .pos { font-size: 11px; }
+.compact .team { font-size: 11px; }
+.compact .score { font-size: 12px; padding-right: 4px; }
+.compact .delta { font-size: 12px; }
+.compact .money { font-size: 9px; }
+.compact .star { font-size: 12px; }
+.compact .detail { padding: 1px 6px 2px; }
+.compact .detailOwner { font-size: 9px; }
+.compact .dt { font-size: 10px; min-width: 260px; }
+.compact .dt th { font-size: 7px; padding: 1px 4px; }
+.compact .dt td { padding: 1px 4px; }

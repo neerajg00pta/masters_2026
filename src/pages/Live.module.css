@@ -1,3 +1,20 @@
+.toolbar {
+  display: flex;
+  justify-content: flex-end;
+  max-width: 1000px;
+  margin: 0 auto 6px;
+}
+
+.compactBtn {
+  display: flex; align-items: center; justify-content: center;
+  width: 28px; height: 28px; border-radius: var(--radius);
+  border: 1px solid var(--border-default); background: var(--bg-surface);
+  color: var(--text-muted); cursor: pointer; transition: all 0.12s;
+}
+.compactBtn:hover { border-color: var(--masters-green); color: var(--text-primary); }
+.compactBtnOn { background: var(--masters-green); border-color: var(--masters-green); color: #fff; }
+.compactBtnOn:hover { opacity: 0.85; color: #fff; }
+
 .grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
