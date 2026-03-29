@@ -34,7 +34,7 @@
 /* ═══ Row: Pos | $ | Team | Score | Delta | Star ═══ */
 .row {
   display: grid;
-  grid-template-columns: 36px 16px 1fr 52px 48px 22px;
+  grid-template-columns: 36px 28px 1fr 52px 48px 22px;
   align-items: center;
   gap: 0;
   padding: 5px 8px;
@@ -64,8 +64,8 @@
 
 /* $ column */
 .money {
-  font-size: 11px; font-weight: 900; color: var(--masters-green);
-  text-align: center;
+  font-size: 10px; font-weight: 900; color: var(--masters-green);
+  text-align: center; letter-spacing: 1px;
 }
 
 /* Team name + live dot */

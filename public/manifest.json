@@ -1,0 +1,20 @@
+{
+  "name": "Masters 2026",
+  "short_name": "Masters",
+  "start_url": "/masters_2026/",
+  "display": "standalone",
+  "background_color": "#006747",
+  "theme_color": "#006747",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "apple-touch-icon.svg",
+      "sizes": "180x180",
+      "type": "image/svg+xml"
+    }
+  ]
+}
