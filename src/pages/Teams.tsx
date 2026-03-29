@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from 'react'
 import { useData } from '../context/DataContext'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
-import { createTeam, deleteTeam, updateTeamName, removeSelection } from '../lib/data-service'
+import { createTeam, deleteTeam, updateTeamName, removeSelection, createUser } from '../lib/data-service'
 import { PICKS_PER_TEAM } from '../lib/types'
 import { GolferPicker } from '../components/GolferPicker'
 import styles from './Teams.module.css'
@@ -11,7 +11,7 @@ export function TeamsPage() { return <TeamsView /> }
 
 function TeamsView() {
   const { config, teams, users, golfers, selections, refresh } = useData()
-  const { currentUser, isAdmin } = useAuth()
+  const { currentUser, isAdmin, login, loginDirect } = useAuth()
   const { addToast } = useToast()
 
   const [activeTeamId, setActiveTeamId] = useState<string | null>(null)
@@ -70,12 +70,58 @@ function TeamsView() {
   // Keep teams in creation order (no reordering)
   const sortedTeams = visibleTeams
 
+  // Inline auth state for Teams page
+  const [authEmail, setAuthEmail] = useState('')
+  const [authName, setAuthName] = useState('')
+  const [authMode, setAuthMode] = useState<'login' | 'register'>('login')
+  const [authError, setAuthError] = useState('')
+  const [authSaving, setAuthSaving] = useState(false)
+
   if (!currentUser) {
+    const handleAuth = async (e: React.FormEvent) => {
+      e.preventDefault()
+      setAuthError('')
+      const email = authEmail.trim().toLowerCase()
+      if (!email) { setAuthError('Enter your email'); return }
+
+      if (authMode === 'login') {
+        if (!login(email)) setAuthError('Email not found — register below')
+      } else {
+        const name = authName.trim()
+        if (!name) { setAuthError('Enter your name'); return }
+        if (users.some(u => u.email?.toLowerCase() === email)) { setAuthError('Email already registered — sign in instead'); return }
+        setAuthSaving(true)
+        try {
+          const newUser = await createUser({ name, email, fullName: name })
+          loginDirect(newUser)
+          await refresh()
+          addToast(`Welcome, ${name}!`, 'success')
+        } catch (err) {
+          setAuthError(err instanceof Error ? err.message : 'Failed to register')
+        } finally { setAuthSaving(false) }
+      }
+    }
+
     return (
       <div className={styles.container}>
         <div className={styles.authPrompt}>
-          <span className={styles.authTitle}>Sign in to manage your picks</span>
-          <span className={styles.authSubtitle}>Use the Sign In button in the header.</span>
+          <h2 className={styles.authTitle}>{authMode === 'login' ? 'Sign In' : 'Join the Pool'}</h2>
+          <form onSubmit={handleAuth} className={styles.authForm}>
+            {authMode === 'register' && (
+              <input className={styles.authInput} value={authName} onChange={e => setAuthName(e.target.value)}
+                placeholder="Your name" autoFocus />
+            )}
+            <input className={styles.authInput} type="email" value={authEmail} onChange={e => setAuthEmail(e.target.value)}
+              placeholder="Your email" autoFocus={authMode === 'login'} />
+            {authError && <div className={styles.authError}>{authError}</div>}
+            <button className={styles.authBtn} type="submit" disabled={authSaving}>
+              {authMode === 'login' ? 'Sign In' : authSaving ? 'Joining...' : 'Join'}
+            </button>
+          </form>
+          <button className={styles.authToggle}
+            onClick={() => { setAuthMode(m => m === 'login' ? 'register' : 'login'); setAuthError('') }}>
+            {authMode === 'login' ? 'New player? Register here' : 'Already have an account? Sign in'}
+          </button>
         </div>
       </div>
     )

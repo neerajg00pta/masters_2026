@@ -58,11 +58,33 @@
 
 /* Auth prompt */
 .authPrompt {
-  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  display: flex; flex-direction: column; align-items: center; gap: 16px;
   padding: 48px 24px; text-align: center;
+  background: var(--bg-surface); border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg); max-width: 360px; margin: 0 auto;
 }
-.authTitle { font-size: 16px; font-weight: 700; color: var(--text-primary); }
-.authSubtitle { font-size: 13px; color: var(--text-secondary); }
+.authTitle { font-size: 18px; font-weight: 700; color: var(--masters-green); }
+.authForm {
+  display: flex; flex-direction: column; gap: 10px; width: 100%;
+}
+.authInput {
+  padding: 10px 12px; border: 1px solid var(--border-default); border-radius: var(--radius);
+  background: var(--bg-input); color: var(--text-primary); font-size: 14px; outline: none;
+  width: 100%;
+}
+.authInput:focus { border-color: var(--masters-green); }
+.authInput::placeholder { color: var(--text-muted); }
+.authError { font-size: 12px; color: var(--accent-red); font-weight: 600; }
+.authBtn {
+  padding: 10px; border-radius: var(--radius); background: var(--masters-green);
+  color: #fff; font-size: 14px; font-weight: 700; border: none; cursor: pointer;
+}
+.authBtn:hover { opacity: 0.9; }
+.authBtn:disabled { opacity: 0.4; cursor: not-allowed; }
+.authToggle {
+  background: none; border: none; color: var(--accent-blue); font-size: 12px;
+  cursor: pointer; text-decoration: underline;
+}
 
 /* ═══ Main two-column layout ═══ */
 .picksLayout {
