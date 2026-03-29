@@ -192,12 +192,19 @@
 .teamCardActive .statusDraft { background: rgba(255,255,255,0.2); color: var(--masters-gold); }
 
 .saveBtn {
-  padding: 3px 10px; border-radius: var(--radius); font-size: 11px; font-weight: 700;
+  padding: 4px 14px; border-radius: 999px; font-size: 11px; font-weight: 700;
   background: var(--masters-green); color: #fff; border: none; cursor: pointer;
-  transition: opacity 0.12s; flex-shrink: 0;
+  flex-shrink: 0; animation: savePulse 1.8s ease-in-out infinite;
+  box-shadow: 0 0 0 0 rgba(0, 103, 71, 0.5);
 }
-.saveBtn:hover { opacity: 0.85; }
-.saveBtn:disabled { opacity: 0.4; cursor: not-allowed; }
+.saveBtn:hover { animation: none; opacity: 0.9; box-shadow: 0 2px 8px rgba(0,103,71,0.3); }
+.saveBtn:disabled { opacity: 0.4; cursor: not-allowed; animation: none; }
+
+@keyframes savePulse {
+  0% { box-shadow: 0 0 0 0 rgba(0, 103, 71, 0.5); }
+  50% { box-shadow: 0 0 0 6px rgba(0, 103, 71, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(0, 103, 71, 0); }
+}
 
 .cardDeleteBtn {
   width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;
@@ -281,12 +288,24 @@
   border-radius: var(--radius-lg); padding: 12px;
 }
 
+.newTeamRow {
+  display: flex; gap: 8px; align-items: center;
+}
+
 .newTeamInput {
-  width: 100%; padding: 8px 10px; border: 1px solid var(--masters-green);
+  flex: 1; padding: 8px 10px; border: 1px solid var(--masters-green);
   border-radius: var(--radius); background: var(--bg-input); color: var(--text-primary);
-  font-size: 13px; font-weight: 600; outline: none;
+  font-size: 13px; font-weight: 600; outline: none; min-width: 0;
 }
 .newTeamInput::placeholder { color: var(--text-muted); font-weight: 400; }
+
+.newTeamOkBtn {
+  padding: 8px 16px; border-radius: var(--radius); font-size: 13px; font-weight: 700;
+  background: var(--masters-green); color: #fff; border: none; cursor: pointer;
+  flex-shrink: 0; transition: opacity 0.12s;
+}
+.newTeamOkBtn:hover { opacity: 0.85; }
+.newTeamOkBtn:disabled { opacity: 0.35; cursor: not-allowed; }
 
 /* Right: picker column */
 .pickerColumn { min-width: 0; }

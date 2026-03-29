@@ -262,7 +262,7 @@ function TeamsView() {
                     </span>
                     {canEdit && hasFivePicks && !isReady && (
                       <button className={styles.saveBtn} onClick={handleConfirm} disabled={saving}>
-                        Save
+                        Submit Picks
                       </button>
                     )}
                     {canEdit && (
@@ -323,25 +323,32 @@ function TeamsView() {
             )
           })}
 
-          {/* New team button/input */}
+          {/* New team button/input — show input directly if no teams yet */}
           {canEdit && (
-            creatingTeam ? (
+            creatingTeam || visibleTeams.length === 0 ? (
               <div className={styles.newTeamCard}>
-                <input
-                  className={styles.newTeamInput}
-                  placeholder="Team name..."
-                  value={newTeamName}
-                  onChange={e => setNewTeamName(e.target.value)}
-                  onKeyDown={handleCreateKeyDown}
-                  onBlur={() => { if (!newTeamName.trim()) { setCreatingTeam(false); setNewTeamName('') } }}
-                  disabled={saving}
-                  autoFocus
-                  maxLength={24}
-                />
+                <div className={styles.newTeamRow}>
+                  <input
+                    className={styles.newTeamInput}
+                    placeholder="Team name..."
+                    value={newTeamName}
+                    onChange={e => setNewTeamName(e.target.value)}
+                    onKeyDown={handleCreateKeyDown}
+                    onBlur={() => { if (!newTeamName.trim() && visibleTeams.length > 0) { setCreatingTeam(false); setNewTeamName('') } }}
+                    disabled={saving}
+                    autoFocus
+                    maxLength={24}
+                  />
+                  <button
+                    className={styles.newTeamOkBtn}
+                    onClick={handleCreateTeam}
+                    disabled={saving || !newTeamName.trim()}
+                  >OK</button>
+                </div>
               </div>
             ) : (
               <button className={styles.newTeamBtn} onClick={() => { if (!requireAuth()) setCreatingTeam(true) }} disabled={saving}>
-                {visibleTeams.length > 0 ? '+ Add Another Team' : '+ Create Team'}
+                + Add Another Team
               </button>
             )
           )}
