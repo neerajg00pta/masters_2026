@@ -23,7 +23,7 @@ function TeamsView() {
   const [searchQuery, setSearchQuery] = useState('')
 
   const isLocked = config.poolLocked
-  const canEdit = !isLocked || isAdmin
+  const canEdit = !isLocked
 
   // Build user lookup
   const userMap = useMemo(() => {
