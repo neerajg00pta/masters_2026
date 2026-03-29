@@ -61,7 +61,7 @@
 }
 
 /* Column widths — Icons, Rank, Player, Adj, Masters, Dups, Thru */
-.table thead th:nth-child(1) { width: 30px; }
+.table thead th:nth-child(1) { width: 36px; }
 .table thead th:nth-child(2) { width: 36px; }
 .table thead th:nth-child(3) { width: auto; }
 .table thead th:nth-child(4) { width: 15%; }
@@ -130,7 +130,7 @@
 
 /* Icons cell: dot + link, fixed positions */
 .iconsCell {
-  padding: 0 2px !important;
+  padding: 0 0 0 6px !important;
 }
 
 .iconsWrap {
