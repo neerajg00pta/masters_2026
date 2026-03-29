@@ -69,6 +69,19 @@
 .table thead th:nth-child(6) { width: 11%; }
 .table thead th:nth-child(7) { width: 13%; }
 
+@media (max-width: 480px) {
+  .table { font-size: 11px; }
+  .table thead th:nth-child(1) { width: 28px; }
+  .table thead th:nth-child(2) { width: 32px; }
+  .table thead th:nth-child(4) { width: 38px; }
+  .table thead th:nth-child(5) { width: 44px; }
+  .table thead th:nth-child(6) { width: 32px; }
+  .table thead th:nth-child(7) { width: 28px; }
+  .table thead th { font-size: 8px; padding: 4px 2px; }
+  .table tbody td { padding: 4px 2px; }
+  .table tbody td:nth-child(4) { font-size: 12px; }
+}
+
 .thLink { padding: 0 !important; }
 
 .sortableTh {
@@ -228,12 +241,16 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .scRound {
   display: flex;
   align-items: center;
   gap: 8px;
+  white-space: nowrap;
+  min-width: max-content;
 }
 
 .scRoundLabel {
@@ -248,6 +265,8 @@
   display: flex;
   gap: 6px;
   flex: 1;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .scNine {
