@@ -68,8 +68,10 @@ export function computeTeamLeaderboard(
   const golferMap = new Map(golfers.map(g => [g.id, g]))
   const dupCounts = computeDupCounts(selections)
 
-  // Build snapshot lookup: teamId -> rank
-  const snapshotMap = new Map(snapshots.map(s => [s.teamId, s.rank]))
+  // Build snapshot lookup: teamId -> rank (most recent snapshot date only)
+  const latestDate = snapshots.length > 0 ? snapshots[0].snapshotDate : null
+  const latestSnapshots = latestDate ? snapshots.filter(s => s.snapshotDate === latestDate) : []
+  const snapshotMap = new Map(latestSnapshots.map(s => [s.teamId, s.rank]))
 
   // Group selections by team
   const teamSelections = new Map<string, Selection[]>()
