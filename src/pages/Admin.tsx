@@ -449,7 +449,7 @@ export function AdminPage() {
               })
               .sort((a, b) => {
                 if (a.admin !== b.admin) return a.admin ? -1 : 1
-                return 0
+                return (a.createdAt ?? '').localeCompare(b.createdAt ?? '')
               }).map(user => (
                 <tr key={user.id}>
                   <td style={{ textAlign: 'center' }}>
