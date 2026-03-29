@@ -94,10 +94,16 @@ export function useLiveScoring(
 
       await onRefresh()
 
-      // Auto-snapshot: when ALL active (non-cut, non-wd) golfers have thru="F"
+      // Auto-snapshot: only during tournament window (day before to day after)
+      // Masters 2026: April 9-12. Window: April 8-13.
+      const today = new Date()
+      const tournamentStart = new Date('2026-04-08')  // day before R1
+      const tournamentEnd = new Date('2026-04-13')    // day after R4
+      const inTournamentWindow = today >= tournamentStart && today <= tournamentEnd
+
       const activeGolfers = golfersRef.current.filter(g => g.status === 'active')
       const allFinished = activeGolfers.length > 0 && activeGolfers.every(g => g.thru === 'F')
-      if (allFinished && !snapshotSavedRef.current) {
+      if (inTournamentWindow && allFinished && !snapshotSavedRef.current) {
         try {
           const entries = computeTeamLeaderboard(teams, users, golfersRef.current, selections, snapshots, null)
           const snapshotData = entries
