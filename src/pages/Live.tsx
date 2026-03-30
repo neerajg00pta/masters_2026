@@ -32,7 +32,7 @@ export function LivePage() {
     return map
   }, [teamEntries])
 
-  const [compact, setCompact] = useState(() => localStorage.getItem('masters_compact') === '1')
+  const [compact, setCompact] = useState(() => localStorage.getItem('masters_compact') !== '0')
   const toggleCompact = () => setCompact(p => { const v = !p; localStorage.setItem('masters_compact', v ? '1' : '0'); return v })
 
   if (teams.length === 0) {
