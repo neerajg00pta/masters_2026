@@ -98,6 +98,33 @@ export const ESPN_TO_MASTERS: Map<string, string> = new Map([
   ['4349547', '45242'],  // Kevin Yu
   ['9877', '47483'],     // Will Zalatoris
   ['4375972', '52955'],  // Ludvig Åberg
+  // --- Late qualifiers / additional field ---
+  ['3550', '31323'],     // Gary Woodland
+  ['9843', '111651'],    // Jake Knapp
+  ['8906', '39546'],     // Keith Mitchell
+  ['3702', '32102'],     // Rickie Fowler
+  ['5080439', '63343'],  // Aldrich Potgieter
+  ['5140', '33968'],     // Thorbjørn Olesen
+  ['10548', '48887'],    // Matt Wallace
+  ['6931', '35506'],     // Mackenzie Hughes
+  ['4251', '29936'],     // Ryan Fox
+  ['10522', '47591'],    // Eric Cole
+  ['9221', '35296'],     // Haotong Li
+  ['6001', '28252'],     // Séamus Power
+  ['10577', '49964'],    // Aaron Wise
+  ['10364', '48117'],    // Kurt Kitayama
+  ['257', '23108'],      // Matt Kuchar
+  ['5882', '31646'],     // Emiliano Grillo
+  ['7083', '32791'],     // K.H. Lee
+  ['4410612', '47917'],  // Takumi Kanaya
+  ['5692', '113130'],    // Peter Malnati
+  ['4404991', '54628'],  // Lee Hodges
+  ['5209442', '63807'],  // Neal Shipley
+  ['9364', '40006'],     // Erik van Rooyen
+  ['10664', '49947'],    // Taylor Moore
+  ['205', '12716'],      // Charley Hoffman
+  ['11393', '54421'],    // Garrick Higgo
+  ['4426181', '55893'],  // Sam Stevens
 ])
 
 export function getMastersUrl(mastersId: string): string {
