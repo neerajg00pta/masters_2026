@@ -310,7 +310,7 @@ function TeamsView() {
                         <span className={styles.cardGolferOdds}>{golferMap.get(randomSel.golferId)?.odds}</span>
                       </>
                     ) : (
-                      <span className={styles.cardRandomSlot}>Random — assigned after lock</span>
+                      <span className={styles.cardRandomSlot}>Random — TBD</span>
                     )}
                   </div>
                 </div>
