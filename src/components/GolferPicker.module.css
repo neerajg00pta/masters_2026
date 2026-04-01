@@ -3,14 +3,13 @@
   border: 1px solid var(--border-default);
   border-radius: var(--radius-lg);
   overflow: hidden;
+  width: max-content;
+  min-width: 380px;
 }
 
 .header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 10px;
-  border-bottom: 1px solid var(--border-muted);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 12px; border-bottom: 1px solid var(--border-muted);
 }
 
 .headerTitle {
@@ -42,7 +41,7 @@
 
 /* Column headers */
 .colHeaders {
-  display: flex; align-items: center; gap: 0;
+  display: flex; align-items: center;
   padding: 4px 6px;
   border-bottom: 1px solid var(--border-default);
   background: var(--bg-elevated);
@@ -51,18 +50,18 @@
 }
 
 .colDots { width: 14px; flex-shrink: 0; }
-.colOdds { width: 46px; flex-shrink: 0; text-align: right; padding-right: 5px; }
-.colFlag { width: 16px; flex-shrink: 0; }
-.colName { flex: 1; min-width: 0; max-width: 130px; }
-.colHist { width: 28px; flex-shrink: 0; text-align: center; }
+.colOdds { width: 48px; flex-shrink: 0; text-align: right; padding-right: 6px; }
+.colFlag { width: 18px; flex-shrink: 0; }
+.colName { width: 140px; flex-shrink: 0; }
+.colHist { width: 32px; flex-shrink: 0; text-align: center; }
 
 /* List */
 .list { max-height: calc(100vh - 240px); overflow-y: auto; }
 
-/* Row */
+/* Row — match team card golfer rows */
 .row {
-  display: flex; align-items: center; gap: 0;
-  padding: 6px 5px; cursor: pointer; transition: background 0.1s; user-select: none;
+  display: flex; align-items: center;
+  padding: 6px 6px; cursor: pointer; transition: background 0.1s; user-select: none;
   border-bottom: 1px solid var(--border-muted);
 }
 .row:last-child { border-bottom: none; }
@@ -85,14 +84,14 @@
 
 /* Odds */
 .odds {
-  width: 46px; flex-shrink: 0; text-align: right; padding-right: 5px;
+  width: 48px; flex-shrink: 0; text-align: right; padding-right: 6px;
   font-size: 12px; font-weight: 800; color: var(--masters-gold-dark);
   font-variant-numeric: tabular-nums;
 }
 
 /* Flag */
 .flag {
-  width: 16px; flex-shrink: 0;
+  width: 18px; flex-shrink: 0;
   display: flex; align-items: center; justify-content: center;
 }
 
@@ -100,24 +99,23 @@
   width: 14px; height: 10px; object-fit: cover; border-radius: 1px;
 }
 
-/* Name */
+/* Name — match team card golfer font */
 .name {
-  flex: 1; min-width: 0; max-width: 130px;
-  font-size: 13px; font-weight: 600; color: var(--text-primary);
+  width: 140px; flex-shrink: 0;
+  font-size: 12px; font-weight: 500; color: var(--text-primary);
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-  padding-right: 2px;
 }
 
 /* History */
 .histCell {
-  width: 28px; flex-shrink: 0;
+  width: 32px; flex-shrink: 0;
   display: flex; align-items: center; justify-content: center;
 }
 
 .histPill {
   display: inline-flex; align-items: center; justify-content: center;
-  min-width: 24px; height: 16px; padding: 0 3px;
-  border-radius: 3px; font-size: 8px; font-weight: 700;
+  min-width: 26px; height: 18px; padding: 0 3px;
+  border-radius: 3px; font-size: 9px; font-weight: 700;
   letter-spacing: 0.2px;
 }
 
@@ -126,15 +124,17 @@
 .histTop10 { background: #3fb950; color: #fff; }
 .histRest { background: var(--bg-elevated); color: var(--text-muted); }
 
-.histDash { font-size: 9px; color: var(--border-default); }
-.histMc { font-size: 7px; font-weight: 600; color: var(--text-muted); opacity: 0.4; }
+.histDash { font-size: 10px; color: var(--border-default); }
+.histMc { font-size: 8px; font-weight: 600; color: var(--text-muted); opacity: 0.4; }
 
 /* Empty */
 .empty {
   padding: 32px 14px; text-align: center; color: var(--text-muted); font-size: 13px;
 }
 
-/* Mobile: stack layout on very small screens */
+/* Mobile */
 @media (max-width: 480px) {
+  .panel { width: auto; min-width: 0; }
   .colHist, .histCell { display: none; }
+  .colName, .name { width: auto; flex: 1; min-width: 0; }
 }

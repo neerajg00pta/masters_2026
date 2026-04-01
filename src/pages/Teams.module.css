@@ -103,7 +103,7 @@
 /* ═══ Main two-column layout ═══ */
 .picksLayout {
   display: grid;
-  grid-template-columns: 280px 1fr;
+  grid-template-columns: 280px auto;
   gap: 16px;
   align-items: start;
 }
