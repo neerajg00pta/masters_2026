@@ -40,7 +40,7 @@ function HistoryPill({ pos }: { pos: string | null }) {
 
 export function GolferPicker({ teamId }: Props) {
   const { config, golfers, selections, teams, refresh } = useData()
-  const { currentUser, isAdmin } = useAuth()
+  const { isAdmin } = useAuth()
   const { addToast } = useToast()
   const [search, setSearch] = useState('')
   const [claimingId, setClaimingId] = useState<string | null>(null)
@@ -55,18 +55,19 @@ export function GolferPicker({ teamId }: Props) {
     [teamSelections],
   )
 
-  // Count how many of the current user's teams have each golfer
+  // Count how many of this team owner's teams have each golfer
   const pickCountMap = useMemo(() => {
-    if (!currentUser) return new Map<string, number>()
-    const userTeamIds = new Set(teams.filter(t => t.userId === currentUser.id).map(t => t.id))
+    const team = teams.find(t => t.id === teamId)
+    if (!team) return new Map<string, number>()
+    const ownerTeamIds = new Set(teams.filter(t => t.userId === team.userId).map(t => t.id))
     const map = new Map<string, number>()
     for (const s of selections) {
-      if (userTeamIds.has(s.teamId) && !s.isRandom) {
+      if (ownerTeamIds.has(s.teamId) && !s.isRandom) {
         map.set(s.golferId, (map.get(s.golferId) ?? 0) + 1)
       }
     }
     return map
-  }, [teams, currentUser, selections])
+  }, [teams, teamId, selections])
 
   const pickCount = teamSelections.filter(s => !s.isRandom).length
   const isFull = pickCount >= PICKS_PER_TEAM

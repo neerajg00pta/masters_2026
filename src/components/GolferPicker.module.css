@@ -134,7 +134,7 @@
   padding: 32px 14px; text-align: center; color: var(--text-muted); font-size: 13px;
 }
 
-/* Mobile: hide history columns on small screens */
-@media (max-width: 900px) {
+/* Mobile: stack layout on very small screens */
+@media (max-width: 480px) {
   .colHist, .histCell { display: none; }
 }
