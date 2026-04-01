@@ -70,6 +70,11 @@ export async function fetchAllData(): Promise<AllData> {
     flagUrl: (r.flag_url as string) ?? null,
     espnId: (r.espn_id as string) ?? null,
     mastersId: (r.masters_id as string) ?? null,
+    masters2025: (r.masters_2025 as string) ?? null,
+    masters2024: (r.masters_2024 as string) ?? null,
+    masters2023: (r.masters_2023 as string) ?? null,
+    masters2022: (r.masters_2022 as string) ?? null,
+    masters2021: (r.masters_2021 as string) ?? null,
   }))
 
   const selections: Selection[] = (selectionsRes.data ?? []).map((r: Record<string, unknown>) => ({

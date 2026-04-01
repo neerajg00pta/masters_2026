@@ -4,15 +4,43 @@ import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
 import { addSelection } from '../lib/data-service'
 import { PICKS_PER_TEAM } from '../lib/types'
+import type { Golfer } from '../lib/types'
 import styles from './GolferPicker.module.css'
 
 interface Props {
   teamId: string
 }
 
+/** Parse a position string to a number for color classification */
+function posToNum(pos: string | null): number | null {
+  if (!pos) return null
+  if (pos === 'MC' || pos === 'WD' || pos === 'DQ') return null
+  const n = parseInt(pos.replace('T', ''), 10)
+  return isNaN(n) ? null : n
+}
+
+function HistoryPill({ pos }: { pos: string | null }) {
+  if (!pos) return <span className={styles.histCell}><span className={styles.histDash}>–</span></span>
+
+  if (pos === 'MC' || pos === 'WD' || pos === 'DQ') {
+    return <span className={styles.histCell}><span className={styles.histMc}>{pos}</span></span>
+  }
+
+  const num = posToNum(pos)
+  const label = num === 1 ? 'WIN' : pos
+
+  let cls = styles.histPill
+  if (num === 1) cls += ` ${styles.histWin}`
+  else if (num && num >= 2 && num <= 5) cls += ` ${styles.histTop5}`
+  else if (num && num >= 6 && num <= 10) cls += ` ${styles.histTop10}`
+  else cls += ` ${styles.histRest}`
+
+  return <span className={styles.histCell}><span className={cls}>{label}</span></span>
+}
+
 export function GolferPicker({ teamId }: Props) {
   const { config, golfers, selections, teams, refresh } = useData()
-  const { isAdmin } = useAuth()
+  const { currentUser, isAdmin } = useAuth()
   const { addToast } = useToast()
   const [search, setSearch] = useState('')
   const [claimingId, setClaimingId] = useState<string | null>(null)
@@ -27,33 +55,23 @@ export function GolferPicker({ teamId }: Props) {
     [teamSelections],
   )
 
-  // Map golferId → team names for OTHER teams of same user
-  const otherTeamGolferMap = useMemo(() => {
-    const team = teams.find(t => t.id === teamId)
-    if (!team) return new Map<string, string[]>()
-    const otherTeams = teams.filter(t => t.userId === team.userId && t.id !== teamId)
-    const otherTeamMap = new Map(otherTeams.map(t => [t.id, t.teamName]))
-    const map = new Map<string, string[]>()
+  // Count how many of the current user's teams have each golfer
+  const pickCountMap = useMemo(() => {
+    if (!currentUser) return new Map<string, number>()
+    const userTeamIds = new Set(teams.filter(t => t.userId === currentUser.id).map(t => t.id))
+    const map = new Map<string, number>()
     for (const s of selections) {
-      const tName = otherTeamMap.get(s.teamId)
-      if (!tName) continue
-      const existing = map.get(s.golferId) ?? []
-      existing.push(tName)
-      map.set(s.golferId, existing)
+      if (userTeamIds.has(s.teamId) && !s.isRandom) {
+        map.set(s.golferId, (map.get(s.golferId) ?? 0) + 1)
+      }
     }
     return map
-  }, [teams, teamId, selections])
+  }, [teams, currentUser, selections])
 
   const pickCount = teamSelections.filter(s => !s.isRandom).length
   const isFull = pickCount >= PICKS_PER_TEAM
   const isLocked = config.poolLocked
   const canEdit = !isLocked || isAdmin
-
-  const golferMap = useMemo(() => {
-    const m = new Map<string, typeof golfers[0]>()
-    for (const g of golfers) m.set(g.id, g)
-    return m
-  }, [golfers])
 
   const filteredGolfers = useMemo(() => {
     const q = search.toLowerCase().trim()
@@ -66,7 +84,7 @@ export function GolferPicker({ teamId }: Props) {
     setClaimingId(golferId)
     try {
       await addSelection(teamId, golferId, false)
-      const g = golferMap.get(golferId)
+      const g = golfers.find(g => g.id === golferId)
       addToast(`Added ${g?.name ?? 'golfer'}`, 'success')
       await refresh()
     } catch (err) {
@@ -76,7 +94,10 @@ export function GolferPicker({ teamId }: Props) {
     }
   }
 
-  if (!canEdit) return null // read-only handled by team cards
+  if (!canEdit) return null
+
+  const historyYears: (keyof Golfer)[] = ['masters2025', 'masters2024', 'masters2023', 'masters2022', 'masters2021']
+  const yearLabels = ["'25", "'24", "'23", "'22", "'21"]
 
   return (
     <div className={styles.panel}>
@@ -96,13 +117,23 @@ export function GolferPicker({ teamId }: Props) {
           <button className={styles.searchClear} onClick={() => setSearch('')}>&times;</button>
         )}
       </div>
+
+      {/* Column headers */}
+      <div className={styles.colHeaders}>
+        <span className={styles.colDots} />
+        <span className={styles.colOdds}>ODDS</span>
+        <span className={styles.colFlag} />
+        <span className={styles.colName}>PLAYER</span>
+        {yearLabels.map(y => <span key={y} className={styles.colHist}>{y}</span>)}
+      </div>
+
       <div className={styles.list}>
         {filteredGolfers.length === 0 && (
           <div className={styles.empty}>No golfers match "{search}"</div>
         )}
-        {filteredGolfers.map((g, i) => {
+        {filteredGolfers.map((g) => {
           const isPicked = pickedGolferIds.has(g.id)
-          const otherTeamNames = otherTeamGolferMap.get(g.id)
+          const dots = pickCountMap.get(g.id) ?? 0
           const isClaiming = claimingId === g.id
           const isDimmed = !isPicked && isFull
 
@@ -111,22 +142,34 @@ export function GolferPicker({ teamId }: Props) {
               key={g.id}
               className={[
                 styles.row,
-                i % 2 === 0 ? styles.rowEven : '',
                 isPicked ? styles.rowPicked : '',
                 isDimmed ? styles.rowDimmed : '',
                 isClaiming ? styles.rowClaiming : '',
               ].filter(Boolean).join(' ')}
               onClick={() => !isPicked && handleAdd(g.id)}
             >
-              <span className={styles.rank}>{g.sortOrder}</span>
-              <span className={styles.name}>
-                {g.name}
-                {otherTeamNames && !isPicked && otherTeamNames.map(tn => (
-                  <span key={tn} className={styles.otherBadge}>{tn}</span>
+              {/* Pick dots */}
+              <span className={styles.dots}>
+                {Array.from({ length: dots }).map((_, i) => (
+                  <span key={i} className={styles.dot} />
                 ))}
               </span>
+
+              {/* Odds */}
               <span className={styles.odds}>{g.odds ?? ''}</span>
-              {isPicked && <span className={styles.pickedTag}>PICKED</span>}
+
+              {/* Flag */}
+              <span className={styles.flag}>
+                {g.flagUrl && <img src={g.flagUrl} alt="" className={styles.flagImg} />}
+              </span>
+
+              {/* Name */}
+              <span className={styles.name}>{g.name}</span>
+
+              {/* History pills */}
+              {historyYears.map((key, i) => (
+                <HistoryPill key={i} pos={g[key] as string | null} />
+              ))}
             </div>
           )
         })}

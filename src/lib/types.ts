@@ -40,6 +40,11 @@ export interface Golfer {
   flagUrl: string | null
   espnId: string | null
   mastersId: string | null
+  masters2025: string | null
+  masters2024: string | null
+  masters2023: string | null
+  masters2022: string | null
+  masters2021: string | null
 }
 
 export interface Selection {
