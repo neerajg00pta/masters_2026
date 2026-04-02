@@ -196,8 +196,9 @@ function TeamsView() {
 
 
   return (
-    <div className={styles.container}>
-      <div className={styles.titleRow}>
+    <div className={styles.picksLayout}>
+      {/* Row 1, left column: title + admin tools */}
+      <div className={styles.titleArea}>
         <h1 className={styles.title}>{isAdmin ? 'All Teams' : 'My Picks'}</h1>
         {isAdmin && (
           <div className={styles.teamTools}>
@@ -224,18 +225,15 @@ function TeamsView() {
             )}
           </div>
         )}
+        {isLocked && (
+          <div className={styles.lockedBanner}>
+            Pool is locked{isAdmin ? ' — admin editing mode' : ' — picks are final'}
+          </div>
+        )}
       </div>
 
-      {isLocked && (
-        <div className={styles.lockedBanner}>
-          Pool is locked{isAdmin ? ' — admin editing mode' : ' — picks are final'}
-        </div>
-      )}
-
-      {/* Main layout: team cards on left, golfer picker on right */}
-      <div className={styles.picksLayout}>
-        {/* Left column: all team cards */}
-        <div className={styles.teamsColumn}>
+      {/* Row 2, left column: team cards */}
+      <div className={styles.teamsColumn}>
           {sortedTeams.map(t => {
             const isActive = t.id === activeTeamId
             const teamSels = selections.filter(s => s.teamId === t.id)
@@ -404,7 +402,6 @@ function TeamsView() {
             </div>
           )}
         </div>
-      </div>
 
       {/* Auth modal overlay */}
       {showAuth && (
