@@ -75,9 +75,10 @@ export function GolferPicker({ teamId }: Props) {
   const canEdit = !isLocked || isAdmin
 
   const filteredGolfers = useMemo(() => {
+    const active = golfers.filter(g => g.status !== 'withdrawn')
     const q = search.toLowerCase().trim()
-    if (!q) return golfers
-    return golfers.filter(g => g.name.toLowerCase().includes(q))
+    if (!q) return active
+    return active.filter(g => g.name.toLowerCase().includes(q))
   }, [golfers, search])
 
   const handleAdd = async (golferId: string) => {
