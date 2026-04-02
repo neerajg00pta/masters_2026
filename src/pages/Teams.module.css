@@ -1,49 +1,38 @@
 .container {
-  max-width: 800px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding: 0 16px;
-}
-
-/* Title row */
-.titleRow {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
   gap: 12px;
 }
 
 .title { font-size: 18px; font-weight: 700; color: var(--text-primary); }
 
-.nudgeBtn {
-  padding: 5px 12px; border-radius: var(--radius); font-size: 11px; font-weight: 700;
-  background: rgba(255,215,0,0.2); color: var(--masters-gold-dark); border: 1px solid var(--masters-gold-dark);
-  text-decoration: none; cursor: pointer; white-space: nowrap;
-  transition: background 0.12s;
-}
-.nudgeBtn:hover { background: rgba(255,215,0,0.35); }
+/* Team tools (search + nudge, inside teams column) */
+.teamTools { display: flex; align-items: center; gap: 6px; }
 
-/* Title actions (search + nudge, inline with title) */
-.titleActions { display: flex; align-items: center; gap: 8px; }
+.teamSearchWrap { position: relative; flex: 1; }
 
-.titleSearchWrap { position: relative; }
-
-.titleSearchInput {
-  padding: 5px 26px 5px 8px; width: 160px;
+.teamSearchInput {
+  width: 100%; padding: 5px 26px 5px 8px;
   border: 1px solid var(--border-default); border-radius: var(--radius);
   background: var(--bg-surface); color: var(--text-primary);
-  font-size: 11px; outline: none; transition: border-color 0.15s;
+  font-size: 11px; outline: none;
 }
-.titleSearchInput::placeholder { color: var(--text-muted); }
-.titleSearchInput:focus { border-color: var(--masters-green); width: 220px; }
+.teamSearchInput::placeholder { color: var(--text-muted); }
+.teamSearchInput:focus { border-color: var(--masters-green); }
 
-.titleSearchClear {
+.teamSearchClear {
   position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
   background: none; border: none; color: var(--text-muted); font-size: 14px; cursor: pointer;
 }
-.titleSearchClear:hover { color: var(--text-primary); }
+.teamSearchClear:hover { color: var(--text-primary); }
+
+.nudgeBtn {
+  padding: 4px 10px; border-radius: var(--radius); font-size: 10px; font-weight: 700;
+  background: rgba(255,215,0,0.2); color: var(--masters-gold-dark); border: 1px solid var(--masters-gold-dark);
+  text-decoration: none; cursor: pointer; white-space: nowrap;
+}
+.nudgeBtn:hover { background: rgba(255,215,0,0.35); }
 
 .ownerRow {
   padding: 3px 12px; font-size: 10px; color: var(--text-muted); font-weight: 500;
