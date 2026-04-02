@@ -18,8 +18,6 @@
 
 .title { font-size: 18px; font-weight: 700; color: var(--text-primary); }
 
-.titleActions { display: flex; align-items: center; gap: 10px; }
-
 .nudgeBtn {
   padding: 5px 12px; border-radius: var(--radius); font-size: 11px; font-weight: 700;
   background: rgba(255,215,0,0.2); color: var(--masters-gold-dark); border: 1px solid var(--masters-gold-dark);
@@ -28,33 +26,31 @@
 }
 .nudgeBtn:hover { background: rgba(255,215,0,0.35); }
 
-/* Admin search */
-.searchWrap {
+/* Team search (inside teams column for admin) */
+.teamSearchWrap {
   position: relative;
-  flex: 1;
-  max-width: 300px;
 }
 
-.searchInput {
+.teamSearchInput {
   width: 100%;
-  padding: 7px 30px 7px 12px;
+  padding: 7px 30px 7px 10px;
   border: 1px solid var(--border-default);
-  border-radius: var(--radius);
+  border-radius: var(--radius-lg);
   background: var(--bg-surface);
   color: var(--text-primary);
-  font-size: 13px;
+  font-size: 12px;
   outline: none;
   transition: border-color 0.15s;
 }
 
-.searchInput::placeholder { color: var(--text-muted); }
-.searchInput:focus { border-color: var(--masters-green); box-shadow: 0 0 0 2px rgba(0,103,71,0.1); }
+.teamSearchInput::placeholder { color: var(--text-muted); }
+.teamSearchInput:focus { border-color: var(--masters-green); }
 
-.searchClear {
+.teamSearchClear {
   position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
   background: none; border: none; color: var(--text-muted); font-size: 16px; cursor: pointer;
 }
-.searchClear:hover { color: var(--text-primary); }
+.teamSearchClear:hover { color: var(--text-primary); }
 
 .ownerRow {
   padding: 3px 12px; font-size: 10px; color: var(--text-muted); font-weight: 500;

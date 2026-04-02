@@ -199,31 +199,15 @@ function TeamsView() {
     <div className={styles.container}>
       <div className={styles.titleRow}>
         <h1 className={styles.title}>{isAdmin ? 'All Teams' : 'My Picks'}</h1>
-        <div className={styles.titleActions}>
-          {isAdmin && unconfirmedFullTeams.length > 0 && (
-            <a
-              className={styles.nudgeBtn}
-              href={`mailto:${nudgeEmails.join(',')}?subject=${encodeURIComponent('Masters Pool — Submit Your Picks!')}&body=${encodeURIComponent('Hey! You have 5 golfers picked but haven\'t submitted yet. Head to the site and hit "Submit Picks" to lock them in before the deadline.\n\nThanks!')}`}
-              title={`${unconfirmedFullTeams.length} team(s) with 5 picks not submitted: ${nudgeEmails.join(', ')}`}
-            >
-              Nudge ({unconfirmedFullTeams.length})
-            </a>
-          )}
-          {isAdmin && (
-            <div className={styles.searchWrap}>
-              <input
-                className={styles.searchInput}
-                type="text"
-                placeholder="Search teams or participants..."
-                value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
-              />
-              {searchQuery && (
-                <button className={styles.searchClear} onClick={() => setSearchQuery('')}>&times;</button>
-              )}
-            </div>
-          )}
-        </div>
+        {isAdmin && unconfirmedFullTeams.length > 0 && (
+          <a
+            className={styles.nudgeBtn}
+            href={`mailto:${nudgeEmails.join(',')}?subject=${encodeURIComponent('Masters Pool — Submit Your Picks!')}&body=${encodeURIComponent('Hey! You have 5 golfers picked but haven\'t submitted yet. Head to the site and hit "Submit Picks" to lock them in before the deadline.\n\nThanks!')}`}
+            title={`${unconfirmedFullTeams.length} team(s) with 5 picks not submitted: ${nudgeEmails.join(', ')}`}
+          >
+            Nudge ({unconfirmedFullTeams.length})
+          </a>
+        )}
       </div>
 
       {isLocked && (
@@ -236,6 +220,20 @@ function TeamsView() {
       <div className={styles.picksLayout}>
         {/* Left column: all team cards */}
         <div className={styles.teamsColumn}>
+          {isAdmin && (
+            <div className={styles.teamSearchWrap}>
+              <input
+                className={styles.teamSearchInput}
+                type="text"
+                placeholder="Search teams..."
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+              />
+              {searchQuery && (
+                <button className={styles.teamSearchClear} onClick={() => setSearchQuery('')}>&times;</button>
+              )}
+            </div>
+          )}
           {sortedTeams.map(t => {
             const isActive = t.id === activeTeamId
             const teamSels = selections.filter(s => s.teamId === t.id)
