@@ -1,14 +1,23 @@
 .container {
+  max-width: 780px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
+/* Title row: title left, admin tools right */
+.titleRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
 .title { font-size: 18px; font-weight: 700; color: var(--text-primary); }
 
-/* Team tools (search + nudge, inside teams column) */
-.teamTools { display: flex; align-items: center; gap: 6px; }
+/* Team tools (search + nudge, in title row) */
+.teamTools { display: flex; align-items: center; gap: 6px; flex: 1; max-width: 280px; }
 
 .teamSearchWrap { position: relative; flex: 1; }
 
@@ -93,7 +102,7 @@
 /* ═══ Main two-column layout ═══ */
 .picksLayout {
   display: grid;
-  grid-template-columns: 280px auto;
+  grid-template-columns: 280px minmax(0, 480px);
   gap: 20px;
   align-items: start;
 }

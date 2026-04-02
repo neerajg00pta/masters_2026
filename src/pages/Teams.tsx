@@ -197,7 +197,34 @@ function TeamsView() {
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>{isAdmin ? 'All Teams' : 'My Picks'}</h1>
+      <div className={styles.titleRow}>
+        <h1 className={styles.title}>{isAdmin ? 'All Teams' : 'My Picks'}</h1>
+        {isAdmin && (
+          <div className={styles.teamTools}>
+            <div className={styles.teamSearchWrap}>
+              <input
+                className={styles.teamSearchInput}
+                type="text"
+                placeholder="Search teams..."
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+              />
+              {searchQuery && (
+                <button className={styles.teamSearchClear} onClick={() => setSearchQuery('')}>&times;</button>
+              )}
+            </div>
+            {unconfirmedFullTeams.length > 0 && (
+              <a
+                className={styles.nudgeBtn}
+                href={`mailto:${nudgeEmails.join(',')}?subject=${encodeURIComponent('Masters Pool — Submit Your Picks!')}&body=${encodeURIComponent('Hey! You have 5 golfers picked but haven\'t submitted yet. Head to the site and hit "Submit Picks" to lock them in before the deadline.\n\nThanks!')}`}
+                title={`${nudgeEmails.join(', ')}`}
+              >
+                Nudge ({unconfirmedFullTeams.length})
+              </a>
+            )}
+          </div>
+        )}
+      </div>
 
       {isLocked && (
         <div className={styles.lockedBanner}>
@@ -209,31 +236,6 @@ function TeamsView() {
       <div className={styles.picksLayout}>
         {/* Left column: all team cards */}
         <div className={styles.teamsColumn}>
-          {isAdmin && (
-            <div className={styles.teamTools}>
-              <div className={styles.teamSearchWrap}>
-                <input
-                  className={styles.teamSearchInput}
-                  type="text"
-                  placeholder="Search teams..."
-                  value={searchQuery}
-                  onChange={e => setSearchQuery(e.target.value)}
-                />
-                {searchQuery && (
-                  <button className={styles.teamSearchClear} onClick={() => setSearchQuery('')}>&times;</button>
-                )}
-              </div>
-              {unconfirmedFullTeams.length > 0 && (
-                <a
-                  className={styles.nudgeBtn}
-                  href={`mailto:${nudgeEmails.join(',')}?subject=${encodeURIComponent('Masters Pool — Submit Your Picks!')}&body=${encodeURIComponent('Hey! You have 5 golfers picked but haven\'t submitted yet. Head to the site and hit "Submit Picks" to lock them in before the deadline.\n\nThanks!')}`}
-                  title={`${nudgeEmails.join(', ')}`}
-                >
-                  Nudge ({unconfirmedFullTeams.length})
-                </a>
-              )}
-            </div>
-          )}
           {sortedTeams.map(t => {
             const isActive = t.id === activeTeamId
             const teamSels = selections.filter(s => s.teamId === t.id)
