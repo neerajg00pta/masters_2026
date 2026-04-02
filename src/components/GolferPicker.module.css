@@ -66,7 +66,7 @@
 }
 .row:last-child { border-bottom: none; }
 .row:hover:not(.rowPicked):not(.rowDimmed) { background: var(--bg-elevated); }
-.rowPicked { background: rgba(0,103,71,0.04); }
+.rowPicked { background: rgba(0,103,71,0.04); cursor: pointer; }
 .rowDimmed { opacity: 0.3; cursor: default; }
 .rowClaiming { opacity: 0.5; pointer-events: none; }
 

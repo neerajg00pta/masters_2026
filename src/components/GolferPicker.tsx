@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react'
 import { useData } from '../context/DataContext'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
-import { addSelection } from '../lib/data-service'
+import { addSelection, removeSelection } from '../lib/data-service'
 import { PICKS_PER_TEAM } from '../lib/types'
 import type { Golfer } from '../lib/types'
 import styles from './GolferPicker.module.css'
@@ -96,6 +96,21 @@ export function GolferPicker({ teamId }: Props) {
     }
   }
 
+  const handleRemove = async (golferId: string) => {
+    if (!canEdit || claimingId) return
+    setClaimingId(golferId)
+    try {
+      await removeSelection(teamId, golferId)
+      const g = golfers.find(g => g.id === golferId)
+      addToast(`Removed ${g?.name ?? 'golfer'}`, 'info')
+      await refresh()
+    } catch (err) {
+      addToast(err instanceof Error ? err.message : 'Failed to remove', 'error')
+    } finally {
+      setClaimingId(null)
+    }
+  }
+
   if (!canEdit) return null
 
   const historyYears: (keyof Golfer)[] = ['masters2025', 'masters2024', 'masters2023', 'masters2022', 'masters2021']
@@ -148,7 +163,7 @@ export function GolferPicker({ teamId }: Props) {
                 isDimmed ? styles.rowDimmed : '',
                 isClaiming ? styles.rowClaiming : '',
               ].filter(Boolean).join(' ')}
-              onClick={() => !isPicked && handleAdd(g.id)}
+              onClick={() => isPicked ? handleRemove(g.id) : handleAdd(g.id)}
             >
               {/* Pick dots */}
               <span className={styles.dots}>
