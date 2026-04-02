@@ -26,31 +26,25 @@
 }
 .nudgeBtn:hover { background: rgba(255,215,0,0.35); }
 
-/* Team search (inside teams column for admin) */
-.teamSearchWrap {
-  position: relative;
-}
+/* Title actions (search + nudge, inline with title) */
+.titleActions { display: flex; align-items: center; gap: 8px; }
 
-.teamSearchInput {
-  width: 100%;
-  padding: 7px 30px 7px 10px;
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-lg);
-  background: var(--bg-surface);
-  color: var(--text-primary);
-  font-size: 12px;
-  outline: none;
-  transition: border-color 0.15s;
-}
+.titleSearchWrap { position: relative; }
 
-.teamSearchInput::placeholder { color: var(--text-muted); }
-.teamSearchInput:focus { border-color: var(--masters-green); }
-
-.teamSearchClear {
-  position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
-  background: none; border: none; color: var(--text-muted); font-size: 16px; cursor: pointer;
+.titleSearchInput {
+  padding: 5px 26px 5px 8px; width: 160px;
+  border: 1px solid var(--border-default); border-radius: var(--radius);
+  background: var(--bg-surface); color: var(--text-primary);
+  font-size: 11px; outline: none; transition: border-color 0.15s;
 }
-.teamSearchClear:hover { color: var(--text-primary); }
+.titleSearchInput::placeholder { color: var(--text-muted); }
+.titleSearchInput:focus { border-color: var(--masters-green); width: 220px; }
+
+.titleSearchClear {
+  position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
+  background: none; border: none; color: var(--text-muted); font-size: 14px; cursor: pointer;
+}
+.titleSearchClear:hover { color: var(--text-primary); }
 
 .ownerRow {
   padding: 3px 12px; font-size: 10px; color: var(--text-muted); font-weight: 500;
