@@ -1,9 +1,11 @@
 .container {
-  max-width: 1100px;
+  width: fit-content;
+  max-width: 100%;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
   gap: 16px;
+  padding: 0 16px;
 }
 
 /* Title row */
@@ -116,7 +118,6 @@
   grid-template-columns: 280px auto;
   gap: 20px;
   align-items: start;
-  justify-content: center;
 }
 
 @media (max-width: 740px) {
@@ -324,7 +325,11 @@
 .newTeamOkBtn:disabled { opacity: 0.35; cursor: not-allowed; }
 
 /* Right: picker column */
-.pickerColumn { min-width: 0; }
+.pickerColumn {
+  min-width: 0;
+  position: sticky;
+  top: calc(var(--header-height) + 16px);
+}
 
 .pickerEmpty {
   padding: 48px 24px; text-align: center; font-size: 13px; color: var(--text-muted);
