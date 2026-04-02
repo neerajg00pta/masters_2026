@@ -282,10 +282,6 @@ function TeamsView() {
                       title={canEdit ? 'Double-click to rename' : undefined}
                     >
                       {t.teamName}
-                      {isAdmin && (() => {
-                        const owner = userMap.get(t.userId)
-                        return <span className={styles.ownerLabel}>({owner?.name ?? '?'} &middot; {owner?.email ?? ''})</span>
-                      })()}
                     </span>
                   )}
                   <div className={styles.cardMeta}>
@@ -301,6 +297,14 @@ function TeamsView() {
                     )}
                   </div>
                 </div>
+
+                {/* Owner info for admin */}
+                {isAdmin && (() => {
+                  const owner = userMap.get(t.userId)
+                  return owner ? (
+                    <div className={styles.ownerRow}>{owner.name} &middot; {owner.email}</div>
+                  ) : null
+                })()}
 
                 {/* Golfer list in card */}
                 <div className={styles.cardGolfers}>
