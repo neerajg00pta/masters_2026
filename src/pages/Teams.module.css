@@ -16,6 +16,16 @@
 
 .title { font-size: 18px; font-weight: 700; color: var(--text-primary); }
 
+.titleActions { display: flex; align-items: center; gap: 10px; }
+
+.nudgeBtn {
+  padding: 5px 12px; border-radius: var(--radius); font-size: 11px; font-weight: 700;
+  background: rgba(255,215,0,0.2); color: var(--masters-gold-dark); border: 1px solid var(--masters-gold-dark);
+  text-decoration: none; cursor: pointer; white-space: nowrap;
+  transition: background 0.12s;
+}
+.nudgeBtn:hover { background: rgba(255,215,0,0.35); }
+
 /* Admin search */
 .searchWrap {
   position: relative;

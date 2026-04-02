@@ -70,6 +70,24 @@ function TeamsView() {
   // Keep teams in creation order (no reordering)
   const sortedTeams = visibleTeams
 
+  // Unconfirmed teams with 5 picks — for admin nudge
+  const unconfirmedFullTeams = useMemo(() => {
+    return teams.filter(t => {
+      if (t.confirmed) return false
+      const picks = selections.filter(s => s.teamId === t.id && !s.isRandom)
+      return picks.length >= PICKS_PER_TEAM
+    })
+  }, [teams, selections])
+
+  const nudgeEmails = useMemo(() => {
+    const emails = new Set<string>()
+    for (const t of unconfirmedFullTeams) {
+      const u = userMap.get(t.userId)
+      if (u?.email) emails.add(u.email)
+    }
+    return [...emails]
+  }, [unconfirmedFullTeams, userMap])
+
   // Auth modal — email first, then name if new
   const [showAuth, setShowAuth] = useState(false)
   const [authEmail, setAuthEmail] = useState('')
@@ -181,20 +199,31 @@ function TeamsView() {
     <div className={styles.container}>
       <div className={styles.titleRow}>
         <h1 className={styles.title}>{isAdmin ? 'All Teams' : 'My Picks'}</h1>
-        {isAdmin && (
-          <div className={styles.searchWrap}>
-            <input
-              className={styles.searchInput}
-              type="text"
-              placeholder="Search teams or participants..."
-              value={searchQuery}
-              onChange={e => setSearchQuery(e.target.value)}
-            />
-            {searchQuery && (
-              <button className={styles.searchClear} onClick={() => setSearchQuery('')}>&times;</button>
-            )}
-          </div>
-        )}
+        <div className={styles.titleActions}>
+          {isAdmin && unconfirmedFullTeams.length > 0 && (
+            <a
+              className={styles.nudgeBtn}
+              href={`mailto:${nudgeEmails.join(',')}?subject=${encodeURIComponent('Masters Pool — Submit Your Picks!')}&body=${encodeURIComponent('Hey! You have 5 golfers picked but haven\'t submitted yet. Head to the site and hit "Submit Picks" to lock them in before the deadline.\n\nThanks!')}`}
+              title={`${unconfirmedFullTeams.length} team(s) with 5 picks not submitted: ${nudgeEmails.join(', ')}`}
+            >
+              Nudge ({unconfirmedFullTeams.length})
+            </a>
+          )}
+          {isAdmin && (
+            <div className={styles.searchWrap}>
+              <input
+                className={styles.searchInput}
+                type="text"
+                placeholder="Search teams or participants..."
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+              />
+              {searchQuery && (
+                <button className={styles.searchClear} onClick={() => setSearchQuery('')}>&times;</button>
+              )}
+            </div>
+          )}
+        </div>
       </div>
 
       {isLocked && (
@@ -253,7 +282,10 @@ function TeamsView() {
                       title={canEdit ? 'Double-click to rename' : undefined}
                     >
                       {t.teamName}
-                      {isAdmin && <span className={styles.ownerLabel}>({userMap.get(t.userId)?.name ?? '?'})</span>}
+                      {isAdmin && (() => {
+                        const owner = userMap.get(t.userId)
+                        return <span className={styles.ownerLabel}>({owner?.name ?? '?'} &middot; {owner?.email ?? ''})</span>
+                      })()}
                     </span>
                   )}
                   <div className={styles.cardMeta}>
