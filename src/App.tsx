@@ -1,4 +1,5 @@
 import { HashRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { useAutoReload } from './hooks/useAutoReload'
 import { DataProvider } from './context/DataContext'
 import { AuthProvider } from './context/AuthContext'
 import { ToastProvider } from './context/ToastContext'
@@ -13,6 +14,7 @@ import { Toasts } from './components/Toasts'
 import { DefaultRedirect } from './components/DefaultRedirect'
 
 export default function App() {
+  useAutoReload()
   return (
     <HashRouter>
       <DataProvider>
