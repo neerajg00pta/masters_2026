@@ -396,15 +396,7 @@ function TeamsView() {
 
         {/* Right column: golfer picker for active team */}
         <div className={styles.pickerColumn}>
-          {activeTeamId ? (
-            <GolferPicker teamId={activeTeamId} />
-          ) : (
-            <div className={styles.pickerEmpty}>
-              {visibleTeams.length === 0
-                ? 'Create a team to start picking golfers'
-                : 'Select a team to edit picks'}
-            </div>
-          )}
+          {activeTeamId && <GolferPicker teamId={activeTeamId} />}
         </div>
 
       {/* Auth modal overlay */}
