@@ -101,7 +101,7 @@ export interface PlayerLeaderboardEntry {
 // === Constants ===
 
 export const PICKS_PER_TEAM = 5
-export const MAX_TEAMS_PER_USER = 2
+export const MAX_TEAMS_PER_USER = 1
 export const COUNTING_GOLFERS = 4
 export const MIN_ACTIVE_FOR_QUALIFYING = 4
 export const CUT_SCORE = 100

@@ -11,7 +11,7 @@ export function RulesPage() {
         <h2 className={styles.cardTitle}>Teams</h2>
         <div className={styles.cardBody}>
           <p>
-            Each participant creates <span className={styles.em}>1 or more teams</span>.
+            Each participant creates <span className={styles.em}>1 team</span>.
             Each team drafts <span className={styles.em}>5 golfers</span> from the Masters field.
           </p>
         </div>
