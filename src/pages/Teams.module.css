@@ -95,37 +95,35 @@
   cursor: pointer; text-decoration: underline;
 }
 
-/* ═══ Main grid layout ═══ */
+/* ═══ Main layout: grid on desktop, flex-column on mobile ═══ */
 .picksLayout {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: 280px 1fr;
   gap: 10px 20px;
+  align-items: start;
   max-width: 780px;
   margin: 0 auto;
-  align-items: flex-start;
 }
 
 /* Centered create-team for first-time users */
 .createCenter {
-  width: 100%;
+  grid-column: 1 / -1;
   display: flex;
   justify-content: center;
   padding: 24px 0;
 }
 .createCenter .newTeamCard { width: 320px; }
 
-/* Title area — full width */
+/* Title area — spans both grid columns */
 .titleArea {
-  width: 100%;
+  grid-column: 1 / -1;
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
 
-/* ─── Left: Teams column ─── */
+/* ─── Left: Teams column (auto-placed to row 2, col 1) ─── */
 .teamsColumn {
-  width: 280px;
-  flex-shrink: 0;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -133,7 +131,13 @@
   top: calc(var(--header-height) + 16px);
 }
 
+/* Mobile: switch to flex-column (no grid) */
 @media (max-width: 900px), (hover: none) {
+  .picksLayout {
+    display: flex;
+    flex-direction: column;
+    max-width: 100%;
+  }
   .teamsColumn { width: 100%; position: static; }
 }
 
@@ -329,16 +333,15 @@
 .newTeamOkBtn:hover { opacity: 0.85; }
 .newTeamOkBtn:disabled { opacity: 0.35; cursor: not-allowed; }
 
-/* Right: picker column */
+/* Right: picker column (auto-placed to row 2, col 2) */
 .pickerColumn {
-  flex: 1;
   min-width: 0;
   position: sticky;
   top: calc(var(--header-height) + 16px);
 }
 
 @media (max-width: 900px), (hover: none) {
-  .pickerColumn { width: 100%; flex: none; position: static; }
+  .pickerColumn { width: 100%; position: static; }
 }
 
 .pickerEmpty {
