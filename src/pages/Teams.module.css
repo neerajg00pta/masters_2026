@@ -107,12 +107,13 @@
 
 /* Centered create-team for first-time users */
 .createCenter {
-  grid-column: 1 / -1;
+  width: 100%;
+  min-height: calc(100dvh - var(--header-height) - 120px);
   display: flex;
+  align-items: center;
   justify-content: center;
-  padding: 24px 0;
 }
-.createCenter .newTeamCard { width: 320px; }
+.createCenter .newTeamCard { width: 320px; max-width: 100%; }
 
 /* Title area — spans both grid columns */
 .titleArea {
