@@ -124,6 +124,7 @@
 .teamsColumn {
   display: flex; flex-direction: column; gap: 10px;
   position: sticky; top: calc(var(--header-height) + 16px);
+  outline: 2px solid red;
 }
 
 /* Team card */
@@ -323,6 +324,7 @@
   min-width: 0;
   position: sticky;
   top: calc(var(--header-height) + 16px);
+  outline: 2px solid blue;
 }
 
 .pickerEmpty {
