@@ -2,22 +2,16 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 4px 8px;
   min-height: var(--header-height);
-  padding: 0 20px;
+  padding: 6px 12px;
   background: linear-gradient(135deg, var(--masters-green-dark) 0%, var(--masters-green) 50%, var(--masters-green-light) 100%);
   border-bottom: 1px solid rgba(0, 0, 0, 0.15);
   position: sticky;
   top: 0;
   z-index: 100;
   box-shadow: 0 1px 8px rgba(0, 50, 30, 0.25);
-}
-
-@media (max-width: 600px) {
-  .header {
-    flex-wrap: wrap;
-    gap: 4px;
-    padding: 6px 12px;
-  }
 }
 
 .brand {
@@ -45,15 +39,10 @@
 .headerRight {
   display: flex;
   align-items: center;
-  gap: 12px;
-}
-
-@media (max-width: 600px) {
-  .headerRight {
-    gap: 6px;
-    flex-wrap: wrap;
-    justify-content: flex-end;
-  }
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  min-width: 0;
 }
 
 .userName {
@@ -65,6 +54,7 @@
 .adminNav {
   display: flex;
   gap: 4px;
+  flex-wrap: wrap;
 }
 
 .navLink {
@@ -120,6 +110,14 @@
   color: #fff;
   border-color: var(--accent-red);
   background: rgba(209, 36, 47, 0.2);
+}
+
+@media (max-width: 600px) {
+  .navLink { padding: 3px 6px; font-size: 11px; }
+  .userName { font-size: 11px; }
+  .logoutBtn { font-size: 11px; padding: 3px 8px; }
+  .signInBtn { font-size: 11px; padding: 3px 8px; }
+  .exitAdminBtn { font-size: 10px; padding: 3px 6px; }
 }
 
 .signInBtn {
