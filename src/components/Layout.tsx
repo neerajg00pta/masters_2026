@@ -11,7 +11,6 @@ export function Layout({ children }: { children: ReactNode }) {
   const { addToast } = useToast()
   const [emailInput, setEmailInput] = useState('')
   const [loginError, setLoginError] = useState(false)
-  const [showLogin, setShowLogin] = useState(false)
   const location = useLocation()
 
   // Hidden admin activation: type "admin" anywhere on the page
@@ -39,8 +38,6 @@ export function Layout({ children }: { children: ReactNode }) {
     if (!login(trimmed)) {
       setLoginError(true)
       setTimeout(() => setLoginError(false), 2000)
-    } else {
-      setShowLogin(false)
     }
     setEmailInput('')
   }
@@ -122,7 +119,7 @@ export function Layout({ children }: { children: ReactNode }) {
                 Log out
               </button>
             </>
-          ) : showLogin ? (
+          ) : (
             <form onSubmit={handleLogin} className={styles.loginForm}>
               <input
                 type="email"
@@ -130,15 +127,9 @@ export function Layout({ children }: { children: ReactNode }) {
                 onChange={e => setEmailInput(e.target.value)}
                 placeholder="Your email"
                 className={`${styles.codeInput} ${loginError ? styles.codeInputError : ''}`}
-                autoFocus
               />
-              <button type="submit" className={styles.goBtn}>Go</button>
-              <button type="button" className={styles.cancelBtn} onClick={() => setShowLogin(false)}>&#x2715;</button>
+              <button type="submit" className={styles.goBtn}>Sign in</button>
             </form>
-          ) : (
-            <button className={styles.signInBtn} onClick={() => setShowLogin(true)}>
-              Sign in
-            </button>
           )}
         </div>
       </header>
