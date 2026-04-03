@@ -114,16 +114,23 @@
   align-items: start;
 }
 
-@media (max-width: 900px) {
-  .grid { display: flex; flex-direction: column; }
-  .teamsColumn { width: 100%; position: static; }
-  .pickerColumn { width: 100%; position: static; }
-}
-
 /* ─── Left: Teams column ─── */
 .teamsColumn {
   display: flex; flex-direction: column; gap: 10px;
-  position: sticky; top: calc(var(--header-height) + 16px);
+}
+
+/* Only enable sticky + 2-column on wide screens */
+@media (min-width: 900px) {
+  .teamsColumn {
+    position: sticky; top: calc(var(--header-height) + 16px);
+  }
+}
+
+/* Stack on narrow screens */
+@media (max-width: 899px) {
+  .grid { display: flex; flex-direction: column; gap: 10px; }
+  .teamsColumn { width: 100%; }
+  .pickerColumn { width: 100%; }
 }
 
 /* Team card */
