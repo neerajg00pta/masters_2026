@@ -150,6 +150,7 @@
   background: var(--bg-elevated);
   border-bottom: 1px solid var(--border-muted);
   gap: 8px;
+  min-height: 40px; box-sizing: border-box;
 }
 
 .cardName {
