@@ -91,56 +91,39 @@
   cursor: pointer; text-decoration: underline;
 }
 
-/* ═══ Main layout: grid on desktop, flex-column on mobile ═══ */
-.picksLayout {
-  display: grid;
-  grid-template-columns: 280px 1fr;
-  gap: 10px 20px;
-  align-items: start;
-  max-width: 780px;
-  margin: 0 auto;
+/* ═══ Page wrapper ═══ */
+.page { max-width: 780px; margin: 0 auto; }
+
+/* Toolbar — above the grid */
+.toolbar {
+  display: flex; align-items: center; gap: 8px;
+  flex-wrap: wrap; margin-bottom: 10px;
 }
 
 /* Centered create-team for first-time users */
 .createCenter {
-  grid-column: 1 / -1;
-  grid-row: 2;
-  display: flex;
-  justify-content: center;
-  padding: 40px 0;
+  display: flex; justify-content: center; padding: 40px 0;
 }
 .createCenter .newTeamCard { width: 320px; max-width: 100%; }
 
-/* Title area — single row, spans both grid columns */
-.titleArea {
-  grid-column: 1 / -1;
-  grid-row: 1;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
+/* ═══ Grid — ONLY 2 children ═══ */
+.grid {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+@media (max-width: 900px), (hover: none) {
+  .grid { display: flex; flex-direction: column; }
+  .teamsColumn { width: 100%; position: static; }
+  .pickerColumn { width: 100%; position: static; }
 }
 
 /* ─── Left: Teams column ─── */
 .teamsColumn {
-  grid-column: 1;
-  grid-row: 2;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  position: sticky;
-  top: calc(var(--header-height) + 16px);
-}
-
-/* Mobile: switch to flex-column (no grid) */
-@media (max-width: 900px), (hover: none) {
-  .picksLayout {
-    display: flex;
-    flex-direction: column;
-    max-width: 100%;
-  }
-  .teamsColumn { width: 100%; position: static; }
-  .pickerColumn { width: 100%; position: static; }
+  display: flex; flex-direction: column; gap: 10px;
+  position: sticky; top: calc(var(--header-height) + 16px);
 }
 
 /* Team card */
@@ -337,15 +320,9 @@
 
 /* Right: picker column */
 .pickerColumn {
-  grid-column: 2;
-  grid-row: 2;
   min-width: 0;
   position: sticky;
   top: calc(var(--header-height) + 16px);
-}
-
-@media (max-width: 900px), (hover: none) {
-  .pickerColumn { width: 100%; position: static; }
 }
 
 .pickerEmpty {

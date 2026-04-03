@@ -202,9 +202,9 @@ function TeamsView() {
 
 
   return (
-    <div className={`${styles.picksLayout} ${compact ? styles.compact : ''}`}>
-      {/* Title bar: all on one line */}
-      <div className={styles.titleArea}>
+    <div className={`${styles.page} ${compact ? styles.compact : ''}`}>
+      {/* Toolbar — OUTSIDE the grid */}
+      <div className={styles.toolbar}>
         <h1 className={styles.title}>{isAdmin ? 'All Teams' : 'My Picks'}</h1>
         <button className={`${styles.compactBtn} ${compact ? styles.compactBtnOn : ''}`} onClick={toggleCompact} title={compact ? 'Normal view' : 'Dense view'}>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -248,7 +248,7 @@ function TeamsView() {
         </div>
       )}
 
-      {/* First-time: centered create team input */}
+      {/* First-time: centered create team input — OUTSIDE the grid */}
       {canEdit && visibleTeams.length === 0 && !creatingTeam && (
         <div className={styles.createCenter}>
           <div className={styles.newTeamCard}>
@@ -272,8 +272,9 @@ function TeamsView() {
         </div>
       )}
 
-      {/* Row 2, left column: team cards */}
-      <div className={styles.teamsColumn}>
+      {/* Grid — ONLY 2 children, nothing else */}
+      <div className={styles.grid}>
+        <div className={styles.teamsColumn}>
           {sortedTeams.map(t => {
             const isActive = t.id === activeTeamId
             const teamSels = selections.filter(s => s.teamId === t.id)
@@ -434,6 +435,7 @@ function TeamsView() {
         <div className={styles.pickerColumn}>
           {activeTeamId && <GolferPicker teamId={activeTeamId} compact={compact} />}
         </div>
+      </div>
 
       {/* Auth modal overlay */}
       {showAuth && (
