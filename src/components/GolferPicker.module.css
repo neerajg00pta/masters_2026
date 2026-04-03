@@ -3,8 +3,6 @@
   border: 2px solid var(--border-default);
   border-radius: var(--radius-lg);
   overflow: hidden;
-  width: max-content;
-  min-width: 380px;
 }
 
 .header {
