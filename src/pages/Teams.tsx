@@ -203,22 +203,20 @@ function TeamsView() {
 
   return (
     <div className={`${styles.picksLayout} ${compact ? styles.compact : ''}`}>
-      {/* Row 1, left column: title + admin tools */}
+      {/* Title bar: all on one line */}
       <div className={styles.titleArea}>
-        <div className={styles.titleTop}>
-          <h1 className={styles.title}>{isAdmin ? 'All Teams' : 'My Picks'}</h1>
-          <button className={`${styles.compactBtn} ${compact ? styles.compactBtnOn : ''}`} onClick={toggleCompact} title={compact ? 'Normal view' : 'Dense view'}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              {compact ? (
-                <><line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="18" x2="21" y2="18" /></>
-              ) : (
-                <><line x1="3" y1="4" x2="21" y2="4" /><line x1="3" y1="10" x2="21" y2="10" /><line x1="3" y1="16" x2="21" y2="16" /><line x1="3" y1="22" x2="21" y2="22" /></>
-              )}
-            </svg>
-          </button>
-        </div>
+        <h1 className={styles.title}>{isAdmin ? 'All Teams' : 'My Picks'}</h1>
+        <button className={`${styles.compactBtn} ${compact ? styles.compactBtnOn : ''}`} onClick={toggleCompact} title={compact ? 'Normal view' : 'Dense view'}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            {compact ? (
+              <><line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="18" x2="21" y2="18" /></>
+            ) : (
+              <><line x1="3" y1="4" x2="21" y2="4" /><line x1="3" y1="10" x2="21" y2="10" /><line x1="3" y1="16" x2="21" y2="16" /><line x1="3" y1="22" x2="21" y2="22" /></>
+            )}
+          </svg>
+        </button>
         {isAdmin && (
-          <div className={styles.teamTools}>
+          <>
             <div className={styles.teamSearchWrap}>
               <input
                 className={styles.teamSearchInput}
@@ -240,14 +238,15 @@ function TeamsView() {
                 Nudge ({unconfirmedFullTeams.length})
               </a>
             )}
-          </div>
-        )}
-        {isLocked && (
-          <div className={styles.lockedBanner}>
-            Pool is locked{isAdmin ? ' — admin editing mode' : ' — picks are final'}
-          </div>
+          </>
         )}
       </div>
+
+      {isLocked && (
+        <div className={styles.lockedBanner}>
+          Pool is locked{isAdmin ? ' — admin editing mode' : ' — picks are final'}
+        </div>
+      )}
 
       {/* First-time: centered create team input */}
       {canEdit && visibleTeams.length === 0 && !creatingTeam && (

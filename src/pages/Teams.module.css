@@ -1,7 +1,5 @@
 .title { font-size: 18px; font-weight: 700; color: var(--text-primary); margin: 0; }
 
-.titleTop { display: flex; align-items: center; gap: 8px; }
-
 .compactBtn {
   display: flex; align-items: center; justify-content: center;
   width: 24px; height: 24px; border-radius: var(--radius);
@@ -12,10 +10,7 @@
 .compactBtnOn { background: var(--masters-green); border-color: var(--masters-green); color: #fff; }
 .compactBtnOn:hover { opacity: 0.85; color: #fff; }
 
-/* Team tools (search + nudge, in title row) */
-.teamTools { display: flex; align-items: center; gap: 6px; flex: 1; max-width: 280px; }
-
-.teamSearchWrap { position: relative; flex: 1; }
+.teamSearchWrap { position: relative; flex: 1; max-width: 180px; }
 
 .teamSearchInput {
   width: 100%; padding: 5px 26px 5px 8px;
@@ -47,6 +42,7 @@
 .teamCardActive .ownerRow { color: rgba(255,255,255,0.5); border-bottom-color: rgba(255,255,255,0.1); }
 
 .lockedBanner {
+  grid-column: 1 / -1;
   padding: 10px 16px; background: var(--bg-elevated); border: 1px solid var(--border-default);
   border-radius: var(--radius); font-size: 13px; color: var(--text-secondary);
 }
@@ -114,12 +110,13 @@
 }
 .createCenter .newTeamCard { width: 320px; max-width: 100%; }
 
-/* Title area — spans both grid columns */
+/* Title area — single row, spans both grid columns */
 .titleArea {
   grid-column: 1 / -1;
   display: flex;
-  flex-direction: column;
-  gap: 6px;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
 /* ─── Left: Teams column (auto-placed to row 2, col 1) ─── */
