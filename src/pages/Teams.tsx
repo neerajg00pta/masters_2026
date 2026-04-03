@@ -3,7 +3,7 @@ import { useData } from '../context/DataContext'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
 import { createTeam, deleteTeam, updateTeamName, removeSelection, createUser, setTeamConfirmed } from '../lib/data-service'
-import { PICKS_PER_TEAM } from '../lib/types'
+import { PICKS_PER_TEAM, MAX_TEAMS_PER_USER } from '../lib/types'
 import { GolferPicker } from '../components/GolferPicker'
 import styles from './Teams.module.css'
 
@@ -131,6 +131,10 @@ function TeamsView() {
     if (requireAuth()) return
     const trimmed = newTeamName.trim()
     if (!trimmed || !currentUser) return
+    const userTeamCount = teams.filter(t => t.userId === currentUser.id).length
+    if (!isAdmin && userTeamCount >= MAX_TEAMS_PER_USER) {
+      addToast(`Maximum ${MAX_TEAMS_PER_USER} teams allowed`, 'error'); return
+    }
     setSaving(true)
     try {
       const team = await createTeam(currentUser.id, trimmed)
@@ -360,7 +364,7 @@ function TeamsView() {
           })}
 
           {/* New team button/input — show input directly if no teams yet */}
-          {canEdit && (
+          {canEdit && (isAdmin || (currentUser && teams.filter(t => t.userId === currentUser.id).length < MAX_TEAMS_PER_USER)) && (
             creatingTeam || visibleTeams.length === 0 ? (
               <div className={styles.newTeamCard}>
                 <div className={styles.newTeamRow}>
