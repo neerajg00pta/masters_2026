@@ -160,8 +160,3 @@
   .colName, .name { width: auto; flex: 1; min-width: 0; }
 }
 
-/* Touch devices — force full width */
-@media (hover: none) {
-  .panel { width: auto; min-width: 0; }
-  .colName, .name { width: auto; flex: 1; min-width: 0; }
-}

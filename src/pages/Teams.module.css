@@ -114,7 +114,7 @@
   align-items: start;
 }
 
-@media (max-width: 900px), (hover: none) {
+@media (max-width: 900px) {
   .grid { display: flex; flex-direction: column; }
   .teamsColumn { width: 100%; position: static; }
   .pickerColumn { width: 100%; position: static; }
