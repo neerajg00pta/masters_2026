@@ -133,9 +133,31 @@
   padding: 32px 14px; text-align: center; color: var(--text-muted); font-size: 13px;
 }
 
-/* Mobile */
-@media (max-width: 480px) {
+/* Compact/dense mode */
+.compact .header { padding: 6px 10px; min-height: 32px; }
+.compact .headerTitle { font-size: 10px; letter-spacing: 1px; }
+.compact .headerCount { font-size: 9px; }
+.compact .searchWrap { padding: 4px 6px; }
+.compact .searchInput { padding: 4px 24px 4px 6px; font-size: 11px; }
+.compact .colHeaders { padding: 2px 4px; font-size: 7px; }
+.compact .row { padding: 3px 4px; }
+.compact .dots { width: 12px; }
+.compact .dot { width: 4px; height: 4px; }
+.compact .odds { font-size: 10px; width: 44px; padding-right: 4px; }
+.compact .flag { width: 16px; }
+.compact .flagImg { width: 12px; height: 9px; }
+.compact .name { font-size: 10px; }
+.compact .histCell { width: 30px; }
+.compact .histPill { min-width: 22px; height: 15px; font-size: 8px; }
+.compact .histMc { font-size: 7px; }
+.compact .histDash { font-size: 8px; }
+.compact .colDots { width: 12px; }
+.compact .colOdds { width: 44px; padding-right: 4px; }
+.compact .colFlag { width: 16px; }
+.compact .colHist { width: 30px; }
+
+/* Mobile — catches iPhone with minimum-scale=0.5 (~786px logical) */
+@media (max-width: 820px) {
   .panel { width: auto; min-width: 0; }
-  .colHist, .histCell { display: none; }
   .colName, .name { width: auto; flex: 1; min-width: 0; }
 }

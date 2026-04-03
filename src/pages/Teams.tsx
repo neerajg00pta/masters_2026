@@ -21,6 +21,8 @@ function TeamsView() {
   const [renameValue, setRenameValue] = useState('')
   const [saving, setSaving] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
+  const [compact, setCompact] = useState(() => localStorage.getItem('masters_teams_compact') !== '0')
+  const toggleCompact = () => setCompact(p => { const v = !p; localStorage.setItem('masters_teams_compact', v ? '1' : '0'); return v })
 
   const isLocked = config.poolLocked
   const canEdit = !isLocked || isAdmin
@@ -200,10 +202,21 @@ function TeamsView() {
 
 
   return (
-    <div className={styles.picksLayout}>
+    <div className={`${styles.picksLayout} ${compact ? styles.compact : ''}`}>
       {/* Row 1, left column: title + admin tools */}
       <div className={styles.titleArea}>
-        <h1 className={styles.title}>{isAdmin ? 'All Teams' : 'My Picks'}</h1>
+        <div className={styles.titleTop}>
+          <h1 className={styles.title}>{isAdmin ? 'All Teams' : 'My Picks'}</h1>
+          <button className={`${styles.compactBtn} ${compact ? styles.compactBtnOn : ''}`} onClick={toggleCompact} title={compact ? 'Normal view' : 'Dense view'}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              {compact ? (
+                <><line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="18" x2="21" y2="18" /></>
+              ) : (
+                <><line x1="3" y1="4" x2="21" y2="4" /><line x1="3" y1="10" x2="21" y2="10" /><line x1="3" y1="16" x2="21" y2="16" /><line x1="3" y1="22" x2="21" y2="22" /></>
+              )}
+            </svg>
+          </button>
+        </div>
         {isAdmin && (
           <div className={styles.teamTools}>
             <div className={styles.teamSearchWrap}>
@@ -421,7 +434,7 @@ function TeamsView() {
 
         {/* Right column: golfer picker for active team */}
         <div className={styles.pickerColumn}>
-          {activeTeamId && <GolferPicker teamId={activeTeamId} />}
+          {activeTeamId && <GolferPicker teamId={activeTeamId} compact={compact} />}
         </div>
 
       {/* Auth modal overlay */}

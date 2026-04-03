@@ -9,6 +9,7 @@ import styles from './GolferPicker.module.css'
 
 interface Props {
   teamId: string
+  compact?: boolean
 }
 
 /** Parse a position string to a number for color classification */
@@ -38,7 +39,7 @@ function HistoryPill({ pos }: { pos: string | null }) {
   return <span className={styles.histCell}><span className={cls}>{label}</span></span>
 }
 
-export function GolferPicker({ teamId }: Props) {
+export function GolferPicker({ teamId, compact }: Props) {
   const { config, golfers, selections, teams, refresh } = useData()
   const { isAdmin } = useAuth()
   const { addToast } = useToast()
@@ -117,7 +118,7 @@ export function GolferPicker({ teamId }: Props) {
   const yearLabels = ["'25", "'24", "'23", "'22", "'21"]
 
   return (
-    <div className={styles.panel}>
+    <div className={`${styles.panel} ${compact ? styles.compact : ''}`}>
       <div className={styles.header}>
         <span className={styles.headerTitle}>Masters Field</span>
         <span className={styles.headerCount}>{golfers.length} golfers</span>
