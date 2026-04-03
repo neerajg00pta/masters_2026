@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { Navigate } from 'react-router-dom'
 import { useData } from '../context/DataContext'
 import { useAuth } from '../context/AuthContext'
 import { computeTeamLeaderboard, computePlayerLeaderboard, getPayoutPosition } from '../lib/scoring'
@@ -8,8 +9,13 @@ import { PlayerLeaderboard } from '../components/PlayerLeaderboard'
 import styles from './Live.module.css'
 
 export function LivePage() {
-  const { teams, users, golfers, selections, snapshots, tick } = useData()
-  const { currentUser } = useAuth()
+  const { config, teams, users, golfers, selections, snapshots, tick } = useData()
+  const { currentUser, isAdmin } = useAuth()
+
+  // Redirect non-admins to teams page when pool isn't locked
+  if (!config.poolLocked && !isAdmin) {
+    return <Navigate to="/teams" replace />
+  }
 
   const teamEntries = useMemo(
     () => computeTeamLeaderboard(teams, users, golfers, selections, snapshots, currentUser?.id ?? null),

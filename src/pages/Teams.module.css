@@ -104,9 +104,13 @@
 }
 
 @media (max-width: 740px) {
-  .picksLayout { grid-template-columns: 1fr; }
-  .titleArea { grid-column: 1; }
-  .pickerColumn { grid-row: auto; }
+  .picksLayout {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+  }
+  .titleArea { grid-column: 1; grid-row: auto; }
+  .teamsColumn { grid-column: 1; grid-row: auto; }
+  .pickerColumn { grid-column: 1; grid-row: auto; }
 }
 
 /* ─── Left: Teams column (row 2, col 1) ─── */
