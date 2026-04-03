@@ -94,6 +94,15 @@
   margin: 0 auto;
 }
 
+/* Centered create-team for first-time users */
+.createCenter {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: center;
+  padding: 24px 0;
+}
+.createCenter .newTeamCard { width: 320px; }
+
 /* Row 1, col 1: title + admin tools */
 .titleArea {
   grid-column: 1;

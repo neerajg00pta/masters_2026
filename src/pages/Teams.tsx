@@ -236,6 +236,31 @@ function TeamsView() {
         )}
       </div>
 
+      {/* First-time: centered create team input */}
+      {canEdit && visibleTeams.length === 0 && !creatingTeam && (
+        <div className={styles.createCenter}>
+          <div className={styles.newTeamCard}>
+            <div className={styles.newTeamRow}>
+              <input
+                className={styles.newTeamInput}
+                placeholder="Team name..."
+                value={newTeamName}
+                onChange={e => setNewTeamName(e.target.value)}
+                onKeyDown={handleCreateKeyDown}
+                disabled={saving}
+                autoFocus
+                maxLength={24}
+              />
+              <button
+                className={styles.newTeamOkBtn}
+                onClick={handleCreateTeam}
+                disabled={saving || !newTeamName.trim()}
+              >OK</button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Row 2, left column: team cards */}
       <div className={styles.teamsColumn}>
           {sortedTeams.map(t => {
@@ -363,9 +388,9 @@ function TeamsView() {
             )
           })}
 
-          {/* New team button/input — show input directly if no teams yet */}
-          {canEdit && (isAdmin || !currentUser || teams.filter(t => t.userId === currentUser.id).length < MAX_TEAMS_PER_USER) && (
-            creatingTeam || visibleTeams.length === 0 ? (
+          {/* Add another team (only when teams exist and under limit) */}
+          {canEdit && visibleTeams.length > 0 && (isAdmin || !currentUser || teams.filter(t => t.userId === currentUser.id).length < MAX_TEAMS_PER_USER) && (
+            creatingTeam ? (
               <div className={styles.newTeamCard}>
                 <div className={styles.newTeamRow}>
                   <input
@@ -374,7 +399,7 @@ function TeamsView() {
                     value={newTeamName}
                     onChange={e => setNewTeamName(e.target.value)}
                     onKeyDown={handleCreateKeyDown}
-                    onBlur={() => { if (!newTeamName.trim() && visibleTeams.length > 0) { setCreatingTeam(false); setNewTeamName('') } }}
+                    onBlur={() => { if (!newTeamName.trim()) { setCreatingTeam(false); setNewTeamName('') } }}
                     disabled={saving}
                     autoFocus
                     maxLength={24}
