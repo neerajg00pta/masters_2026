@@ -273,7 +273,8 @@ function TeamsView() {
       )}
 
       {/* Grid — ONLY 2 children, nothing else */}
-      <div style={{ display: 'grid', gridTemplateColumns: '280px 1fr', gap: '20px', alignItems: 'start' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '280px 1fr', gap: '20px', alignItems: 'start', position: 'relative' }}>
+        <span style={{ position: 'absolute', top: -18, right: 0, fontSize: 9, color: '#ccc' }}>v10</span>
         <div className={styles.teamsColumn}>
           {sortedTeams.map(t => {
             const isActive = t.id === activeTeamId
