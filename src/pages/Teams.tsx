@@ -364,7 +364,7 @@ function TeamsView() {
           })}
 
           {/* New team button/input — show input directly if no teams yet */}
-          {canEdit && (isAdmin || (currentUser && teams.filter(t => t.userId === currentUser.id).length < MAX_TEAMS_PER_USER)) && (
+          {canEdit && (isAdmin || !currentUser || teams.filter(t => t.userId === currentUser.id).length < MAX_TEAMS_PER_USER) && (
             creatingTeam || visibleTeams.length === 0 ? (
               <div className={styles.newTeamCard}>
                 <div className={styles.newTeamRow}>
