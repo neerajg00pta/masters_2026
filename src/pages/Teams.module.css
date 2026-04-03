@@ -134,6 +134,17 @@
   .pickerColumn { grid-column: 1; grid-row: auto; }
 }
 
+/* Touch devices (no hover) — force single column */
+@media (hover: none) {
+  .picksLayout {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+  }
+  .titleArea { grid-column: 1; grid-row: auto; }
+  .teamsColumn { grid-column: 1; grid-row: auto; }
+  .pickerColumn { grid-column: 1; grid-row: auto; }
+}
+
 /* ─── Left: Teams column (row 2, col 1) ─── */
 .teamsColumn {
   grid-column: 1;

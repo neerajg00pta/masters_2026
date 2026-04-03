@@ -156,8 +156,14 @@
 .compact .colFlag { width: 16px; }
 .compact .colHist { width: 30px; }
 
-/* Mobile — catches iPhone with minimum-scale=0.5 (~786px logical) */
+/* Mobile — viewport fallback */
 @media (max-width: 900px) {
+  .panel { width: auto; min-width: 0; }
+  .colName, .name { width: auto; flex: 1; min-width: 0; }
+}
+
+/* Touch devices — force full width */
+@media (hover: none) {
   .panel { width: auto; min-width: 0; }
   .colName, .name { width: auto; flex: 1; min-width: 0; }
 }
