@@ -261,7 +261,6 @@ function TeamsView() {
                 onChange={e => setNewTeamName(e.target.value)}
                 onKeyDown={handleCreateKeyDown}
                 disabled={saving}
-                autoFocus
                 maxLength={24}
               />
               <button

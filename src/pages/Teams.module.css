@@ -108,10 +108,9 @@
 /* Centered create-team for first-time users */
 .createCenter {
   width: 100%;
-  min-height: calc(100dvh - var(--header-height) - 120px);
   display: flex;
-  align-items: center;
   justify-content: center;
+  padding: 40px 0;
 }
 .createCenter .newTeamCard { width: 320px; max-width: 100%; }
 

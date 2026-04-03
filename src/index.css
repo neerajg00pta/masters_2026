@@ -65,6 +65,13 @@ body {
   flex-direction: column;
 }
 
+/* Prevent iOS Safari auto-zoom on input focus (requires >= 16px) */
+@media screen and (max-width: 900px) {
+  input, select, textarea {
+    font-size: 16px !important;
+  }
+}
+
 /* Scrollbar */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
