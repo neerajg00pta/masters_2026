@@ -205,7 +205,7 @@ function TeamsView() {
     <div className={`${styles.page} ${compact ? styles.compact : ''}`}>
       {/* Toolbar — OUTSIDE the grid */}
       <div className={styles.toolbar}>
-        <h1 className={styles.title}>{isAdmin ? 'All Teams' : 'My Picks'}</h1>
+        <h1 className={styles.title}>{isAdmin ? 'All Teams' : 'My Picks'} <span style={{ fontSize: 9, color: '#ccc', fontWeight: 400 }}>v11</span></h1>
         <button className={`${styles.compactBtn} ${compact ? styles.compactBtnOn : ''}`} onClick={toggleCompact} title={compact ? 'Normal view' : 'Dense view'}>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             {compact ? (
