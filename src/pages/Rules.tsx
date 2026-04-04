@@ -6,12 +6,12 @@ export function RulesPage() {
       <h1 className={styles.pageTitle}>Masters Fantasy Golf Pool</h1>
       <p className={styles.subtitle}>Official Rules</p>
 
-      {/* Teams */}
+      {/* Entry */}
       <div className={styles.card}>
-        <h2 className={styles.cardTitle}>Teams</h2>
+        <h2 className={styles.cardTitle}>Entry</h2>
         <div className={styles.cardBody}>
           <p>
-            Each team drafts <span className={styles.em}>5 golfers</span> from the Masters field.
+            <span className={styles.em}>$20 per person</span>. Each team drafts <span className={styles.em}>5 golfers</span> from the Masters field.
           </p>
         </div>
       </div>

@@ -44,10 +44,10 @@ export function AdminPage() {
 
   const paidCount = users.filter(u => u.paid).length
 
-  // Count teams per user
+  // Count submitted teams per user
   const teamCountByUser = new Map<string, number>()
   for (const t of teams) {
-    teamCountByUser.set(t.userId, (teamCountByUser.get(t.userId) ?? 0) + 1)
+    if (t.confirmed) teamCountByUser.set(t.userId, (teamCountByUser.get(t.userId) ?? 0) + 1)
   }
 
   // Team readiness
