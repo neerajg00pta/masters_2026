@@ -72,23 +72,19 @@ function TeamsView() {
   // Keep teams in creation order (no reordering)
   const sortedTeams = visibleTeams
 
-  // Unconfirmed teams with 5 picks — for admin nudge
-  const unconfirmedFullTeams = useMemo(() => {
-    return teams.filter(t => {
-      if (t.confirmed) return false
-      const picks = selections.filter(s => s.teamId === t.id && !s.isRandom)
-      return picks.length >= PICKS_PER_TEAM
-    })
-  }, [teams, selections])
+  // Unconfirmed teams — for admin nudge
+  const unconfirmedTeams = useMemo(() => {
+    return teams.filter(t => !t.confirmed)
+  }, [teams])
 
   const nudgeEmails = useMemo(() => {
     const emails = new Set<string>()
-    for (const t of unconfirmedFullTeams) {
+    for (const t of unconfirmedTeams) {
       const u = userMap.get(t.userId)
       if (u?.email) emails.add(u.email)
     }
     return [...emails]
-  }, [unconfirmedFullTeams, userMap])
+  }, [unconfirmedTeams, userMap])
 
   // Auth modal — email first, then name if new
   const [showAuth, setShowAuth] = useState(false)
@@ -229,13 +225,13 @@ function TeamsView() {
                 <button className={styles.teamSearchClear} onClick={() => setSearchQuery('')}>&times;</button>
               )}
             </div>
-            {unconfirmedFullTeams.length > 0 && (
+            {unconfirmedTeams.length > 0 && (
               <a
                 className={styles.nudgeBtn}
-                href={`mailto:${nudgeEmails.join(',')}?subject=${encodeURIComponent('Masters Pool — Submit Your Picks!')}&body=${encodeURIComponent('Hey! You have 5 golfers picked but haven\'t submitted yet. Head to the site and hit "Submit Picks" to lock them in before the deadline.\n\nThanks!')}`}
+                href={`mailto:${nudgeEmails.join(',')}?subject=${encodeURIComponent('Masters Pool — Submit Your Picks!')}&body=${encodeURIComponent('Hey! Your team hasn\'t been submitted yet. Head to the site, finish your picks, and hit "Submit Picks" to lock them in before the deadline.\n\nThanks!')}`}
                 title={`${nudgeEmails.join(', ')}`}
               >
-                Nudge ({unconfirmedFullTeams.length})
+                Nudge ({unconfirmedTeams.length})
               </a>
             )}
           </>

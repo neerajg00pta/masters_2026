@@ -17,16 +17,23 @@ export function LivePage() {
     return <Navigate to="/teams" replace />
   }
 
+  // Only show submitted (confirmed) teams on the live page
+  const confirmedTeams = useMemo(() => teams.filter(t => t.confirmed), [teams])
+  const confirmedSelections = useMemo(() => {
+    const teamIds = new Set(confirmedTeams.map(t => t.id))
+    return selections.filter(s => teamIds.has(s.teamId))
+  }, [confirmedTeams, selections])
+
   const teamEntries = useMemo(
-    () => computeTeamLeaderboard(teams, users, golfers, selections, snapshots, currentUser?.id ?? null),
+    () => computeTeamLeaderboard(confirmedTeams, users, golfers, confirmedSelections, snapshots, currentUser?.id ?? null),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [teams, users, golfers, selections, snapshots, currentUser, tick],
+    [confirmedTeams, users, golfers, confirmedSelections, snapshots, currentUser, tick],
   )
 
   const playerEntries = useMemo(
-    () => computePlayerLeaderboard(golfers, selections, teams),
+    () => computePlayerLeaderboard(golfers, confirmedSelections, confirmedTeams),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [golfers, selections, teams, tick],
+    [golfers, confirmedSelections, confirmedTeams, tick],
   )
 
   const payoutMap = useMemo(() => {

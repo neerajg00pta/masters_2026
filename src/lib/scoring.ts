@@ -263,9 +263,10 @@ export function getPayoutPosition(
   // 1st rank
   if (entry.rank === 1) return 'first'
 
-  // 2nd rank
+  // 2nd rank — only if 1st is NOT tied (tie for 1st eliminates 2nd place prize)
+  const firstCount = nonDq.filter(e => e.rank === 1).length
   const ranks = [...new Set(nonDq.map(e => e.rank))].sort((a, b) => a - b)
-  if (ranks.length >= 2 && entry.rank === ranks[1]) return 'second'
+  if (firstCount === 1 && ranks.length >= 2 && entry.rank === ranks[1]) return 'second'
 
   // Last non-DQ rank
   const lastRank = ranks[ranks.length - 1]

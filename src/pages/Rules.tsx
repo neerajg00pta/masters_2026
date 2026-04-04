@@ -121,6 +121,17 @@ export function RulesPage() {
             <span className={`${styles.payoutPlace} ${styles.payoutMiddle}`}>Middle Place</span>
           </div>
         </div>
+        <div className={styles.divider} />
+        <div className={styles.cardBody}>
+          <p>
+            In the event of a tie for 1st place, the 2nd place prize is eliminated
+            and added to the winners&apos; purse, divided equally among those tied for 1st.
+          </p>
+          <p>
+            If there is a tie at 2nd, Last, or Middle, winnings at that level
+            are divided equally among those tied.
+          </p>
+        </div>
       </div>
     </div>
   )
