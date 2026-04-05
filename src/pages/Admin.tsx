@@ -95,6 +95,7 @@ export function AdminPage() {
     }
   }
 
+  // @ts-expect-error hidden feature, uncomment button in JSX to re-enable
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleClearRandoms = async () => {
     if (!window.confirm('Clear ALL random assignments? This cannot be undone.')) return
