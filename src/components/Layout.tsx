@@ -59,7 +59,7 @@ export function Layout({ children }: { children: ReactNode }) {
             <rect x="9" y="2" width="2" height="20" fill="var(--masters-gold)" rx="1" />
             <path d="M11 2 L19 6 L11 10 Z" fill="var(--masters-gold)" />
           </svg>
-          <span className={styles.brandText}>MASTERS POOL <span style={{ fontSize: 8, opacity: 0.5 }}>v12</span></span>
+          <span className={styles.brandText}>MASTERS POOL</span>
         </Link>
 
         <div className={styles.headerRight}>
@@ -87,28 +87,6 @@ export function Layout({ children }: { children: ReactNode }) {
           </Link>
           {currentUser ? (
             <>
-              {isAdmin && (
-                <nav className={styles.adminNav}>
-                  <Link
-                    to="/admin"
-                    className={`${styles.navLink} ${location.pathname === '/admin' ? styles.navLinkActive : ''}`}
-                  >
-                    Admin
-                  </Link>
-                  <Link
-                    to="/admin/golfers"
-                    className={`${styles.navLink} ${location.pathname === '/admin/golfers' ? styles.navLinkActive : ''}`}
-                  >
-                    Golfers
-                  </Link>
-                  <button
-                    className={styles.exitAdminBtn}
-                    onClick={() => { deactivateAdmin(); addToast('Player mode', 'success') }}
-                  >
-                    Exit Admin
-                  </button>
-                </nav>
-              )}
               <span
                 className={styles.userName}
                 style={{ WebkitUserSelect: 'none', userSelect: 'none' }}
@@ -134,6 +112,23 @@ export function Layout({ children }: { children: ReactNode }) {
           )}
         </div>
       </header>
+
+      {isAdmin && (
+        <nav className={styles.adminBar}>
+          <Link
+            to="/admin"
+            className={`${styles.adminLink} ${location.pathname === '/admin' ? styles.adminLinkActive : ''}`}
+          >Admin</Link>
+          <Link
+            to="/admin/golfers"
+            className={`${styles.adminLink} ${location.pathname === '/admin/golfers' ? styles.adminLinkActive : ''}`}
+          >Golfers</Link>
+          <button
+            className={styles.exitAdminBtn}
+            onClick={() => { deactivateAdmin(); addToast('Player mode', 'success') }}
+          >Exit Admin</button>
+        </nav>
+      )}
 
       <main className={styles.main}>
         {children}

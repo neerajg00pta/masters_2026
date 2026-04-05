@@ -51,11 +51,27 @@
   font-weight: 600;
 }
 
-.adminNav {
+.adminBar {
   display: flex;
-  gap: 4px;
-  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 4px 12px;
+  background: var(--masters-green-dark);
+  border-bottom: 1px solid rgba(0,0,0,0.15);
 }
+
+.adminLink {
+  padding: 2px 8px;
+  border-radius: var(--radius);
+  font-size: 11px;
+  font-weight: 600;
+  text-decoration: none;
+  color: rgba(255,255,255,0.75);
+  transition: all 0.15s;
+}
+.adminLink:hover { color: #fff; background: rgba(255,255,255,0.1); }
+.adminLinkActive { color: var(--masters-gold); background: rgba(255,215,0,0.15); }
 
 .navLink {
   padding: 4px 10px;
