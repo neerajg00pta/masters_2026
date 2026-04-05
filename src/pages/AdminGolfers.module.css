@@ -195,15 +195,13 @@
   top: 0;
 }
 
-.thNum { width: 30px; text-align: center; }
-.thName { width: 16%; }
-.thEspn { width: 14%; }
-.thOdds { width: 50px; }
-.thScore { width: 48px; }
-.thToday { width: 48px; }
-.thThru { width: 48px; }
-.thStatus { width: 60px; }
-.thLocked { width: 36px; text-align: center; }
+.thNum { width: 28px; text-align: center; }
+.thName { }
+.thEspn { }
+.thOdds { width: 44px; text-align: center; }
+.thNarrow { width: 36px; text-align: center; }
+.thStatus { width: 52px; }
+.thLocked { width: 30px; text-align: center; }
 
 .table td {
   padding: 2px 5px;
@@ -248,7 +246,7 @@
 .textInput::placeholder { color: var(--text-muted); }
 
 .scoreInput {
-  width: 44px;
+  width: 32px;
   padding: 2px 4px;
   border: 1px solid transparent;
   border-radius: 3px;
@@ -364,3 +362,12 @@
 }
 
 .tipWarn strong { color: var(--accent-red); }
+
+/* Numeric cells */
+.numCell {
+  text-align: center; font-size: 11px; font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.centered { text-align: center; }
+.rndLabel { font-size: 8px; font-weight: 700; color: var(--text-muted); }
+.dupLabel { font-weight: 600; color: var(--accent-red); }

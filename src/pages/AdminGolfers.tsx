@@ -201,11 +201,11 @@ export function AdminGolfersPage() {
                 <th className={styles.thName}>Name</th>
                 <th className={styles.thEspn}>ESPN Match</th>
                 <th className={styles.thOdds}>Odds</th>
-                <th style={{ width: '50px', textAlign: 'center' }}>Adj</th>
-                <th className={styles.thScore}>Masters</th>
-                <th style={{ width: '40px', textAlign: 'center' }}>Dups</th>
-                <th className={styles.thToday}>Today</th>
-                <th className={styles.thThru}>Thru</th>
+                <th className={styles.thNarrow}>Adj</th>
+                <th className={styles.thNarrow}>Masters</th>
+                <th className={styles.thNarrow}>Dups</th>
+                <th className={styles.thNarrow}>Today</th>
+                <th className={styles.thNarrow}>Thru</th>
                 <th className={styles.thStatus}>Status</th>
                 <th className={styles.thLocked} title="Lock prevents live scoring from overwriting">Lock</th>
               </tr>
@@ -282,10 +282,10 @@ function GolferRow({
         )}
       </td>
       <td>
-        <input className={styles.textInput} value={localOdds} style={{ width: 60, textAlign: 'center' }}
+        <input className={`${styles.textInput} ${styles.centered}`} value={localOdds} style={{ width: 44 }}
           onChange={e => { setLocalOdds(e.target.value); onDebouncedUpdate(golfer.id, { name: golfer.name }) }} />
       </td>
-      <td style={{ textAlign: 'center', fontSize: 12, fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>
+      <td className={styles.numCell}>
         {formatScore(golfer.scoreToPar + dupPenalty)}
       </td>
       <td>
@@ -293,11 +293,11 @@ function GolferRow({
           type="number" value={localScore}
           onChange={e => { setLocalScore(e.target.value); const n = parseInt(e.target.value, 10); if (!isNaN(n)) onDebouncedUpdate(golfer.id, { scoreToPar: n }) }} />
       </td>
-      <td style={{ textAlign: 'center', fontSize: 12, fontVariantNumeric: 'tabular-nums' }}>
+      <td className={styles.numCell}>
         {isRandomOnly ? (
-          <span style={{ fontSize: 9, fontWeight: 700, color: 'var(--text-muted)' }}>RND</span>
+          <span className={styles.rndLabel}>RND</span>
         ) : dupPenalty > 0 ? (
-          <span style={{ fontWeight: 600, color: 'var(--accent-red)' }}>+{dupPenalty}</span>
+          <span className={styles.dupLabel}>+{dupPenalty}</span>
         ) : ''}
       </td>
       <td>
@@ -306,8 +306,7 @@ function GolferRow({
           onChange={e => { setLocalToday(e.target.value); const n = parseInt(e.target.value, 10); if (!isNaN(n)) onDebouncedUpdate(golfer.id, { today: n }) }} />
       </td>
       <td>
-        <input className={styles.textInput} value={localThru} placeholder=""
-          style={{ width: 48, textAlign: 'center' }}
+        <input className={`${styles.textInput} ${styles.centered}`} value={localThru} placeholder="" style={{ width: 32 }}
           onChange={e => { setLocalThru(e.target.value); onDebouncedUpdate(golfer.id, { thru: e.target.value }) }} />
       </td>
       <td>
