@@ -363,11 +363,23 @@
 
 .tipWarn strong { color: var(--accent-red); }
 
-/* Mobile: hide redundant columns, fit table on screen */
+/* Mobile: hide redundant columns, let name wrap, shrink everything */
 @media (max-width: 900px) {
-  .table { min-width: 0; width: 100%; }
-  .thEspn, .table td:nth-child(3) { display: none; }  /* ESPN Match */
-  .thOdds, .table td:nth-child(4) { display: none; }  /* Odds */
+  .table { min-width: 0; width: 100%; font-size: 10px; }
+  .table th { font-size: 7px; padding: 3px 2px; }
+  .table td { padding: 2px 2px; }
+  .thEspn, .table td:nth-child(3) { display: none; }
+  .thOdds, .table td:nth-child(4) { display: none; }
+  .thNum { width: 22px; }
+  .thNarrow { width: 26px; }
+  .thStatus { width: 44px; }
+  .thLocked { width: 24px; }
+  .textInput { font-size: 10px; white-space: normal; word-break: break-word; padding: 1px 2px; }
+  .scoreInput { width: 26px; font-size: 10px; padding: 1px 2px; }
+  .statusSelect { font-size: 9px; padding: 1px 2px; }
+  .lockToggle { width: 20px; height: 20px; font-size: 9px; }
+  .sortNum { font-size: 9px; }
+  .numCell { font-size: 10px; }
 }
 
 /* Numeric cells */
