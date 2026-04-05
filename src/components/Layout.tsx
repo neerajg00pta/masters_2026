@@ -59,7 +59,7 @@ export function Layout({ children }: { children: ReactNode }) {
             <rect x="9" y="2" width="2" height="20" fill="var(--masters-gold)" rx="1" />
             <path d="M11 2 L19 6 L11 10 Z" fill="var(--masters-gold)" />
           </svg>
-          <span className={styles.brandText}>MASTERS POOL</span>
+          <span className={styles.brandText}>MASTERS POOL <span style={{ fontSize: 8, opacity: 0.5 }}>v12</span></span>
         </Link>
 
         <div className={styles.headerRight}>
