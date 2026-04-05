@@ -13,16 +13,9 @@ export function Layout({ children }: { children: ReactNode }) {
   const [loginError, setLoginError] = useState(false)
   const location = useLocation()
 
-  // Hidden admin activation: type "admin" anywhere, or double-tap name
+  // Hidden admin activation: type "admin" anywhere, or long-press name
   const keyBuffer = useRef('')
-  const lastNameTap = useRef(0)
-  const handleNameDoubleTap = () => {
-    const now = Date.now()
-    if (now - lastNameTap.current < 400) {
-      if (activateAdmin()) addToast('Admin mode activated', 'success')
-    }
-    lastNameTap.current = now
-  }
+  const longPressRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return
@@ -116,7 +109,13 @@ export function Layout({ children }: { children: ReactNode }) {
                   </button>
                 </nav>
               )}
-              <span className={styles.userName} onTouchEnd={handleNameDoubleTap} onClick={handleNameDoubleTap} style={{ WebkitUserSelect: 'none', userSelect: 'none' }}>{currentUser.fullName ?? currentUser.name}</span>
+              <span
+                className={styles.userName}
+                style={{ WebkitUserSelect: 'none', userSelect: 'none' }}
+                onTouchStart={() => { longPressRef.current = setTimeout(() => { if (activateAdmin()) addToast('Admin mode activated', 'success') }, 800) }}
+                onTouchEnd={() => { if (longPressRef.current) clearTimeout(longPressRef.current) }}
+                onTouchCancel={() => { if (longPressRef.current) clearTimeout(longPressRef.current) }}
+              >{currentUser.fullName ?? currentUser.name}</span>
               <button onClick={logout} className={styles.logoutBtn}>
                 Log out
               </button>
