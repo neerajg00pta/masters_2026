@@ -95,6 +95,7 @@ export function AdminPage() {
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleClearRandoms = async () => {
     if (!window.confirm('Clear ALL random assignments? This cannot be undone.')) return
     setSaving(true)
