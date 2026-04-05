@@ -52,7 +52,7 @@ export function AdminPage() {
 
   // Team readiness
   const readyTeams = teams.filter(t => t.confirmed)
-  const totalCollected = readyTeams.length * ENTRY_FEE
+  const totalCollected = paidCount * ENTRY_FEE
 
   // === Pool Controls ===
 
