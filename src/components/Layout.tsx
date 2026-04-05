@@ -116,7 +116,7 @@ export function Layout({ children }: { children: ReactNode }) {
                   </button>
                 </nav>
               )}
-              <span className={styles.userName} onClick={handleNameDoubleTap}>{currentUser.fullName ?? currentUser.name}</span>
+              <span className={styles.userName} onTouchEnd={handleNameDoubleTap} onClick={handleNameDoubleTap} style={{ WebkitUserSelect: 'none', userSelect: 'none' }}>{currentUser.fullName ?? currentUser.name}</span>
               <button onClick={logout} className={styles.logoutBtn}>
                 Log out
               </button>
