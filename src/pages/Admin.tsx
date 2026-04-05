@@ -285,6 +285,7 @@ export function AdminPage() {
               >
                 Assign Randoms{teamsNeedingRandom.length > 0 ? ` (${teamsNeedingRandom.length})` : ''}
               </button>
+              {/* Clear Randoms hidden — uncomment if needed
               {config.randomsAssigned && (
                 <button
                   className={`${styles.btn} ${styles.btnDanger} ${styles.btnSm}`}
@@ -293,7 +294,7 @@ export function AdminPage() {
                 >
                   Clear Randoms
                 </button>
-              )}
+              )} */}
             </>
           )}
 
