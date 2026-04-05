@@ -72,6 +72,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (user) {
         setCurrentUser(user)
         setCookie(SESSION_COOKIE, email, SESSION_EXPIRY_DAYS)
+        // Fresh login → start in player mode
+        setAdminActivated(false)
+        deleteCookie(ADMIN_COOKIE)
         return true
       }
       return false
