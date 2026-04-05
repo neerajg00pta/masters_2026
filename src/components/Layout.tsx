@@ -13,16 +13,15 @@ export function Layout({ children }: { children: ReactNode }) {
   const [loginError, setLoginError] = useState(false)
   const location = useLocation()
 
-  // Hidden admin activation: type "admin" anywhere, or double-tap flag
+  // Hidden admin activation: type "admin" anywhere, or double-tap name
   const keyBuffer = useRef('')
-  const lastFlagTap = useRef(0)
-  const handleFlagTap = (e: React.MouseEvent) => {
+  const lastNameTap = useRef(0)
+  const handleNameDoubleTap = () => {
     const now = Date.now()
-    if (now - lastFlagTap.current < 400) {
-      e.preventDefault()
+    if (now - lastNameTap.current < 400) {
       if (activateAdmin()) addToast('Admin mode activated', 'success')
     }
-    lastFlagTap.current = now
+    lastNameTap.current = now
   }
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -63,7 +62,7 @@ export function Layout({ children }: { children: ReactNode }) {
     <>
       <header className={styles.header}>
         <Link to="/" className={styles.brand}>
-          <svg className={styles.brandIcon} viewBox="0 0 20 24" width="16" height="20" onClick={handleFlagTap}>
+          <svg className={styles.brandIcon} viewBox="0 0 20 24" width="16" height="20">
             <rect x="9" y="2" width="2" height="20" fill="var(--masters-gold)" rx="1" />
             <path d="M11 2 L19 6 L11 10 Z" fill="var(--masters-gold)" />
           </svg>
@@ -117,7 +116,7 @@ export function Layout({ children }: { children: ReactNode }) {
                   </button>
                 </nav>
               )}
-              <span className={styles.userName}>{currentUser.fullName ?? currentUser.name}</span>
+              <span className={styles.userName} onClick={handleNameDoubleTap}>{currentUser.fullName ?? currentUser.name}</span>
               <button onClick={logout} className={styles.logoutBtn}>
                 Log out
               </button>
