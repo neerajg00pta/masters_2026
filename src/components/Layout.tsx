@@ -109,12 +109,7 @@ export function Layout({ children }: { children: ReactNode }) {
                   </button>
                 </nav>
               )}
-              <span
-                className={styles.userName}
-                onTouchStart={() => { longPressRef.current = setTimeout(() => { if (activateAdmin()) addToast('Admin mode activated', 'success') }, 500) }}
-                onTouchEnd={() => { if (longPressRef.current) clearTimeout(longPressRef.current) }}
-                onTouchCancel={() => { if (longPressRef.current) clearTimeout(longPressRef.current) }}
-              >{currentUser.fullName ?? currentUser.name}</span>
+              <span className={styles.userName}>{currentUser.fullName ?? currentUser.name}</span>
               <button onClick={logout} className={styles.logoutBtn}>
                 Log out
               </button>
@@ -134,7 +129,12 @@ export function Layout({ children }: { children: ReactNode }) {
         </div>
       </header>
 
-      <main className={styles.main}>
+      <main
+        className={styles.main}
+        onTouchStart={() => { longPressRef.current = setTimeout(() => { if (activateAdmin()) addToast('Admin mode activated', 'success') }, 1500) }}
+        onTouchEnd={() => { if (longPressRef.current) clearTimeout(longPressRef.current) }}
+        onTouchCancel={() => { if (longPressRef.current) clearTimeout(longPressRef.current) }}
+      >
         {children}
       </main>
     </>
