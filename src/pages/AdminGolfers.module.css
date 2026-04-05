@@ -3,7 +3,7 @@
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 12px;
 }
 
 .forbidden {
@@ -16,20 +16,20 @@
 .header {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
   flex-wrap: wrap;
 }
 
 .title {
-  font-size: 22px;
+  font-size: 16px;
   font-weight: 800;
   color: var(--masters-green);
 }
 
 .stats {
   display: flex;
-  gap: 8px;
-  font-size: 12px;
+  gap: 6px;
+  font-size: 11px;
   font-weight: 600;
 }
 
@@ -38,7 +38,7 @@
 .statWd { color: var(--text-muted); }
 
 .savingBadge {
-  font-size: 11px;
+  font-size: 10px;
   color: var(--masters-green);
   font-weight: 600;
   animation: pulse 1s infinite;
@@ -53,14 +53,14 @@
 .controls {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   flex-wrap: wrap;
 }
 
 .btn {
-  padding: 7px 14px;
+  padding: 5px 12px;
   border-radius: var(--radius);
-  font-size: 13px;
+  font-size: 11px;
   font-weight: 600;
   border: 1px solid var(--border-default);
   cursor: pointer;
@@ -85,15 +85,15 @@
   border-color: var(--accent-red);
 }
 
-.btnSm { padding: 4px 10px; font-size: 12px; }
+.btnSm { padding: 3px 8px; font-size: 10px; }
 
 .csvBtn {
-  padding: 6px 14px;
+  padding: 5px 12px;
   border-radius: var(--radius);
   background: var(--bg-elevated);
   border: 1px solid var(--border-default);
   color: var(--text-primary);
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.15s;
@@ -112,16 +112,16 @@
   gap: 2px;
   background: var(--bg-elevated);
   border: 1px solid var(--border-default);
-  border-radius: var(--radius-lg);
-  padding: 3px;
+  border-radius: var(--radius);
+  padding: 2px;
 }
 
 .tab {
   flex: 1;
-  padding: 8px 16px;
+  padding: 5px 12px;
   border: none;
   border-radius: var(--radius);
-  font-size: 13px;
+  font-size: 11px;
   font-weight: 600;
   background: transparent;
   color: var(--text-secondary);
@@ -150,20 +150,20 @@
 .sectionHeader {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 10px 14px;
+  gap: 8px;
+  padding: 8px 12px;
   background: var(--bg-elevated);
   border-bottom: 1px solid var(--border-default);
 }
 
 .sectionTitle {
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 700;
   color: var(--masters-green);
 }
 
 .sectionCount {
-  font-size: 11px;
+  font-size: 10px;
   color: var(--text-muted);
   margin-left: auto;
 }
@@ -172,37 +172,41 @@
 
 .tableWrap {
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .table {
   min-width: 700px;
   border-collapse: collapse;
-  font-size: 13px;
+  font-size: 11px;
 }
 
 .table th {
   text-align: left;
-  font-size: 10px;
-  font-weight: 600;
+  font-size: 8px;
+  font-weight: 700;
   color: var(--text-muted);
   text-transform: uppercase;
-  padding: 6px 8px;
+  padding: 4px 5px;
   letter-spacing: 0.3px;
+  border-bottom: 1px solid var(--border-default);
+  background: var(--bg-elevated);
+  position: sticky;
+  top: 0;
 }
 
-.thNum { width: 36px; text-align: center; }
+.thNum { width: 30px; text-align: center; }
 .thName { width: 16%; }
 .thEspn { width: 14%; }
-.thOdds { width: 60px; }
-.thScore { width: 56px; }
-.thToday { width: 56px; }
-.thThru { width: 56px; }
-.thStatus { width: 72px; }
-.thLocked { width: 48px; text-align: center; }
-.thActions { width: 56px; }
+.thOdds { width: 50px; }
+.thScore { width: 48px; }
+.thToday { width: 48px; }
+.thThru { width: 48px; }
+.thStatus { width: 60px; }
+.thLocked { width: 36px; text-align: center; }
 
 .table td {
-  padding: 3px 6px;
+  padding: 2px 5px;
   border-bottom: 1px solid var(--border-muted);
   vertical-align: middle;
 }
@@ -215,7 +219,7 @@
 .rowWithdrawn td { opacity: 0.4; }
 
 .sortNum {
-  font-size: 11px;
+  font-size: 10px;
   color: var(--text-muted);
   font-weight: 600;
   font-variant-numeric: tabular-nums;
@@ -226,12 +230,12 @@
 
 .textInput {
   width: 100%;
-  padding: 4px 6px;
+  padding: 2px 4px;
   border: 1px solid transparent;
-  border-radius: 4px;
+  border-radius: 3px;
   background: transparent;
   color: var(--text-primary);
-  font-size: 13px;
+  font-size: 11px;
   outline: none;
   transition: border-color 0.15s, background 0.15s;
 }
@@ -244,13 +248,13 @@
 .textInput::placeholder { color: var(--text-muted); }
 
 .scoreInput {
-  width: 56px;
-  padding: 4px 6px;
+  width: 44px;
+  padding: 2px 4px;
   border: 1px solid transparent;
-  border-radius: 4px;
+  border-radius: 3px;
   background: transparent;
   color: var(--text-primary);
-  font-size: 13px;
+  font-size: 11px;
   font-variant-numeric: tabular-nums;
   text-align: center;
   outline: none;
@@ -278,12 +282,12 @@
 /* Status */
 
 .statusSelect {
-  padding: 3px 6px;
-  border-radius: 4px;
+  padding: 2px 4px;
+  border-radius: 3px;
   border: 1px solid var(--border-default);
   background: var(--bg-input);
   color: var(--text-primary);
-  font-size: 12px;
+  font-size: 10px;
   outline: none;
   cursor: pointer;
 }
@@ -295,8 +299,8 @@
 /* Lock toggle */
 
 .lockToggle {
-  width: 28px;
-  height: 28px;
+  width: 22px;
+  height: 22px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -305,7 +309,7 @@
   background: var(--bg-primary);
   color: var(--text-muted);
   cursor: pointer;
-  font-size: 12px;
+  font-size: 10px;
   transition: all 0.15s;
   margin: 0 auto;
 }
@@ -319,24 +323,24 @@
 /* ESPN match indicators */
 
 .matchedName {
-  font-size: 12px;
+  font-size: 10px;
   color: var(--accent-green);
   font-weight: 500;
 }
 
 .noMatchBadge {
-  font-size: 10px;
+  font-size: 8px;
   font-weight: 700;
   color: var(--accent-red);
   background: rgba(209, 36, 47, 0.08);
-  padding: 2px 6px;
+  padding: 1px 4px;
   border-radius: 3px;
   letter-spacing: 0.3px;
 }
 
 .noData {
   color: var(--text-muted);
-  font-size: 12px;
+  font-size: 10px;
 }
 
 .rowNoMatch td {
@@ -350,38 +354,13 @@
 /* Warn tip */
 
 .tipWarn {
-  padding: 10px 14px;
+  padding: 8px 12px;
   background: rgba(209, 36, 47, 0.05);
   border: 1px solid rgba(209, 36, 47, 0.15);
   border-radius: var(--radius);
-  font-size: 12px;
+  font-size: 11px;
   color: var(--accent-red);
-  line-height: 1.5;
+  line-height: 1.4;
 }
 
 .tipWarn strong { color: var(--accent-red); }
-
-/* Odds display */
-
-.oddsCell {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--text-secondary);
-  font-variant-numeric: tabular-nums;
-}
-
-/* Tip box */
-
-.tip {
-  padding: 10px 14px;
-  background: rgba(0, 103, 71, 0.04);
-  border: 1px solid rgba(0, 103, 71, 0.12);
-  border-radius: var(--radius);
-  font-size: 12px;
-  color: var(--text-secondary);
-  line-height: 1.5;
-}
-
-.tip strong {
-  color: var(--masters-green);
-}
