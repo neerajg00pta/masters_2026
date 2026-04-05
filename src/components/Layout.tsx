@@ -13,9 +13,17 @@ export function Layout({ children }: { children: ReactNode }) {
   const [loginError, setLoginError] = useState(false)
   const location = useLocation()
 
-  // Hidden admin activation: type "admin" anywhere on the page
+  // Hidden admin activation: type "admin" anywhere, or double-tap flag
   const keyBuffer = useRef('')
-  const longPressRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const lastFlagTap = useRef(0)
+  const handleFlagTap = (e: React.MouseEvent) => {
+    const now = Date.now()
+    if (now - lastFlagTap.current < 400) {
+      e.preventDefault()
+      if (activateAdmin()) addToast('Admin mode activated', 'success')
+    }
+    lastFlagTap.current = now
+  }
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return
@@ -55,7 +63,7 @@ export function Layout({ children }: { children: ReactNode }) {
     <>
       <header className={styles.header}>
         <Link to="/" className={styles.brand}>
-          <svg className={styles.brandIcon} viewBox="0 0 20 24" width="16" height="20">
+          <svg className={styles.brandIcon} viewBox="0 0 20 24" width="16" height="20" onClick={handleFlagTap}>
             <rect x="9" y="2" width="2" height="20" fill="var(--masters-gold)" rx="1" />
             <path d="M11 2 L19 6 L11 10 Z" fill="var(--masters-gold)" />
           </svg>
@@ -129,12 +137,7 @@ export function Layout({ children }: { children: ReactNode }) {
         </div>
       </header>
 
-      <main
-        className={styles.main}
-        onTouchStart={() => { longPressRef.current = setTimeout(() => { if (activateAdmin()) addToast('Admin mode activated', 'success') }, 1500) }}
-        onTouchEnd={() => { if (longPressRef.current) clearTimeout(longPressRef.current) }}
-        onTouchCancel={() => { if (longPressRef.current) clearTimeout(longPressRef.current) }}
-      >
+      <main className={styles.main}>
         {children}
       </main>
     </>
