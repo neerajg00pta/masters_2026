@@ -282,7 +282,7 @@ function GolferRow({
         )}
       </td>
       <td>
-        <input className={`${styles.textInput} ${styles.centered}`} value={localOdds} style={{ width: 44 }}
+        <input className={`${styles.textInput} ${styles.centered}`} value={localOdds} style={{ width: 60 }}
           onChange={e => { setLocalOdds(e.target.value); onDebouncedUpdate(golfer.id, { name: golfer.name }) }} />
       </td>
       <td className={styles.numCell}>
