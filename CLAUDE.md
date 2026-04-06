@@ -56,6 +56,12 @@ No passwords. Email-based access codes per the platform spec. Admin creates user
 - **Scoring:** Based on golfers' tournament scores (strokes). Lower is better. Players' scores = sum of their golfers' scores relative to par. Missed cut golfers may receive a penalty score.
 - **Leaderboard:** Ranked by total team score (lowest wins). Drill-down shows per-golfer breakdown by round.
 
+### Golfer Data Architecture
+
+`masters-field.ts` is the **single source of truth** for all golfer metadata: ID, name, odds, ESPN ID, Masters ID, withdrawn status. Each golfer has a hardcoded stable DB ID (e.g. `g1`) that never changes. `upsertGolfers()` writes all fields (including `espn_id`, `masters_id`) to Supabase on refresh — no separate sync step needed.
+
+`masters-ids.ts` contains `ESPN_TO_MASTERS` (legacy lookup used by live scoring) and `getMastersUrl()`.
+
 ### Looking Up Player IDs
 
 - **ESPN ID:** Search `site:espn.com [player name] "golf profile"`

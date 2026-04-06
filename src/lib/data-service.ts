@@ -306,6 +306,8 @@ export async function upsertGolfers(field: MastersFieldEntry[]): Promise<number>
     world_rank: entry.worldRank,
     sort_order: idx + 1,
     status: entry.withdrawn ? 'withdrawn' : 'active',
+    espn_id: entry.espnId,
+    masters_id: entry.mastersId,
   }))
 
   const { error, count } = await supabase
