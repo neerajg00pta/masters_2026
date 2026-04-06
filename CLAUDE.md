@@ -55,3 +55,8 @@ No passwords. Email-based access codes per the platform spec. Admin creates user
 - **Tournament Phase (gameplay):** Four rounds of golf. Scores flow in via live API or manual admin entry. Player standings update based on their drafted golfers' cumulative performance.
 - **Scoring:** Based on golfers' tournament scores (strokes). Lower is better. Players' scores = sum of their golfers' scores relative to par. Missed cut golfers may receive a penalty score.
 - **Leaderboard:** Ranked by total team score (lowest wins). Drill-down shows per-golfer breakdown by round.
+
+### Looking Up Player IDs
+
+- **ESPN ID:** Search `site:espn.com [player name] "golf profile"`
+- **Masters ID:** Search `site:masters.com [player name]`

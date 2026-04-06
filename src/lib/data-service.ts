@@ -299,12 +299,13 @@ export async function deleteUser(userId: string): Promise<void> {
 /** Upsert golfers from the masters field data */
 export async function upsertGolfers(field: MastersFieldEntry[]): Promise<number> {
   const rows = field.map((entry, idx) => ({
-    id: `g${idx + 1}`,
+    id: entry.id,
     name: entry.name,
     odds: entry.odds,
     odds_numeric: entry.oddsNumeric,
     world_rank: entry.worldRank,
     sort_order: idx + 1,
+    ...(entry.withdrawn ? { status: 'withdrawn' } : {}),
   }))
 
   const { error, count } = await supabase

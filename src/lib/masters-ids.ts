@@ -51,7 +51,7 @@ export const ESPN_TO_MASTERS: Map<string, string> = new Map([
   ['11250', '52453'],    // Nicolai Højgaard
   ['4251', '29936'],     // Ryan Fox
   ['10906', '46414'],    // Aaron Rai
-  ['4589438', '34099'],  // Harry Hall
+  ['4589438', '57975'],  // Harry Hall
   ['10576', '50823'],    // Tom McKibbin
   ['1225', '27644'],     // Brian Harman
   ['10364', '48117'],    // Kurt Kitayama
@@ -70,7 +70,6 @@ export const ESPN_TO_MASTERS: Map<string, string> = new Map([
   ['780', '25804'],      // Bubba Watson
   ['10916', '52666'],    // Sami Valimaki
   ['10058', '47995'],    // Davis Riley
-  ['4837', '33653'],     // Thomas Detry
   ['1097', '26331'],     // Charl Schwartzel
   ['4920078', '60004'],  // Jacob Bridgeman
   ['9525', '46443'],     // Brian Campbell
@@ -82,6 +81,22 @@ export const ESPN_TO_MASTERS: Map<string, string> = new Map([
   ['453', '10423'],      // Mike Weir
   ['329', '6373'],       // José María Olazábal
   ['10054', '47993'],    // Denny McCarthy
+  ['4690755', '59095'],  // Chris Gotterup
+  ['4404992', '54591'],  // Ben Griffin
+  ['4921329', '61522'],  // Michael Brennan
+  ['11332', '51997'],    // Andrew Novak
+  ['4585549', '51003'],  // Marco Penge
+  ['5076021', '59018'],  // Ryan Gerard
+  ['5217048', '63454'],  // Johnny Keefer
+  ['4858859', '52689'],  // Rasmus Neergaard-Petersen
+  ['4348470', '49855'],  // Kristoffer Reitan
+  ['4837226', '46879'],  // Naoyuki Kataoka
+  ['5289811', '68607'],  // Mason Howell (a)
+  ['5293232', '68932'],  // Ethan Fang (a)
+  ['5327297', '70146'],  // Fifa Laopakdee (a)
+  ['5344766', '70148'],  // Jackson Herrington (a)
+  ['2201886', '70147'],  // Brandon Holtz (a)
+  ['5344763', '70145'],  // Mateo Pulcini (a)
 ])
 
 export function getMastersUrl(mastersId: string): string {
