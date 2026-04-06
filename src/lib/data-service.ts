@@ -305,7 +305,7 @@ export async function upsertGolfers(field: MastersFieldEntry[]): Promise<number>
     odds_numeric: entry.oddsNumeric,
     world_rank: entry.worldRank,
     sort_order: idx + 1,
-    ...(entry.withdrawn ? { status: 'withdrawn' } : {}),
+    status: entry.withdrawn ? 'withdrawn' : 'active',
   }))
 
   const { error, count } = await supabase
