@@ -34,8 +34,8 @@ export function AdminGolfersPage() {
       const count = await upsertGolfers(MASTERS_2026_FIELD)
       await refresh()
       addToast(`Field refreshed: ${count} golfers`, 'success')
-    } catch {
-      addToast('Failed to refresh field', 'error')
+    } catch (err) {
+      addToast(`Failed to refresh field: ${err instanceof Error ? err.message : String(err)}`, 'error')
     } finally {
       setSaving(false)
     }
