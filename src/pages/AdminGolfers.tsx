@@ -221,6 +221,7 @@ export function AdminGolfersPage() {
                     golfer={golfer}
                     liveOn={liveOn}
                     dupPenalty={dupPenalty}
+                    teamCount={teamCount}
                     isRandomOnly={isRandomOnly}
                     onDebouncedUpdate={debouncedUpdate}
                     onStatusChange={handleStatusChange}
@@ -238,11 +239,12 @@ export function AdminGolfersPage() {
 }
 
 function GolferRow({
-  golfer, liveOn, dupPenalty, isRandomOnly, onDebouncedUpdate, onStatusChange, onLockToggle, saving,
+  golfer, liveOn, dupPenalty, teamCount, isRandomOnly, onDebouncedUpdate, onStatusChange, onLockToggle, saving,
 }: {
   golfer: Golfer
   liveOn: boolean
   dupPenalty: number
+  teamCount: number
   isRandomOnly: boolean
   onDebouncedUpdate: (id: string, updates: Parameters<typeof updateGolfer>[1]) => void
   onStatusChange: (id: string, status: Golfer['status']) => void
@@ -298,7 +300,7 @@ function GolferRow({
           <span className={styles.rndLabel}>RND</span>
         ) : dupPenalty > 0 ? (
           <span className={styles.dupLabel}>+{dupPenalty}</span>
-        ) : ''}
+        ) : teamCount > 0 ? '0' : ''}
       </td>
       <td>
         <input className={`${styles.scoreInput} ${golfer.scoreLocked ? styles.lockedInput : ''}`}
