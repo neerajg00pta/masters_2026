@@ -69,8 +69,8 @@ export function TeamLeaderboard({ entries, payoutMap, currentUserId, compact, se
       || e.scoredGolfers.some(sg => sg.golfer.name.toLowerCase().includes(q))
   }) : sorted
 
-  // Pinned = starred teams (includes own unless user unstarred them)
-  const pinned = (search.trim() ? [] : sorted.filter(e => starred.has(e.team.id)))
+  // Pinned = starred teams (always visible, even during search)
+  const pinned = sorted.filter(e => starred.has(e.team.id))
 
   const renderRow = (e: TeamLeaderboardEntry, prefix: string) => {
     const key = `${prefix}${e.team.id}`
@@ -88,8 +88,8 @@ export function TeamLeaderboard({ entries, payoutMap, currentUserId, compact, se
 
   return (
     <div className={compact ? styles.compact : ''}>
-      {/* Pinned section — above the main panel */}
-      {!search.trim() && pinned.length > 0 && (
+      {/* Pinned section — always visible */}
+      {pinned.length > 0 && (
         <div className={styles.pinnedSection}>
           {pinned.map(e => renderRow(e, 'p-'))}
         </div>
