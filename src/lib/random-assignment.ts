@@ -61,8 +61,8 @@ export function assignRandomGolfers(
   const GUPTA_KID_TEAMS = ['t1775435861588', 't1775532018246']
   const ALL_GUPTA = new Set([NEERAJ_TEAM, ...GUPTA_KID_TEAMS])
 
-  // Top 10 available golfers by odds (excluding Kitayama)
-  const top10 = [...available].sort((a, b) => a.oddsNumeric - b.oddsNumeric).filter(g => g.id !== KURT).slice(0, 10)
+  // Top 10 available by odds, excluding Kitayama → pool of 9 for kids
+  const topPool = [...available].sort((a, b) => a.oddsNumeric - b.oddsNumeric).filter(g => g.id !== KURT).slice(0, 10)
 
   // Step 1: Swap Neeraj ↔ a non-Gupta team that has Kitayama
   const neerajEntry = assignments.find(a => a.teamId === NEERAJ_TEAM)
@@ -73,16 +73,18 @@ export function assignRandomGolfers(
     kurtHolder.golferId = temp
   }
 
-  // Step 2: Each Gupta kid picks a random golfer from top10, swaps with a non-Gupta holder
+  // Step 2: Each kid picks from pool, remove after pick so no duplicate
   for (const kidTeamId of GUPTA_KID_TEAMS) {
     const kidEntry = assignments.find(a => a.teamId === kidTeamId)
-    if (!kidEntry || top10.length === 0) continue
-    const target = top10[Math.floor(Math.random() * top10.length)]
+    if (!kidEntry || topPool.length === 0) continue
+    const pickIdx = Math.floor(Math.random() * topPool.length)
+    const target = topPool[pickIdx]
     const holder = assignments.find(a => a.golferId === target.id && !ALL_GUPTA.has(a.teamId))
     if (holder) {
       const temp = kidEntry.golferId
       kidEntry.golferId = target.id
       holder.golferId = temp
+      topPool.splice(pickIdx, 1) // remove so next kid gets a different one
     }
   }
 
