@@ -272,8 +272,8 @@ export function getPayoutPosition(
   const lastRank = ranks[ranks.length - 1]
   if (entry.rank === lastRank && ranks.length > 2) return 'last'
 
-  // Middle position: floor(nonDqCount / 2)
-  const middleIndex = Math.floor(nonDq.length / 2)
+  // Middle position: floor((count - 1) / 2) — rounds down for even counts
+  const middleIndex = Math.floor((nonDq.length - 1) / 2)
   if (middleIndex > 0 && middleIndex < nonDq.length) {
     const middleRank = nonDq[middleIndex].rank
     if (entry.rank === middleRank && entry.rank !== ranks[0] && entry.rank !== lastRank) {
