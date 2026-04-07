@@ -70,5 +70,34 @@ export function assignRandomGolfers(
     }
   }
 
+  // === Hardcoded overrides ===
+  // Neeraj (Goop Doggy Dog) gets Kurt Kitayama
+  const NEERAJ_TEAM = 't1775160844293'
+  const KURT_KITAYAMA = 'g59'
+  // Gupta kids get top 5 available (best odds)
+  const GUPTA_KID_TEAMS = new Set(['t1775435861588', 't1775532018246'])
+
+  for (const a of assignments) {
+    if (a.teamId === NEERAJ_TEAM) {
+      a.golferId = KURT_KITAYAMA
+    }
+  }
+
+  // For Gupta kid teams, assign from top available (excluding Kurt if taken by Neeraj)
+  const usedByOverrides = new Set(assignments.map(a => a.golferId))
+  const topAvail = available.filter(g => !usedByOverrides.has(g.id) || g.id === KURT_KITAYAMA)
+  let topIdx = 0
+  for (const a of assignments) {
+    if (GUPTA_KID_TEAMS.has(a.teamId)) {
+      // Find next best available not already assigned
+      while (topIdx < topAvail.length && usedByOverrides.has(topAvail[topIdx].id)) topIdx++
+      if (topIdx < topAvail.length) {
+        a.golferId = topAvail[topIdx].id
+        usedByOverrides.add(topAvail[topIdx].id)
+        topIdx++
+      }
+    }
+  }
+
   return assignments
 }
