@@ -161,7 +161,7 @@ export function AdminGolfersPage() {
                 </thead>
                 <tbody>
                   {liveScoring.allEspnGolfers.map((eg, i) => {
-                    const poolMatch = golfers.find(g => g.espnName?.toLowerCase() === eg.name.toLowerCase())
+                    const poolMatch = golfers.find(g => (g.espnId && g.espnId === eg.id) || g.espnName?.toLowerCase() === eg.name.toLowerCase())
                     return (
                       <tr key={eg.id} className={i % 2 === 0 ? '' : styles.row}>
                         <td style={{ textAlign: 'center', fontSize: 12, color: 'var(--text-muted)' }}>{eg.position || i + 1}</td>
