@@ -47,6 +47,7 @@ export function LivePage() {
 
   const [compact, setCompact] = useState(() => localStorage.getItem('masters_compact') !== '0')
   const toggleCompact = () => setCompact(p => { const v = !p; localStorage.setItem('masters_compact', v ? '1' : '0'); return v })
+  const [search, setSearch] = useState('')
 
   if (teams.length === 0) {
     return (
@@ -59,6 +60,16 @@ export function LivePage() {
   return (
     <div>
       <div className={styles.toolbar}>
+        <div className={styles.searchWrap}>
+          <input
+            className={styles.searchInput}
+            type="text"
+            placeholder="Search team, player, or golfer..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+          />
+          {search && <button className={styles.searchClear} onClick={() => setSearch('')}>&times;</button>}
+        </div>
         <button className={`${styles.compactBtn} ${compact ? styles.compactBtnOn : ''}`} onClick={toggleCompact} title={compact ? 'Normal view' : 'Compact view'}>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             {compact ? (
@@ -75,8 +86,9 @@ export function LivePage() {
           payoutMap={payoutMap}
           currentUserId={currentUser?.id ?? null}
           compact={compact}
+          search={search}
         />
-        <PlayerLeaderboard entries={playerEntries} compact={compact} />
+        <PlayerLeaderboard entries={playerEntries} compact={compact} search={search} />
       </div>
     </div>
   )

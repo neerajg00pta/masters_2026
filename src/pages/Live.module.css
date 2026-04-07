@@ -1,9 +1,36 @@
 .toolbar {
   display: flex;
-  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
   max-width: 1000px;
   margin: 0 auto 6px;
 }
+
+.searchWrap {
+  flex: 1;
+  position: relative;
+  max-width: 300px;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 6px 28px 6px 10px;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius);
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  font-size: 12px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.searchInput::placeholder { color: var(--text-muted); }
+.searchInput:focus { border-color: var(--masters-green); }
+
+.searchClear {
+  position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+  background: none; border: none; color: var(--text-muted); font-size: 14px; cursor: pointer;
+}
+.searchClear:hover { color: var(--text-primary); }
 
 .compactBtn {
   display: flex; align-items: center; justify-content: center;

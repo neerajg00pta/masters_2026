@@ -19,13 +19,13 @@ interface Props {
   payoutMap: Map<string, PayoutPosition>
   currentUserId: string | null
   compact?: boolean
+  search?: string
 }
 
-export function TeamLeaderboard({ entries, payoutMap, currentUserId, compact }: Props) {
+export function TeamLeaderboard({ entries, payoutMap, currentUserId, compact, search = '' }: Props) {
   const [collapsed, setCollapsed] = useState(false)
   const [expanded, setExpanded] = useState<Set<string>>(new Set())
   const [starred, setStarred] = useState(() => readStarred(currentUserId))
-  const [search, setSearch] = useState('')
 
   // Auto-star own teams + auto-expand pinned, once
   const didInit = useRef(false)
@@ -66,6 +66,7 @@ export function TeamLeaderboard({ entries, payoutMap, currentUserId, compact }: 
     return e.team.teamName.toLowerCase().includes(q)
       || (e.user.fullName ?? '').toLowerCase().includes(q)
       || e.user.name.toLowerCase().includes(q)
+      || e.scoredGolfers.some(sg => sg.golfer.name.toLowerCase().includes(q))
   }) : sorted
 
   // Pinned = starred teams (includes own unless user unstarred them)
@@ -101,11 +102,6 @@ export function TeamLeaderboard({ entries, payoutMap, currentUserId, compact }: 
           <span className={`${styles.chev} ${collapsed ? styles.chevC : ''}`}>&#9660;</span>
         </div>
         {!collapsed && <div className={styles.body}>
-          <div className={styles.searchBar}>
-            <input className={styles.searchInput} type="text" placeholder="Find team or player..."
-              value={search} onChange={e => setSearch(e.target.value)} />
-            {search && <button className={styles.searchClear} onClick={() => setSearch('')}>&times;</button>}
-          </div>
           {sorted.length === 0 ? <div className={styles.empty}>No teams yet.</div> :
             filtered.length === 0 ? <div className={styles.empty}>No matches for &ldquo;{search}&rdquo;</div> :
               filtered.map(e => renderRow(e, ''))}

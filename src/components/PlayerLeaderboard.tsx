@@ -8,6 +8,7 @@ import styles from './PlayerLeaderboard.module.css'
 interface PlayerLeaderboardProps {
   entries: PlayerLeaderboardEntry[]
   compact?: boolean
+  search?: string
 }
 
 type SortKey = 'adj' | 'masters' | 'dups' | 'name' | 'odds' | 'thru'
@@ -26,7 +27,7 @@ function computeRanks(entries: PlayerLeaderboardEntry[]): string[] {
   return ranks.map(r => (counts.get(r) ?? 0) > 1 ? `T${r}` : `${r}`)
 }
 
-export function PlayerLeaderboard({ entries, compact }: PlayerLeaderboardProps) {
+export function PlayerLeaderboard({ entries, compact, search = '' }: PlayerLeaderboardProps) {
   const [collapsed, setCollapsed] = useState(false)
   const [sortKey, setSortKey] = useState<SortKey>('adj')
   const [sortDir, setSortDir] = useState<SortDir>('asc')
@@ -60,6 +61,12 @@ export function PlayerLeaderboard({ entries, compact }: PlayerLeaderboardProps) 
   }, [entries, sortKey, sortDir])
 
   const rankDisplays = useMemo(() => computeRanks(sorted), [sorted])
+
+  const filteredSorted = useMemo(() => {
+    if (!search.trim()) return sorted
+    const q = search.toLowerCase()
+    return sorted.filter(e => e.golfer.name.toLowerCase().includes(q))
+  }, [sorted, search])
 
   const togglePlayer = useCallback(async (espnName: string | null) => {
     if (!espnName) return
@@ -102,7 +109,8 @@ export function PlayerLeaderboard({ entries, compact }: PlayerLeaderboardProps) 
                 </tr>
               </thead>
               <tbody>
-                {sorted.map((entry, idx) => {
+                {filteredSorted.map((entry) => {
+                  const idx = sorted.indexOf(entry)
                   const isCut = entry.adjScore >= CUT_SCORE
                   const live = isGolferLive(entry.golfer.thru)
                   const espnKey = (entry.golfer.espnName ?? entry.golfer.name).toLowerCase()
