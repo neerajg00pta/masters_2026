@@ -70,32 +70,34 @@ export function assignRandomGolfers(
     }
   }
 
-  // === Hardcoded overrides ===
-  // Neeraj (Goop Doggy Dog) gets Kurt Kitayama
+  // === Balance-preserving swaps for Gupta teams ===
   const NEERAJ_TEAM = 't1775160844293'
-  const KURT_KITAYAMA = 'g59'
-  // Gupta kids get top 5 available (best odds)
-  const GUPTA_KID_TEAMS = new Set(['t1775435861588', 't1775532018246'])
+  const KURT = 'g59' // Kurt Kitayama
+  const GUPTA_KID_TEAMS = ['t1775435861588', 't1775532018246']
+  const ALL_GUPTA = new Set([NEERAJ_TEAM, ...GUPTA_KID_TEAMS])
 
-  for (const a of assignments) {
-    if (a.teamId === NEERAJ_TEAM) {
-      a.golferId = KURT_KITAYAMA
-    }
+  // Top 8 available golfers by odds (excluding Kitayama)
+  const top8 = available.filter(g => g.id !== KURT).slice(0, 8)
+
+  // Step 1: Swap Neeraj ↔ a non-Gupta team that has Kitayama
+  const neerajEntry = assignments.find(a => a.teamId === NEERAJ_TEAM)
+  const kurtHolder = assignments.find(a => a.golferId === KURT && !ALL_GUPTA.has(a.teamId))
+  if (neerajEntry && kurtHolder) {
+    const temp = neerajEntry.golferId
+    neerajEntry.golferId = KURT
+    kurtHolder.golferId = temp
   }
 
-  // For Gupta kid teams, assign from top available (excluding Kurt if taken by Neeraj)
-  const usedByOverrides = new Set(assignments.map(a => a.golferId))
-  const topAvail = available.filter(g => !usedByOverrides.has(g.id) || g.id === KURT_KITAYAMA)
-  let topIdx = 0
-  for (const a of assignments) {
-    if (GUPTA_KID_TEAMS.has(a.teamId)) {
-      // Find next best available not already assigned
-      while (topIdx < topAvail.length && usedByOverrides.has(topAvail[topIdx].id)) topIdx++
-      if (topIdx < topAvail.length) {
-        a.golferId = topAvail[topIdx].id
-        usedByOverrides.add(topAvail[topIdx].id)
-        topIdx++
-      }
+  // Step 2: Each Gupta kid picks a random golfer from top8, swaps with a non-Gupta holder
+  for (const kidTeamId of GUPTA_KID_TEAMS) {
+    const kidEntry = assignments.find(a => a.teamId === kidTeamId)
+    if (!kidEntry || top8.length === 0) continue
+    const target = top8[Math.floor(Math.random() * top8.length)]
+    const holder = assignments.find(a => a.golferId === target.id && !ALL_GUPTA.has(a.teamId))
+    if (holder) {
+      const temp = kidEntry.golferId
+      kidEntry.golferId = target.id
+      holder.golferId = temp
     }
   }
 
