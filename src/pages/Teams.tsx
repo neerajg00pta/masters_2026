@@ -229,6 +229,7 @@ function TeamsView() {
               <a
                 className={styles.nudgeBtn}
                 href={`mailto:${nudgeEmails.join(',')}?subject=${encodeURIComponent('Masters Pool — Submit Your Picks!')}&body=${encodeURIComponent('Hey! Your team hasn\'t been submitted yet. Head to the site, finish your picks, and hit "Submit Picks" to lock them in before the deadline.\n\nThanks!')}`}
+                target="_blank" rel="noopener noreferrer"
                 title={`${nudgeEmails.join(', ')}`}
               >
                 Nudge ({unconfirmedTeams.length})
