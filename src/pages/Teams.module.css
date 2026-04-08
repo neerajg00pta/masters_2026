@@ -39,7 +39,7 @@
   border-bottom: 1px solid var(--border-muted);
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
-.teamCardActive .ownerRow { background: var(--masters-green); color: rgba(255,255,255,0.75); border-bottom-color: rgba(255,255,255,0.15); }
+/* Owner row keeps default styling even on active card — no white text on white bg */
 
 .lockedBanner {
   grid-column: 1 / -1;
