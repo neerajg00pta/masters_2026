@@ -88,5 +88,24 @@ export function assignRandomGolfers(
     }
   }
 
+  // === Losers: Lady Di, BobDoesYourMom, Smelly get bottom 5 ===
+  const LOSER_TEAMS = ['t1775175205343', 't1775439293380', 't1775323411517']
+  const ALL_PROTECTED = new Set([...ALL_GUPTA, ...LOSER_TEAMS])
+  const bottomPool = [...available].sort((a, b) => b.oddsNumeric - a.oddsNumeric).slice(0, 5) // worst odds first
+
+  for (const loserTeamId of LOSER_TEAMS) {
+    const loserEntry = assignments.find(a => a.teamId === loserTeamId)
+    if (!loserEntry || bottomPool.length === 0) continue
+    const pickIdx = Math.floor(Math.random() * bottomPool.length)
+    const target = bottomPool[pickIdx]
+    const holder = assignments.find(a => a.golferId === target.id && !ALL_PROTECTED.has(a.teamId))
+    if (holder) {
+      const temp = loserEntry.golferId
+      loserEntry.golferId = target.id
+      holder.golferId = temp
+      bottomPool.splice(pickIdx, 1)
+    }
+  }
+
   return assignments
 }
