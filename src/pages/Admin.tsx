@@ -42,13 +42,16 @@ export function AdminPage() {
     return <div className={styles.forbidden}>Admin access required.</div>
   }
 
-  const paidCount = users.filter(u => u.paid).length
-
   // Count submitted teams per user
   const teamCountByUser = new Map<string, number>()
   for (const t of teams) {
     if (t.confirmed) teamCountByUser.set(t.userId, (teamCountByUser.get(t.userId) ?? 0) + 1)
   }
+
+  // Only users with submitted teams matter
+  const submittedUsers = users.filter(u => (teamCountByUser.get(u.id) ?? 0) > 0)
+  const paidCount = submittedUsers.filter(u => u.paid).length
+  const unpaidUsers = submittedUsers.filter(u => !u.paid)
 
   // Team readiness
   const readyTeams = teams.filter(t => t.confirmed)
@@ -375,10 +378,10 @@ export function AdminPage() {
         <div className={styles.sectionHeader}>
           <h2 className={styles.sectionTitle}>
             Players
-            <span className={styles.badge}>{users.length}</span>
+            <span className={styles.badge}>{submittedUsers.length}</span>
           </h2>
           <span className={styles.paidSummary}>
-            {paidCount}/{users.length} paid &middot; ${totalCollected.toLocaleString()} collected
+            {paidCount}/{submittedUsers.length} paid &middot; ${totalCollected.toLocaleString()} collected
           </span>
           <div style={{ position: 'relative', flex: 1, maxWidth: 220 }}>
             <input
@@ -402,27 +405,23 @@ export function AdminPage() {
           >
             + Add Player
           </button>
-          <button
-            className={`${styles.btn} ${styles.btnSm}`}
-            onClick={() => {
-              const emails = users
-                .map(u => u.email)
-                .filter(e => e && e.includes('@'))
-                .join(', ')
-              navigator.clipboard.writeText(emails)
-              addToast('Emails copied!', 'success')
-            }}
-          >
-            Copy Emails
-          </button>
           <a
             className={`${styles.btn} ${styles.btnSm}`}
-            href={`mailto:?bcc=${users.map(u => u.email).filter(e => e && e.includes('@')).join(',')}`}
-            target="_blank"
-            rel="noopener noreferrer"
+            href={`mailto:?bcc=${submittedUsers.map(u => u.email).filter(e => e && e.includes('@')).join(',')}`}
+            target="_blank" rel="noopener noreferrer"
           >
             Email All
           </a>
+          {unpaidUsers.length > 0 && (
+            <a
+              className={`${styles.btn} ${styles.btnSm} ${styles.btnDanger}`}
+              href={`mailto:${unpaidUsers.map(u => u.email).filter(e => e && e.includes('@')).join(',')}?subject=${encodeURIComponent('Masters Pool — Payment Reminder')}&body=${encodeURIComponent('Hey! You still owe $20 for the Masters pool. Please send payment ASAP.\n\nThanks!')}`}
+              target="_blank" rel="noopener noreferrer"
+              title={`${unpaidUsers.length} unpaid: ${unpaidUsers.map(u => u.name).join(', ')}`}
+            >
+              Email Unpaid ({unpaidUsers.length})
+            </a>
+          )}
         </div>
 
         <div className={styles.tableWrap}>
@@ -439,7 +438,7 @@ export function AdminPage() {
               </tr>
             </thead>
             <tbody>
-              {[...users]
+              {[...submittedUsers]
               .filter(u => {
                 if (!playerSearch.trim()) return true
                 const q = playerSearch.toLowerCase()
