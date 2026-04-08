@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useMemo } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { useData } from '../context/DataContext'
 import { useToast } from '../context/ToastContext'
@@ -18,6 +18,16 @@ export function AdminGolfersPage() {
   const [activeTab, setActiveTab] = useState<'field' | 'espn'>('field')
   const debounceRef = useRef<ReturnType<typeof setTimeout>>(null)
 
+  type SortKey = 'rank' | 'odds' | 'adj' | 'masters' | 'dups'
+  type SortDir = 'asc' | 'desc'
+  const [sortKey, setSortKey] = useState<SortKey>('rank')
+  const [sortDir, setSortDir] = useState<SortDir>('asc')
+  const handleSort = (key: SortKey) => {
+    if (sortKey === key) setSortDir(d => d === 'asc' ? 'desc' : 'asc')
+    else { setSortKey(key); setSortDir(key === 'dups' ? 'desc' : 'asc') }
+  }
+  const si = (key: SortKey) => sortKey !== key ? '' : sortDir === 'asc' ? ' ▲' : ' ▼'
+
   if (!isAdmin) {
     return <div className={styles.forbidden}>Admin access required.</div>
   }
@@ -27,6 +37,28 @@ export function AdminGolfersPage() {
   const wdCount = golfers.filter(g => g.status === 'withdrawn').length
   const matchedCount = golfers.filter(g => g.espnName).length
   const liveOn = config.liveScoring
+
+  const sortedGolfers = useMemo(() => {
+    const rows = golfers.map(golfer => {
+      const teamCount = selections.filter(s => s.golferId === golfer.id && !s.isRandom).length
+      const isRandomOnly = selections.some(s => s.golferId === golfer.id && s.isRandom) && teamCount === 0
+      const dupPenalty = isRandomOnly ? 0 : Math.max(0, teamCount - 1)
+      const adjScore = golfer.scoreToPar + dupPenalty
+      return { golfer, teamCount, isRandomOnly, dupPenalty, adjScore }
+    })
+    const dir = sortDir === 'asc' ? 1 : -1
+    rows.sort((a, b) => {
+      switch (sortKey) {
+        case 'rank': return (a.golfer.sortOrder - b.golfer.sortOrder) * dir
+        case 'odds': return (a.golfer.oddsNumeric - b.golfer.oddsNumeric) * dir
+        case 'adj': return (a.adjScore - b.adjScore) * dir
+        case 'masters': return (a.golfer.scoreToPar - b.golfer.scoreToPar) * dir
+        case 'dups': return (a.dupPenalty - b.dupPenalty) * dir
+        default: return 0
+      }
+    })
+    return rows
+  }, [golfers, selections, sortKey, sortDir])
 
   const handleRefreshField = async () => {
     setSaving(true)
@@ -197,13 +229,13 @@ export function AdminGolfersPage() {
           <table className={styles.table}>
             <thead>
               <tr>
-                <th className={styles.thNum}>Rank</th>
+                <th className={`${styles.thNum} ${styles.sortable}`} onClick={() => handleSort('rank')}>Rank{si('rank')}</th>
                 <th className={styles.thName}>Name</th>
                 <th className={styles.thEspn}>ESPN Match</th>
-                <th className={styles.thOdds}>Odds</th>
-                <th className={styles.thNarrow}>Adj</th>
-                <th className={styles.thNarrow}>Masters</th>
-                <th className={styles.thNarrow}>Dups</th>
+                <th className={`${styles.thOdds} ${styles.sortable}`} onClick={() => handleSort('odds')}>Odds{si('odds')}</th>
+                <th className={`${styles.thNarrow} ${styles.sortable}`} onClick={() => handleSort('adj')}>Adj{si('adj')}</th>
+                <th className={`${styles.thNarrow} ${styles.sortable}`} onClick={() => handleSort('masters')}>Mstr{si('masters')}</th>
+                <th className={`${styles.thNarrow} ${styles.sortable}`} onClick={() => handleSort('dups')}>Dups{si('dups')}</th>
                 <th className={styles.thNarrow}>Today</th>
                 <th className={styles.thNarrow}>Thru</th>
                 <th className={styles.thStatus}>Status</th>
@@ -211,10 +243,7 @@ export function AdminGolfersPage() {
               </tr>
             </thead>
             <tbody>
-              {golfers.map(golfer => {
-                const teamCount = selections.filter(s => s.golferId === golfer.id && !s.isRandom).length
-                const isRandomOnly = selections.some(s => s.golferId === golfer.id && s.isRandom) && teamCount === 0
-                const dupPenalty = isRandomOnly ? 0 : Math.max(0, teamCount - 1)
+              {sortedGolfers.map(({ golfer, teamCount, isRandomOnly, dupPenalty }) => {
                 return (
                   <GolferRow
                     key={golfer.id}

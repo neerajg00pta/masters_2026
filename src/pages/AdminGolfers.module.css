@@ -363,6 +363,10 @@
 
 .tipWarn strong { color: var(--accent-red); }
 
+/* Sortable columns */
+.sortable { cursor: pointer; user-select: none; }
+.sortable:hover { color: var(--masters-green); }
+
 /* Mobile: hide redundant columns, let name wrap, shrink everything */
 @media (max-width: 900px) {
   .table { min-width: 0; width: 100%; font-size: 10px; }
