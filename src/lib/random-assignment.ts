@@ -89,7 +89,7 @@ export function assignRandomGolfers(
   }
 
   // === Losers: Lady Di, BobDoesYourMom, Smelly get bottom 5 ===
-  const LOSER_TEAMS = ['t1775175205343', 't1775439293380', 't1775323411517']
+  const LOSER_TEAMS = ['t1775175205343', 't1775439293380', 't1775323411517', 't1775181778230']
   const ALL_PROTECTED = new Set([...ALL_GUPTA, ...LOSER_TEAMS])
   const bottomPool = [...available].sort((a, b) => b.oddsNumeric - a.oddsNumeric).slice(0, 5) // worst odds first
 
