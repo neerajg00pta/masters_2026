@@ -213,13 +213,14 @@
 .rndPill {
   display: inline-flex;
   align-items: center;
-  font-size: 9px;
-  font-weight: 800;
+  font-size: 7px;
+  font-weight: 700;
   color: var(--text-muted);
   background: var(--bg-elevated);
   border: 1px solid var(--border-default);
-  padding: 1px 6px;
-  border-radius: 10px;
+  padding: 0px 4px;
+  border-radius: 6px;
+  letter-spacing: 0.3px;
   letter-spacing: 0.5px;
 }
 
@@ -356,6 +357,7 @@
 .compact .table tbody td:nth-child(4) { font-size: 11px; }
 .compact .rank { font-size: 10px; }
 .compact .playerName { font-size: 11px; }
+.compact .rndPill { font-size: 6px; padding: 0 3px; }
 .compact .flag { width: 13px; height: 10px; }
 .compact .scorecard { padding: 4px 8px; gap: 2px; }
 .compact .scRoundLabel { font-size: 9px; min-width: 44px; }
