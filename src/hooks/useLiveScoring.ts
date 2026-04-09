@@ -39,7 +39,6 @@ export function useLiveScoring(
   const intervalRef = useRef<ReturnType<typeof setInterval>>(null)
   const golfersRef = useRef(golfers)
   golfersRef.current = golfers
-  const snapshotSavedRef = useRef(false)
 
   const poll = useCallback(async () => {
     if (document.hidden) return // skip when tab is backgrounded
@@ -100,16 +99,14 @@ export function useLiveScoring(
 
       await onRefresh()
 
-      // Auto-snapshot: only during tournament window (day before to day after)
-      // Masters 2026: April 9-12. Window: April 8-13.
-      const today = new Date()
-      const tournamentStart = new Date('2026-04-08')  // day before R1
-      const tournamentEnd = new Date('2026-04-13')    // day after R4
-      const inTournamentWindow = today >= tournamentStart && today <= tournamentEnd
+      // Auto-snapshot: if all active golfers finished AND no snapshot for today yet
+      const todayET = new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' })
+      const latestSnapshotDate = snapshots.length > 0 ? snapshots[0].snapshotDate : null
+      const alreadySnapshotToday = latestSnapshotDate === todayET
 
       const activeGolfers = golfersRef.current.filter(g => g.status === 'active')
       const allFinished = activeGolfers.length > 0 && activeGolfers.every(g => g.thru === 'F')
-      if (inTournamentWindow && allFinished && !snapshotSavedRef.current) {
+      if (allFinished && !alreadySnapshotToday) {
         try {
           const entries = computeTeamLeaderboard(teams, users, golfersRef.current, selections, snapshots, null)
           const snapshotData = entries
@@ -117,16 +114,11 @@ export function useLiveScoring(
             .map(e => ({ teamId: e.team.id, aggregateScore: e.aggregateScore, rank: e.rank }))
           if (snapshotData.length > 0) {
             await saveSnapshots(snapshotData)
-            snapshotSavedRef.current = true
-            console.log('Auto-saved daily snapshot')
+            console.log('Auto-saved daily snapshot for', todayET)
           }
         } catch (err) {
           console.error('Auto-snapshot failed:', err)
         }
-      }
-      // Reset snapshot flag when a new round starts (not all finished anymore)
-      if (!allFinished) {
-        snapshotSavedRef.current = false
       }
 
       setError(null)
