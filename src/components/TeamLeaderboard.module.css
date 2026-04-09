@@ -86,7 +86,7 @@
 /* Score */
 .score {
   font-weight: 800; font-size: 14px; color: var(--text-primary);
-  text-align: right; line-height: 1; padding-right: 6px;
+  text-align: right; line-height: 1; padding-right: 14px;
 }
 
 /* Delta */
