@@ -64,10 +64,10 @@
 .table thead th:nth-child(1) { width: 36px; }
 .table thead th:nth-child(2) { width: 36px; }
 .table thead th:nth-child(3) { width: auto; }
-.table thead th:nth-child(4) { width: 15%; }
-.table thead th:nth-child(5) { width: 15%; }
-.table thead th:nth-child(6) { width: 11%; }
-.table thead th:nth-child(7) { width: 13%; }
+.table thead th:nth-child(4) { width: 48px; }
+.table thead th:nth-child(5) { width: 56px; }
+.table thead th:nth-child(6) { width: 40px; }
+.table thead th:nth-child(7) { width: 52px; }
 
 @media (max-width: 480px) {
   .table { font-size: 11px; }
@@ -142,6 +142,14 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   max-width: 100%;
+}
+
+/* Constrain player name on narrow screens so Thru column fits */
+.table tbody td:nth-child(3) {
+  max-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .randomPlayer .playerName {
