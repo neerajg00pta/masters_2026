@@ -164,8 +164,8 @@ function PlayerRow({ entry, rank, isCut, live, isExpanded, rounds, onToggle }: {
         <td>
           <span className={styles.playerName}>
             {entry.golfer.flagUrl && <img src={entry.golfer.flagUrl} alt="" className={styles.flag} />}
-            {entry.isOnRandomTeam && <span className={styles.rndPill}>RND</span>}
             {entry.golfer.name}
+            {entry.isOnRandomTeam && <span className={styles.rndPill}>RND</span>}
           </span>
         </td>
         <td>{formatScore(entry.adjScore)}</td>

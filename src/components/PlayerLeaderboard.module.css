@@ -152,9 +152,6 @@
   white-space: nowrap;
 }
 
-.randomPlayer .playerName {
-  font-style: italic;
-}
 
 /* Icons cell: dot + link, fixed positions */
 .iconsCell {
