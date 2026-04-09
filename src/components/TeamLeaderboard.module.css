@@ -86,16 +86,15 @@
 /* Score */
 .score {
   font-weight: 800; font-size: 14px; color: var(--text-primary);
-  text-align: right; line-height: 1; padding-right: 14px;
+  text-align: right; line-height: 1; padding-right: 6px;
 }
 
 /* Delta */
-.delta { font-weight: 800; font-size: 14px; line-height: 1; }
-.up, .down { display: inline-flex; align-items: center; width: 100%; }
+.delta { text-align: right; font-weight: 800; font-size: 14px; line-height: 1; padding-right: 4px; }
 .up { color: var(--accent-green); }
 .down { color: var(--accent-red); }
-.deltaNum { flex: 1; text-align: right; font-variant-numeric: tabular-nums; }
-.flat { color: var(--text-muted); font-size: 11px; text-align: center; display: block; }
+.deltaNum { display: inline-block; min-width: 1.2em; text-align: right; font-variant-numeric: tabular-nums; }
+.flat { color: var(--text-muted); font-size: 11px; }
 
 /* Star */
 .star {
