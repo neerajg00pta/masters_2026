@@ -90,10 +90,12 @@
 }
 
 /* Delta */
-.delta { text-align: left; font-weight: 800; font-size: 14px; line-height: 1; padding-left: 4px; }
+.delta { font-weight: 800; font-size: 14px; line-height: 1; }
+.up, .down { display: inline-flex; align-items: center; width: 100%; }
 .up { color: var(--accent-green); }
 .down { color: var(--accent-red); }
-.flat { color: var(--text-muted); font-size: 11px; }
+.deltaNum { flex: 1; text-align: right; font-variant-numeric: tabular-nums; }
+.flat { color: var(--text-muted); font-size: 11px; text-align: center; display: block; }
 
 /* Star */
 .star {
