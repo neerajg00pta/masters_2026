@@ -90,7 +90,7 @@
 }
 
 /* Delta */
-.delta { text-align: right; font-weight: 800; font-size: 14px; line-height: 1; padding-right: 4px; }
+.delta { text-align: left; font-weight: 800; font-size: 14px; line-height: 1; padding-left: 4px; }
 .up { color: var(--accent-green); }
 .down { color: var(--accent-red); }
 .flat { color: var(--text-muted); font-size: 11px; }
