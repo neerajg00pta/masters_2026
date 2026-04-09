@@ -39,6 +39,14 @@ export function useLiveScoring(
   const intervalRef = useRef<ReturnType<typeof setInterval>>(null)
   const golfersRef = useRef(golfers)
   golfersRef.current = golfers
+  const snapshotsRef = useRef(snapshots)
+  snapshotsRef.current = snapshots
+  const teamsRef = useRef(teams)
+  teamsRef.current = teams
+  const usersRef = useRef(users)
+  usersRef.current = users
+  const selectionsRef = useRef(selections)
+  selectionsRef.current = selections
 
   const poll = useCallback(async () => {
     if (document.hidden) return // skip when tab is backgrounded
@@ -99,22 +107,30 @@ export function useLiveScoring(
 
       await onRefresh()
 
-      // Auto-snapshot: if all active golfers finished AND no snapshot for today yet
+      // Auto-snapshot: if all ESPN golfers finished AND no snapshot for today yet
+      // Use ESPN data (fresh) not golfersRef (stale until next render)
       const todayET = new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' })
-      const latestSnapshotDate = snapshots.length > 0 ? snapshots[0].snapshotDate : null
+      const currentSnapshots = snapshotsRef.current
+      const latestSnapshotDate = currentSnapshots.length > 0 ? currentSnapshots[0].snapshotDate : null
       const alreadySnapshotToday = latestSnapshotDate === todayET
 
-      const activeGolfers = golfersRef.current.filter(g => g.status === 'active')
-      const allFinished = activeGolfers.length > 0 && activeGolfers.every(g => g.thru === 'F')
+      const allFinished = espnGolfers.length > 0 &&
+        espnGolfers.every(g => g.thru === 'F' || g.status === 'cut' || g.status === 'withdrawn')
+
       if (allFinished && !alreadySnapshotToday) {
         try {
-          const entries = computeTeamLeaderboard(teams, users, golfersRef.current, selections, snapshots, null)
+          // Use refs for current data (onRefresh just updated the DB)
+          const entries = computeTeamLeaderboard(
+            teamsRef.current, usersRef.current, golfersRef.current,
+            selectionsRef.current, currentSnapshots, null
+          )
           const snapshotData = entries
             .filter(e => !e.isDisqualified)
             .map(e => ({ teamId: e.team.id, aggregateScore: e.aggregateScore, rank: e.rank }))
           if (snapshotData.length > 0) {
             await saveSnapshots(snapshotData)
             console.log('Auto-saved daily snapshot for', todayET)
+            await onRefresh() // refresh again so snapshots state updates
           }
         } catch (err) {
           console.error('Auto-snapshot failed:', err)
