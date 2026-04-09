@@ -34,7 +34,7 @@
 /* ═══ Row: Pos | $ | Team | Score | Delta | Star ═══ */
 .row {
   display: grid;
-  grid-template-columns: 14px 36px 28px 1fr 52px 48px 22px;
+  grid-template-columns: 14px 36px 28px 1fr 80px 48px 22px;
   align-items: center;
   gap: 0;
   padding: 5px 8px;
