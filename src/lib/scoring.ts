@@ -70,7 +70,8 @@ export function computeTeamLeaderboard(
 
   // Build snapshot lookup: teamId -> rank from YESTERDAY's snapshot
   // (not today's, since today's snapshot reflects current state)
-  const today = new Date().toISOString().slice(0, 10)
+  // Use Eastern time (Augusta) for snapshot date comparison
+  const today = new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' })
   const yesterdaySnapshots = snapshots.filter(s => s.snapshotDate < today)
   const yesterdayDate = yesterdaySnapshots.length > 0 ? yesterdaySnapshots[0].snapshotDate : null
   const dateSnapshots = yesterdayDate ? yesterdaySnapshots.filter(s => s.snapshotDate === yesterdayDate) : []

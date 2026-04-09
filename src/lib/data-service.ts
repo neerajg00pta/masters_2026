@@ -384,7 +384,8 @@ export async function bulkAddSelections(
 export async function saveSnapshots(
   entries: Array<{ teamId: string; aggregateScore: number; rank: number }>
 ): Promise<void> {
-  const today = new Date().toISOString().slice(0, 10)
+  // Use Eastern time (Augusta) for snapshot dates
+  const today = new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' })
 
   // Delete existing snapshots for today (idempotent)
   await supabase
