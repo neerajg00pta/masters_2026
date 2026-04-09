@@ -27,6 +27,11 @@ export function TeamLeaderboard({ entries, payoutMap, currentUserId, compact, se
   const [expanded, setExpanded] = useState<Set<string>>(new Set())
   const [starred, setStarred] = useState(() => readStarred(currentUserId))
 
+  // Re-read stars when user identity loads (initial render has null userId)
+  useEffect(() => {
+    setStarred(readStarred(currentUserId))
+  }, [currentUserId])
+
   // Auto-star own teams + auto-expand pinned, once
   const didInit = useRef(false)
   useEffect(() => {
