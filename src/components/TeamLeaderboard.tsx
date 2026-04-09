@@ -148,7 +148,7 @@ function Row({ entry, moneyStr, hasMoney, isOwn, isOpen, isStar, onToggle, onSta
         <span className={styles.score}>
           {entry.isDisqualified ? '—' : formatScore(entry.aggregateScore)}
         </span>
-
+        <span />
         <span className={styles.delta}>
           {entry.rankDelta !== null && entry.rankDelta > 0 && <span className={styles.up}>&#9650;<span className={styles.deltaNum}>{entry.rankDelta}</span></span>}
           {entry.rankDelta !== null && entry.rankDelta < 0 && <span className={styles.down}>&#9660;<span className={styles.deltaNum}>{Math.abs(entry.rankDelta)}</span></span>}
