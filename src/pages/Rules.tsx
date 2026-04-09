@@ -107,18 +107,22 @@ export function RulesPage() {
           <div className={styles.payoutItem}>
             <span className={`${styles.payoutMedal} ${styles.medalGold}`}>1</span>
             <span className={`${styles.payoutPlace} ${styles.payoutFirst}`}>1st Place</span>
+            <span className={styles.payoutPct}>50%</span>
           </div>
           <div className={styles.payoutItem}>
             <span className={`${styles.payoutMedal} ${styles.medalSilver}`}>2</span>
             <span className={`${styles.payoutPlace} ${styles.payoutSecond}`}>2nd Place</span>
+            <span className={styles.payoutPct}>25%</span>
+          </div>
+          <div className={styles.payoutItem}>
+            <span className={`${styles.payoutMedal} ${styles.medalBronze}`}>M</span>
+            <span className={`${styles.payoutPlace} ${styles.payoutMiddle}`}>Middle</span>
+            <span className={styles.payoutPct}>12.5%</span>
           </div>
           <div className={styles.payoutItem}>
             <span className={`${styles.payoutMedal} ${styles.medalBronze}`}>L</span>
             <span className={`${styles.payoutPlace} ${styles.payoutLast}`}>Last Place</span>
-          </div>
-          <div className={styles.payoutItem}>
-            <span className={`${styles.payoutMedal} ${styles.medalBronze}`}>M</span>
-            <span className={`${styles.payoutPlace} ${styles.payoutMiddle}`}>Middle Place</span>
+            <span className={styles.payoutPct}>12.5%</span>
           </div>
         </div>
         <div className={styles.divider} />
