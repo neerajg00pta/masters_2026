@@ -52,7 +52,7 @@ export function useLiveScoring(
     if (document.hidden) return // skip when tab is backgrounded
     setIsPolling(true)
     try {
-      const espnGolfers = await fetchESPNLeaderboard()
+      const { golfers: espnGolfers, roundComplete } = await fetchESPNLeaderboard()
       setAllEspnGolfers(espnGolfers)
 
       const currentGolfers = golfersRef.current
@@ -114,10 +114,7 @@ export function useLiveScoring(
       const latestSnapshotDate = currentSnapshots.length > 0 ? currentSnapshots[0].snapshotDate : null
       const alreadySnapshotToday = latestSnapshotDate === todayET
 
-      const allFinished = espnGolfers.length > 0 &&
-        espnGolfers.every(g => g.thru === 'F' || g.status === 'cut' || g.status === 'withdrawn')
-
-      if (allFinished && !alreadySnapshotToday) {
+      if (roundComplete && !alreadySnapshotToday) {
         try {
           // Use refs for current data (onRefresh just updated the DB)
           const entries = computeTeamLeaderboard(

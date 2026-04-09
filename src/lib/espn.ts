@@ -37,15 +37,23 @@ function formatTeeTime(detail: string): string {
 /**
  * Fetch ESPN PGA leaderboard — single endpoint for everything.
  */
-export async function fetchESPNLeaderboard(): Promise<ESPNGolfer[]> {
+export interface ESPNLeaderboardResult {
+  golfers: ESPNGolfer[]
+  roundComplete: boolean
+}
+
+export async function fetchESPNLeaderboard(): Promise<ESPNLeaderboardResult> {
   const url = 'https://site.web.api.espn.com/apis/site/v2/sports/golf/leaderboard?league=pga'
   const res = await fetch(url)
   if (!res.ok) throw new Error(`ESPN API ${res.status}`)
   const data = await res.json()
 
   const golfers: ESPNGolfer[] = []
+  let roundComplete = false
   const events = data?.events ?? []
   for (const event of events) {
+    const compStatus = event?.competitions?.[0]?.status?.type?.state
+    if (compStatus === 'post') roundComplete = true
     const competitors = event?.competitions?.[0]?.competitors ?? []
     for (const c of competitors) {
       const athlete = c?.athlete ?? {}
@@ -127,7 +135,7 @@ export async function fetchESPNLeaderboard(): Promise<ESPNGolfer[]> {
     }
   }
 
-  return golfers
+  return { golfers, roundComplete }
 }
 
 /** Hole score from ESPN scorecard */
