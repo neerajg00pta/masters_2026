@@ -56,13 +56,20 @@ export async function fetchESPNLeaderboard(): Promise<ESPNGolfer[]> {
       const stateType = st?.type?.state ?? ''
       const detail = st?.detail ?? ''
 
-      // Score
+      // Score — use statistics.scoreToPar (most reliable for total tournament score)
       let scoreToPar = 0
-      const scoreObj = c?.score
-      if (scoreObj) {
-        const dv = typeof scoreObj === 'object' ? scoreObj.displayValue : String(scoreObj)
-        if (dv === 'E') scoreToPar = 0
-        else scoreToPar = parseInt(dv, 10) || 0
+      const stats = c?.statistics ?? []
+      const stpStat = stats.find((s: { name: string }) => s.name === 'scoreToPar')
+      if (stpStat) {
+        scoreToPar = Math.round(stpStat.value ?? 0)
+      } else {
+        // Fallback to c.score
+        const scoreObj = c?.score
+        if (scoreObj) {
+          const dv = typeof scoreObj === 'object' ? scoreObj.displayValue : String(scoreObj)
+          if (dv === 'E') scoreToPar = 0
+          else scoreToPar = parseInt(dv, 10) || 0
+        }
       }
 
       // Today — from current round linescore
