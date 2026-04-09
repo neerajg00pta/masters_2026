@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from 'react'
+import { Navigate } from 'react-router-dom'
 import { useData } from '../context/DataContext'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
@@ -25,6 +26,11 @@ function TeamsView() {
   const toggleCompact = () => setCompact(p => { const v = !p; localStorage.setItem('masters_teams_compact', v ? '1' : '0'); return v })
 
   const isLocked = config.poolLocked
+
+  // Redirect to live when pool is locked (admins can still access)
+  if (isLocked && !isAdmin) {
+    return <Navigate to="/live" replace />
+  }
   const canEdit = !isLocked || isAdmin
 
   // Build user lookup
