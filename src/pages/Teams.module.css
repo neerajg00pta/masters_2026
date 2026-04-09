@@ -39,6 +39,15 @@
   border-bottom: 1px solid var(--border-muted);
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
+.renameBtn {
+  background: none; border: none; cursor: pointer; font-size: 10px;
+  color: var(--text-muted); padding: 0; line-height: 1; flex-shrink: 0;
+  opacity: 0.5; transition: opacity 0.12s;
+}
+.renameBtn:hover { opacity: 1; }
+.teamCardActive .renameBtn { color: rgba(255,255,255,0.5); }
+.teamCardActive .renameBtn:hover { color: #fff; }
+
 /* Owner row keeps default styling even on active card — no white text on white bg */
 
 .lockedBanner {
@@ -173,6 +182,9 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .cardMeta {

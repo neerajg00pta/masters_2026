@@ -323,6 +323,9 @@ function TeamsView() {
                       title={canEdit ? 'Double-click to rename' : undefined}
                     >
                       {t.teamName}
+                      {isAdmin && (
+                        <button className={styles.renameBtn} onClick={e => { e.stopPropagation(); startRename(t.id, t.teamName) }} title="Rename">&#9998;</button>
+                      )}
                     </span>
                   )}
                   <div className={styles.cardMeta}>
