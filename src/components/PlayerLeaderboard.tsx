@@ -222,7 +222,7 @@ function HoleCell({ hole }: { hole: { hole: number; strokes: number; relative: s
   const isEagle = !isNaN(rel) && rel <= -2
   const isBirdie = hole.relative === '-1'
   const isBogey = hole.relative === '+1'
-  const isDoublePlus = !isNaN(rel) && rel >= 2
+  const isDoublePlus = (!isNaN(rel) && rel >= 2) || hole.relative === 'OTHER'
 
   const cls = [
     styles.scCell,
