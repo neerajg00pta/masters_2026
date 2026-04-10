@@ -219,10 +219,14 @@ function Scorecard({ rounds }: { rounds: RoundScorecard[] }) {
 
 function HoleCell({ hole }: { hole: { hole: number; strokes: number; relative: string } }) {
   const rel = parseInt(hole.relative, 10)
-  const isEagle = !isNaN(rel) && rel <= -2
+  // ESPN returns "OTHER" for extreme scores — use strokes to guess direction
+  // Hole-in-one (1 stroke) or albatross (2 strokes) = eagle+; 7+ strokes = double bogey+
+  const otherIsGood = hole.relative === 'OTHER' && hole.strokes <= 2
+  const otherIsBad = hole.relative === 'OTHER' && hole.strokes >= 7
+  const isEagle = (!isNaN(rel) && rel <= -2) || otherIsGood
   const isBirdie = hole.relative === '-1'
   const isBogey = hole.relative === '+1'
-  const isDoublePlus = (!isNaN(rel) && rel >= 2) || hole.relative === 'OTHER'
+  const isDoublePlus = (!isNaN(rel) && rel >= 2) || otherIsBad
 
   const cls = [
     styles.scCell,
