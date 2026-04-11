@@ -56,10 +56,11 @@ create table selections (
   unique (team_id, golfer_id)
 );
 
--- Score snapshots (for yesterday rank comparison)
+-- Score snapshots (for round-over-round rank comparison)
+-- snapshot_date is the round's date (derived from event start + round - 1)
 create table score_snapshots (
   id serial primary key,
-  snapshot_date date not null default current_date,
+  snapshot_date date not null,
   team_id text not null references teams(id) on delete cascade,
   aggregate_score int not null,
   rank int not null,

@@ -39,7 +39,9 @@ function formatTeeTime(detail: string): string {
  */
 export interface ESPNLeaderboardResult {
   golfers: ESPNGolfer[]
+  currentRound: number       // 1-4 (from competition.status.period)
   roundComplete: boolean
+  eventStartDate: string     // "2026-04-09" — first round date
 }
 
 export async function fetchESPNLeaderboard(): Promise<ESPNLeaderboardResult> {
@@ -50,10 +52,17 @@ export async function fetchESPNLeaderboard(): Promise<ESPNLeaderboardResult> {
 
   const golfers: ESPNGolfer[] = []
   let roundComplete = false
+  let currentRound = 0
+  let eventStartDate = ''
   const events = data?.events ?? []
   for (const event of events) {
-    const compStatus = event?.competitions?.[0]?.status?.type?.state
+    const comp = event?.competitions?.[0]
+    const compStatus = comp?.status?.type?.state
     if (compStatus === 'post') roundComplete = true
+    currentRound = comp?.status?.period ?? 0
+    // Extract event start date (UTC midnight → date portion)
+    const rawDate = event?.date ?? ''
+    if (rawDate) eventStartDate = rawDate.slice(0, 10)
     const competitors = event?.competitions?.[0]?.competitors ?? []
     for (const c of competitors) {
       const athlete = c?.athlete ?? {}
@@ -135,7 +144,14 @@ export async function fetchESPNLeaderboard(): Promise<ESPNLeaderboardResult> {
     }
   }
 
-  return { golfers, roundComplete }
+  return { golfers, currentRound, roundComplete, eventStartDate }
+}
+
+/** Compute the date for a given round: startDate + (round - 1) days */
+export function roundDate(eventStartDate: string, round: number): string {
+  const d = new Date(eventStartDate + 'T12:00:00Z') // noon UTC to avoid TZ issues
+  d.setUTCDate(d.getUTCDate() + round - 1)
+  return d.toISOString().slice(0, 10)
 }
 
 /** Hole score from ESPN scorecard */

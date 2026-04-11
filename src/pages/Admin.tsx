@@ -124,9 +124,10 @@ export function AdminPage() {
       const lb = computeTeamLeaderboard(teams, users, golfers, selections, snapshots, null)
       const data = lb.filter(e => !e.isDisqualified).map(e => ({ teamId: e.team.id, aggregateScore: e.aggregateScore, rank: e.rank }))
       const { saveSnapshots } = await import('../lib/data-service')
-      await saveSnapshots(data)
+      const todayET = new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' })
+      await saveSnapshots(data, todayET)
       await refresh()
-      addToast(`Snapshot saved (${data.length} teams)`, 'success')
+      addToast(`Snapshot saved for ${todayET} (${data.length} teams)`, 'success')
     } catch {
       addToast('Failed to save snapshot', 'error')
     } finally {

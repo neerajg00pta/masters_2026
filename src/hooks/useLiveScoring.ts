@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import type { Golfer, Team, User, Selection, ScoreSnapshot } from '../lib/types'
-import { fetchESPNLeaderboard, matchESPNToPool, type ESPNGolfer } from '../lib/espn'
+import { fetchESPNLeaderboard, matchESPNToPool, roundDate, type ESPNGolfer } from '../lib/espn'
 import { updateGolferScores, updateGolfer, saveSnapshots } from '../lib/data-service'
 import { computeTeamLeaderboard } from '../lib/scoring'
 import { ESPN_TO_MASTERS } from '../lib/masters-ids'
@@ -52,7 +52,7 @@ export function useLiveScoring(
     if (document.hidden) return // skip when tab is backgrounded
     setIsPolling(true)
     try {
-      const { golfers: espnGolfers, roundComplete } = await fetchESPNLeaderboard()
+      const { golfers: espnGolfers, currentRound, roundComplete, eventStartDate } = await fetchESPNLeaderboard()
       setAllEspnGolfers(espnGolfers)
 
       const currentGolfers = golfersRef.current
@@ -107,30 +107,29 @@ export function useLiveScoring(
 
       await onRefresh()
 
-      // Auto-snapshot: if all ESPN golfers finished AND no snapshot for today yet
-      // Use ESPN data (fresh) not golfersRef (stale until next render)
-      const todayET = new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' })
-      const currentSnapshots = snapshotsRef.current
-      const latestSnapshotDate = currentSnapshots.length > 0 ? currentSnapshots[0].snapshotDate : null
-      const alreadySnapshotToday = latestSnapshotDate === todayET
+      // Auto-snapshot: round-aware — only snapshot completed rounds, dated by round
+      if (roundComplete && currentRound > 0 && eventStartDate) {
+        const snapshotDateForRound = roundDate(eventStartDate, currentRound)
+        const currentSnapshots = snapshotsRef.current
+        const alreadySnapshotted = currentSnapshots.some(s => s.snapshotDate === snapshotDateForRound)
 
-      if (roundComplete && !alreadySnapshotToday) {
-        try {
-          // Use refs for current data (onRefresh just updated the DB)
-          const entries = computeTeamLeaderboard(
-            teamsRef.current, usersRef.current, golfersRef.current,
-            selectionsRef.current, currentSnapshots, null
-          )
-          const snapshotData = entries
-            .filter(e => !e.isDisqualified)
-            .map(e => ({ teamId: e.team.id, aggregateScore: e.aggregateScore, rank: e.rank }))
-          if (snapshotData.length > 0) {
-            await saveSnapshots(snapshotData)
-            console.log('Auto-saved daily snapshot for', todayET)
-            await onRefresh() // refresh again so snapshots state updates
+        if (!alreadySnapshotted) {
+          try {
+            const entries = computeTeamLeaderboard(
+              teamsRef.current, usersRef.current, golfersRef.current,
+              selectionsRef.current, currentSnapshots, null
+            )
+            const snapshotData = entries
+              .filter(e => !e.isDisqualified)
+              .map(e => ({ teamId: e.team.id, aggregateScore: e.aggregateScore, rank: e.rank }))
+            if (snapshotData.length > 0) {
+              await saveSnapshots(snapshotData, snapshotDateForRound)
+              console.log(`Auto-saved snapshot for round ${currentRound} (${snapshotDateForRound})`)
+              await onRefresh()
+            }
+          } catch (err) {
+            console.error('Auto-snapshot failed:', err)
           }
-        } catch (err) {
-          console.error('Auto-snapshot failed:', err)
         }
       }
 

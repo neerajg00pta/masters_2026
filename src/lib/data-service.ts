@@ -380,21 +380,19 @@ export async function bulkAddSelections(
   if (error) throw new Error(error.message)
 }
 
-/** Save daily score snapshots */
+/** Save score snapshots for a specific date (idempotent — replaces existing) */
 export async function saveSnapshots(
-  entries: Array<{ teamId: string; aggregateScore: number; rank: number }>
+  entries: Array<{ teamId: string; aggregateScore: number; rank: number }>,
+  snapshotDate: string,
 ): Promise<void> {
-  // Use Eastern time (Augusta) for snapshot dates
-  const today = new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' })
-
-  // Delete existing snapshots for today (idempotent)
+  // Delete existing snapshots for this date (idempotent)
   await supabase
     .from('score_snapshots')
     .delete()
-    .eq('snapshot_date', today)
+    .eq('snapshot_date', snapshotDate)
 
   const rows = entries.map(e => ({
-    snapshot_date: today,
+    snapshot_date: snapshotDate,
     team_id: e.teamId,
     aggregate_score: e.aggregateScore,
     rank: e.rank,
