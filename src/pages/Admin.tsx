@@ -105,7 +105,7 @@ export function AdminPage() {
     setSaving(true)
     try {
       // Delete all selections where is_random = true
-      const { error } = await supabase.from('selections').delete().eq('is_random', true)
+      const { error } = await supabase.from('pga_masters_selections').delete().eq('is_random', true)
       if (error) throw new Error(error.message)
       await updateConfig({ randomsAssigned: false })
       await refresh()

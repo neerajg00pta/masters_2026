@@ -14,12 +14,12 @@ interface AllData {
 /** Fetch all 6 data tables in parallel */
 export async function fetchAllData(): Promise<AllData> {
   const [configRes, usersRes, teamsRes, golfersRes, selectionsRes, snapshotsRes] = await Promise.all([
-    supabase.from('config').select('*').single(),
-    supabase.from('users').select('*').order('created_at', { ascending: true }),
-    supabase.from('teams').select('*').order('created_at', { ascending: true }),
-    supabase.from('golfers').select('*').order('sort_order', { ascending: true }),
-    supabase.from('selections').select('*'),
-    supabase.from('score_snapshots').select('*').order('snapshot_date', { ascending: false }),
+    supabase.from('pga_masters_config').select('*').single(),
+    supabase.from('pga_masters_users').select('*').order('created_at', { ascending: true }),
+    supabase.from('pga_masters_teams').select('*').order('created_at', { ascending: true }),
+    supabase.from('pga_masters_golfers').select('*').order('sort_order', { ascending: true }),
+    supabase.from('pga_masters_selections').select('*'),
+    supabase.from('pga_masters_score_snapshots').select('*').order('snapshot_date', { ascending: false }),
   ])
 
   if (configRes.error) throw new Error(`Config: ${configRes.error.message}`)
@@ -100,7 +100,7 @@ export async function fetchAllData(): Promise<AllData> {
 export async function createUser(input: { name: string; email: string; fullName: string }): Promise<User> {
   const id = `u${Date.now()}`
   const { data, error } = await supabase
-    .from('users')
+    .from('pga_masters_users')
     .insert({ id, name: input.name, email: input.email, full_name: input.fullName })
     .select()
     .single()
@@ -124,7 +124,7 @@ export async function createUser(input: { name: string; email: string; fullName:
 export async function createTeam(userId: string, teamName: string): Promise<Team> {
   const id = `t${Date.now()}`
   const { data, error } = await supabase
-    .from('teams')
+    .from('pga_masters_teams')
     .insert({ id, user_id: userId, team_name: teamName })
     .select()
     .single()
@@ -144,14 +144,14 @@ export async function createTeam(userId: string, teamName: string): Promise<Team
 export async function deleteTeam(teamId: string): Promise<void> {
   // First delete all selections for this team
   const { error: selError } = await supabase
-    .from('selections')
+    .from('pga_masters_selections')
     .delete()
     .eq('team_id', teamId)
 
   if (selError) throw new Error(selError.message)
 
   const { error } = await supabase
-    .from('teams')
+    .from('pga_masters_teams')
     .delete()
     .eq('id', teamId)
 
@@ -161,7 +161,7 @@ export async function deleteTeam(teamId: string): Promise<void> {
 /** Rename a team */
 export async function updateTeamName(teamId: string, name: string): Promise<void> {
   const { error } = await supabase
-    .from('teams')
+    .from('pga_masters_teams')
     .update({ team_name: name })
     .eq('id', teamId)
 
@@ -171,7 +171,7 @@ export async function updateTeamName(teamId: string, name: string): Promise<void
 /** Set team confirmed status */
 export async function setTeamConfirmed(teamId: string, confirmed: boolean): Promise<void> {
   const { error } = await supabase
-    .from('teams')
+    .from('pga_masters_teams')
     .update({ confirmed })
     .eq('id', teamId)
   if (error) throw new Error(error.message)
@@ -184,10 +184,10 @@ export async function addSelection(teamId: string, golferId: string, isRandom: b
   const id = `s${Date.now()}`
   // Unconfirm team when editing picks (unless it's a random assignment)
   if (!isRandom) {
-    await supabase.from('teams').update({ confirmed: false }).eq('id', teamId)
+    await supabase.from('pga_masters_teams').update({ confirmed: false }).eq('id', teamId)
   }
   const { data, error } = await supabase
-    .from('selections')
+    .from('pga_masters_selections')
     .insert({ id, team_id: teamId, golfer_id: golferId, is_random: isRandom })
     .select()
     .single()
@@ -205,9 +205,9 @@ export async function addSelection(teamId: string, golferId: string, isRandom: b
 
 /** Remove a golfer from a team (auto-unconfirms) */
 export async function removeSelection(teamId: string, golferId: string): Promise<void> {
-  await supabase.from('teams').update({ confirmed: false }).eq('id', teamId)
+  await supabase.from('pga_masters_teams').update({ confirmed: false }).eq('id', teamId)
   const { error } = await supabase
-    .from('selections')
+    .from('pga_masters_selections')
     .delete()
     .eq('team_id', teamId)
     .eq('golfer_id', golferId)
@@ -225,7 +225,7 @@ export async function updateConfig(updates: Partial<Config>): Promise<void> {
   if (updates.liveScoring !== undefined) payload.live_scoring = updates.liveScoring
 
   const { error } = await supabase
-    .from('config')
+    .from('pga_masters_config')
     .update(payload)
     .eq('id', 1)
 
@@ -247,7 +247,7 @@ export async function updateUser(
   if (updates.paid !== undefined) payload.paid = updates.paid
 
   const { error } = await supabase
-    .from('users')
+    .from('pga_masters_users')
     .update(payload)
     .eq('id', userId)
 
@@ -258,7 +258,7 @@ export async function updateUser(
 export async function deleteUser(userId: string): Promise<void> {
   // Find all teams for this user
   const { data: userTeams, error: teamsErr } = await supabase
-    .from('teams')
+    .from('pga_masters_teams')
     .select('id')
     .eq('user_id', userId)
 
@@ -267,7 +267,7 @@ export async function deleteUser(userId: string): Promise<void> {
   // Delete selections for each team
   for (const t of userTeams ?? []) {
     const { error: selErr } = await supabase
-      .from('selections')
+      .from('pga_masters_selections')
       .delete()
       .eq('team_id', t.id)
     if (selErr) console.error(`Failed to delete selections for team ${t.id}:`, selErr.message)
@@ -275,19 +275,19 @@ export async function deleteUser(userId: string): Promise<void> {
 
   // Delete teams
   const { error: delTeamsErr } = await supabase
-    .from('teams')
+    .from('pga_masters_teams')
     .delete()
     .eq('user_id', userId)
   if (delTeamsErr) throw new Error(delTeamsErr.message)
 
   // Delete snapshots for those teams
   for (const t of userTeams ?? []) {
-    await supabase.from('score_snapshots').delete().eq('team_id', t.id)
+    await supabase.from('pga_masters_score_snapshots').delete().eq('team_id', t.id)
   }
 
   // Delete the user
   const { error } = await supabase
-    .from('users')
+    .from('pga_masters_users')
     .delete()
     .eq('id', userId)
 
@@ -311,7 +311,7 @@ export async function upsertGolfers(field: MastersFieldEntry[]): Promise<number>
   }))
 
   const { error, count } = await supabase
-    .from('golfers')
+    .from('pga_masters_golfers')
     .upsert(rows, { onConflict: 'id', count: 'exact' })
 
   if (error) throw new Error(error.message)
@@ -320,7 +320,7 @@ export async function upsertGolfers(field: MastersFieldEntry[]): Promise<number>
 
 /** Auto-seed golfers if table is empty */
 export async function seedGolfersIfEmpty(field: MastersFieldEntry[]): Promise<boolean> {
-  const { count } = await supabase.from('golfers').select('id', { count: 'exact', head: true })
+  const { count } = await supabase.from('pga_masters_golfers').select('id', { count: 'exact', head: true })
   if (count && count > 0) return false
   await upsertGolfers(field)
   return true
@@ -355,7 +355,7 @@ export async function updateGolfer(
   if (updates.mastersId !== undefined) payload.masters_id = updates.mastersId
 
   const { error } = await supabase
-    .from('golfers')
+    .from('pga_masters_golfers')
     .update(payload)
     .eq('id', golferId)
 
@@ -374,7 +374,7 @@ export async function bulkAddSelections(
   }))
 
   const { error } = await supabase
-    .from('selections')
+    .from('pga_masters_selections')
     .insert(rows)
 
   if (error) throw new Error(error.message)
@@ -387,7 +387,7 @@ export async function saveSnapshots(
 ): Promise<void> {
   // Delete existing snapshots for this date (idempotent)
   await supabase
-    .from('score_snapshots')
+    .from('pga_masters_score_snapshots')
     .delete()
     .eq('snapshot_date', snapshotDate)
 
@@ -399,7 +399,7 @@ export async function saveSnapshots(
   }))
 
   const { error } = await supabase
-    .from('score_snapshots')
+    .from('pga_masters_score_snapshots')
     .insert(rows)
 
   if (error) throw new Error(error.message)
@@ -413,7 +413,7 @@ export async function updateGolferScores(
 ): Promise<void> {
   for (const u of updates) {
     const { error } = await supabase
-      .from('golfers')
+      .from('pga_masters_golfers')
       .update({
         score_to_par: u.scoreToPar,
         today: u.today,
